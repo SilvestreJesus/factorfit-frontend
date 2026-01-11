@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@layer base {
+    .input-field {
+        @apply w-full bg-white/50 border border-gray-200 rounded-xl p-3 text-gray-900 font-semibold 
+               placeholder-gray-400 outline-none transition-all focus:border-pink-500 focus:ring-2 focus:ring-pink-100;
+    }
+}
+
+/* Scrollbar personalizada */
+ul::-webkit-scrollbar {
+    width: 6px;
+}
+ul::-webkit-scrollbar-thumb {
+    @apply bg-pink-200 rounded-full;
+}
+
+/* Animación de entrada */
+.container {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animaciones para el Toast */
+.animate-in {
+    animation-duration: 0.3s;
+}

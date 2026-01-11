@@ -1,0 +1,14 @@
+.bg {
+    background-image: url('https://i.ibb.co/272HW3wN/fondo-landing.jpg');
+}
+
+/* client-home-layout.css */
+#bg {
+    position: fixed; /* O absolute */
+    inset: 0;
+    z-index: -1; /* Esto lo manda al fondo de todo */
+    background: 
+        radial-gradient(ellipse 80% 60% at 5% 40%, rgba(108, 31, 202, 0.48), transparent 67%),
+        /* ... el resto de tus gradientes ... */
+        linear-gradient(45deg, #f7eaff 0%, #fde2ea 100%);
+}

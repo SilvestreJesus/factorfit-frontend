@@ -1,0 +1,26 @@
+<div class="container mx-auto text-center">
+    <h1 class="font-atomic text-6xl sm:text-7xl italic text-pink-600 mb-10">Membresías</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        @for (plan of plansData; track plan.id) {
+        <div class="p-8 rounded-3xl h-96 flex flex-col justify-between transition-all duration-300" [ngClass]="{
+             'bg-black/20 backdrop-blur-sm text-black scale-110 shadow-2xl shadow-purple-600/30': plan.featured,
+             'bg-black/10 backdrop-blur-sm text-gray-800': !plan.featured
+           }">
+            <h3 class="text-4xl font-bold">{{ plan.name }}</h3>
+            <div>
+            </div>
+            <button [ngClass]="{
+          'bg-purple-950 hover:bg-purple-800 text-white': plan.featured,
+          'bg-purple-500 hover:bg-purple-600 text-black': !plan.featured
+        }" class="font-bold py-3 px-8 rounded-full w-full">Editar</button>
+        </div>
+        }
+    </div>
+
+    <div class="flex justify-center mt-12">
+        <button class="bg-purple-500 hover:bg-purple-600 text-black font-bold py-3 px-12 rounded-full text-lg">
+            Agregar
+        </button>
+    </div>
+</div>

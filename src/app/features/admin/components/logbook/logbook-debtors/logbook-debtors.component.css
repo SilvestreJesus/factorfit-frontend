@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@layer base {
+  /* Tabs y Botones Estilo Usuarios */
+  .sub-nav-btn {
+    @apply px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 
+           bg-white/20 border border-white/30 text-gray-800 hover:bg-pink-500 hover:text-white shadow-sm;
+  }
+
+  .active-sub-nav {
+    @apply bg-pink-600 text-white shadow-pink-300 shadow-lg scale-105 border-pink-400;
+  }
+
+  /* Botones de acción circulares */
+  .action-btn {
+    @apply p-2 rounded-xl bg-white/40 border border-white/60 shadow-sm transition-all 
+           hover:bg-white hover:shadow-md active:scale-90 flex items-center justify-center;
+  }
+
+  /* Badges de Estado */
+  .status-badge-activo {
+    @apply bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200;
+  }
+
+  .status-badge-pending {
+    @apply bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-200;
+  }
+
+  .status-chip {
+    @apply px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest 
+           bg-white/20 text-gray-600 border border-white/30 transition-all hover:bg-pink-50;
+  }
+}
+
+/* Animaciones */
+.animate-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para los inputs de edición (Texto Negro sobre Blanco) */
+input[type="text"], textarea {
+  color: #111827 !important; /* Gray-900 */
+}
+
+/* Scroll lateral elegante para tablas */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(219, 39, 119, 0.2) transparent;
+}
+
+/* Actualiza esto en tu archivo CSS */
+input[type="text"], input[type="number"], textarea {
+  color: #111827 !important; /* Gray-900 */
+}

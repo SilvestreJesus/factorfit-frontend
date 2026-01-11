@@ -1,0 +1,41 @@
+<section id="events" class="py-24 bg-gradient-to-tr from-fuchsia-400 to-gray-900">
+  <div class="container mx-auto px-6 text-center">
+
+    <h2 class="section-title-fluid font-bold mb-12">
+      Eventos
+    </h2>
+
+    <div class="carousel-polaroid">
+      
+
+    <!-- BOTÓN IZQUIERDA -->
+    <button
+        class="carousel-btn left"
+        (click)="scrollLeft()">
+        ⬅
+    </button>
+
+    @for (evento of eventos; track evento.clave_eventos; let i = $index) {
+        <div class="polaroid-card" [class.active]="i === activeIndex" [class.inactive]="i !== activeIndex"
+        [ngStyle]="getCardStyle(i)">
+
+        <img [src]="evento.imagen" alt="evento">
+
+        <div class="polaroid-info">
+            <h3>{{ evento.titulo }}</h3>
+            <p>{{ evento.descripcion }}</p>
+            <span class="sede">Sucursal {{ evento.sede }}</span>
+        </div>
+        </div>
+    }
+
+    <!-- BOTÓN DERECHA -->
+    <button
+        class="carousel-btn right"
+        (click)="scrollRight()">
+        ➡
+    </button>
+
+    </div>
+  </div>
+</section>

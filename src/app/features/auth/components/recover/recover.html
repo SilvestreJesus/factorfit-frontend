@@ -1,0 +1,77 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4 relative"
+    style="background-image: url('https://i.ibb.co/272HW3wN/fondo-landing.jpg');">
+    
+    <div class="absolute inset-0 bg-black/70"></div>
+
+    <a routerLink="/home" class="absolute top-6 left-6 z-20 text-2xl font-bold flex items-center gap-2 text-white">
+        <img src="images/factor_fit-25.webp" alt="Factor Fit Logo" class="w-8 h-8 rounded-full transition-transform hover:scale-110">
+    </a>
+
+    <div class="relative z-10 w-full max-w-sm md:max-w-md bg-gradient-to-br from-purple-950/40 to-gray-950/60 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl border border-white/10">
+        
+        <h1 class="text-3xl md:text-5xl font-semibold text-center text-purple-200 mb-8 leading-tight">
+            Recuperar <br class="md:hidden"> Contraseña 
+            <span class="font-thin font-atomic-e text-2xl md:text-4xl block md:inline mt-2">I</span>
+        </h1>
+
+        <form (ngSubmit)="onRecover(recoverForm)" #recoverForm="ngForm" class="flex flex-col items-center space-y-6">
+            <div class="relative w-full">
+                <input type="email" name="email" placeholder="usuario@ejemplo.com" ngModel required
+                    class="w-full bg-gray-100 text-gray-900 placeholder-gray-500 py-4 pl-4 pr-12 rounded-xl border-2 border-transparent focus:border-purple-500 focus:outline-none transition-all">
+                <i class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-gray-500 ph ph-envelope-simple"></i>
+            </div>
+
+            <button type="submit" [disabled]="!recoverForm.valid"
+                class="w-full md:w-64 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-purple-900/20">
+                Enviar Instrucciones
+            </button>
+        </form>
+    </div>
+
+    <a routerLink="/auth/login"
+        class="relative z-10 mt-8 text-gray-300 font-medium py-3 px-8 rounded-full border border-white/20 hover:bg-white/10 transition-all flex items-center gap-2">
+        <i class="ph ph-arrow-left"></i> Volver al Login
+    </a>
+</div>
+
+@if (mensajeError()) {
+    <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-xl mb-4 text-sm text-center">
+        {{ mensajeError() }}
+    </div>
+}
+
+<form (ngSubmit)="onRecover(recoverForm)" #recoverForm="ngForm" class="flex flex-col items-center space-y-6">
+    <button type="submit" [disabled]="!recoverForm.valid || cargando()"
+        class="w-full md:w-64 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2">
+        @if (cargando()) {
+            <span class="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
+            PROCESANDO...
+        } @else {
+            Enviar Instrucciones
+        }
+    </button>
+</form>
+
+@if (toast().visible) {
+    <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md animate-in slide-in-from-bottom-5 duration-300">
+        <div [ngClass]="toast().tipo === 'success' ? 'bg-purple-900/90 border-purple-500' : 'bg-red-900/90 border-red-500'"
+             class="backdrop-blur-md border-2 p-4 rounded-2xl shadow-2xl flex items-center gap-4 text-white">
+            
+            <div [ngClass]="toast().tipo === 'success' ? 'bg-purple-500' : 'bg-red-500'" 
+                 class="p-2 rounded-full shrink-0">
+                @if (toast().tipo === 'success') {
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                } @else {
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                }
+            </div>
+
+            <div class="flex flex-col">
+                <span class="font-black text-sm uppercase tracking-widest">
+                    {{ toast().tipo === 'success' ? 'Sistema' : 'Error' }}
+                </span>
+                <span class="font-medium text-purple-100 italic">{{ toast().mensaje }}</span>
+            </div>
+        </div>
+    </div>
+}

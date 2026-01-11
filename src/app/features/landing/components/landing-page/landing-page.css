@@ -1,0 +1,10 @@
+/* Habilita el desplazamiento suave para los enlaces de anclaje (ej: href="#about") */
+:host {
+    scroll-behavior: smooth;
+}
+
+/* Un pequeño truco para cambiar el fondo del header al hacer scroll */
+/* Puedes omitir esto si prefieres un estilo más simple */
+:host ::ng-deep body:has(#header.scrolled) #header {
+    @apply bg-[rgb(0_0_0/0.8)];
+}

@@ -1,0 +1,120 @@
+<section
+  id="hero"
+  class="
+    min-h-screen
+    flex items-center justify-center
+    bg-cover bg-center
+    bg-fixed
+    relative
+  "
+>
+  <!-- OVERLAY -->
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <!-- CONTENIDO -->
+  <div class="relative z-10 text-center px-4 flex flex-col items-center">
+
+    <!-- LOGO -->
+    <div
+    class="
+        bg-white/20 backdrop-blur-sm
+        p-4 sm:p-6
+        rounded-2xl shadow-lg
+        mb-8
+        flex flex-col items-center
+        w-full max-w-lg
+    "
+    >
+    <!-- FACTOR -->
+    <h1
+        class="
+        font-roboto-c
+        bg-black
+        px-2 py-1
+        text-white
+        text-5xl sm:text-7xl lg:text-8xl
+        font-medium
+        tracking-[0.15em]
+        text-center
+        w-full
+        "
+    >
+        FACTOR
+    </h1>
+
+    <!-- F I T (SEPARADOS) -->
+    <div
+        class="
+        text-black font-mono font-black
+        text-2xl sm:text-3xl lg:text-4xl
+        flex justify-between
+        w-full
+        mt-2
+        px-2
+        "
+    >
+        <p>F</p>
+        <p>I</p>
+        <p>T</p>
+    </div>
+    </div>
+    <!-- CTA -->
+    <div
+      class="
+        bg-purple-400/20 backdrop-blur-sm
+        rounded-2xl
+        p-4 sm:p-6
+        shadow-lg
+        flex flex-col items-center
+        border-purple-950/50 border-2
+        max-w-md w-full
+      "
+    >
+      <p
+        class="
+          text-xl sm:text-2xl lg:text-4xl
+          font-medium
+          mb-6
+          italic
+          text-white
+          text-center
+        "
+      >
+        ¿Ya te inscribiste?
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+        <a
+          routerLink="/auth/login"
+          class="
+            bg-purple-600 hover:bg-purple-700
+            text-white font-bold
+            py-3 px-8
+            rounded-full
+            transition-transform
+            hover:scale-105
+            text-center
+          "
+        >
+          Inicia sesión
+        </a>
+
+        <a
+          routerLink="/auth/register"
+          class="
+            bg-gray-800 hover:bg-gray-900
+            text-white font-bold
+            py-3 px-8
+            rounded-full
+            transition-transform
+            hover:scale-105
+            text-center
+          "
+        >
+          Registrarte
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>

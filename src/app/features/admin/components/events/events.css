@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+@layer base {
+    * {}
+
+    .input-field {
+        @apply w-full bg-white/10 border border-white/20 rounded-lg p-3 text-black placeholder-gray-900 focus:outline-none focus:border-pink-500;
+    }
+}
+
+
+.carousel-polaroid.mini {
+  height: 360px;
+  width: 100%;
+  perspective: 1200px;
+}
+
+.carousel-polaroid.mini .polaroid-card img {
+  height: 55%;
+}
+
+.carousel-polaroid.mini .polaroid-info h3 {
+  font-size: 1.2rem;
+}
+
+.carousel-polaroid.mini .polaroid-info p {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+/* ===============================
+   MINI – AJUSTES CRÍTICOS
+================================ */
+.carousel-polaroid.mini .polaroid-card {
+  overflow: visible;
+}
+
+/* Imagen más pequeña en mini */
+.carousel-polaroid.mini .polaroid-card img {
+  height: 50%;
+}
+
+/* Texto compacto */
+.carousel-polaroid.mini .polaroid-info {
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* Botones SIEMPRE visibles */
+.carousel-polaroid.mini .polaroid-info .flex {
+  margin-top: auto;
+}
+
+
+
+/* ===============================
+   CONTENEDOR PRINCIPAL
+================================ */
+.carousel-polaroid {
+  max-width: 100%;
+  height: 565px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  perspective: 1800px;
+}
+
+#events {
+  overflow-x: hidden;
+}
+
+
+/* ===============================
+   BOTONES
+================================ */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 999px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 50;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.left {
+  left: 12px;
+}
+
+.carousel-btn.right {
+  right: 12px;
+}
+
+/* ===============================
+   TARJETA POLAROID
+================================ */
+.polaroid-card {
+  position: absolute;
+  background: #FAF7F9;
+  padding: 12px;
+  border-radius: 20px;
+  overflow: visible;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease,
+    filter 0.5s ease,
+    width 0.5s ease,
+    height 0.5s ease;
+}
+
+/* ===============================
+   IMAGEN
+================================ */
+.polaroid-card img {
+  width: 100%;
+  height: 65%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ===============================
+   TEXTO BASE (NEUTRO)
+================================ */
+.polaroid-info {
+  margin-top: 14px;
+  text-align: center;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.polaroid-info h3 {
+  color: #1F0E2B;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-family: 'Playfair Display', serif;
+}
+
+.polaroid-info p {
+  color: #3A2A44;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+
+}
+
+.polaroid-info span {
+  color: #5A2E78;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.polaroid-info::before {
+  content: "";
+  width: 60px;
+  height: 2px;
+  background: #5A2E78;
+  margin: 8px auto;
+  opacity: 0.6;
+}
+
+/* ===============================
+   TARJETA ACTIVA
+================================ */
+.polaroid-card.active {
+  box-shadow: 0 35px 70px rgba(128, 0, 255, 0.35);
+  opacity:0.35; 
+  border-radius: 20px;
+  filter: none;
+}
+
+.polaroid-card.active .polaroid-info h3 {
+  font-size: 2.1rem;
+  
+  letter-spacing: 0.05em;
+}
+
+.polaroid-card.active .polaroid-info p {
+  font-size: 1.2rem;
+}
+
+.polaroid-card.active .polaroid-info span {
+  font-size: 1rem;
+}
+
+/* ===============================
+   TARJETAS INACTIVAS
+================================ */
+.polaroid-card.inactive {
+  opacity: 0.75;
+  filter: blur(0.4px) saturate(0.85);
+}
+
+.polaroid-card.inactive .polaroid-info h3 {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.polaroid-card.inactive .polaroid-info p {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.polaroid-card.inactive .polaroid-info span {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ===============================
+   AJUSTES PARA MÓVIL
+================================ */
+@media (max-width: 768px) {
+    .carousel-btn {
+        padding: 8px 10px;
+        background: rgba(0, 0, 0, 0.4);
+        font-size: 1rem;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .carousel-btn.left { left: 5px; }
+    .carousel-btn.right { right: 5px; }
+
+    /* Altura del contenedor del carrusel en móvil */
+    .carousel-polaroid.mini {
+        perspective: 1000px;
+        height: 340px; /* Reducido ligeramente */
+    }
+
+    /* Reducimos la imagen en móvil para dar espacio a los botones */
+    .carousel-polaroid.mini .polaroid-card img {
+        height: 40% !important; 
+    }
+
+    /* Ajuste de textos en móvil */
+    .polaroid-info h3 {
+        font-size: 1rem !important;
+        margin-top: 5px;
+    }
+
+    .polaroid-info p {
+        font-size: 0.75rem !important;
+        -webkit-line-clamp: 2; /* Forzamos máximo 2 líneas */
+    }
+
+    /* Padding interno reducido para que quepa todo */
+    .polaroid-card {
+        padding: 8px !important;
+    }
+}
+
+/* Forzar que el contenedor de info use todo el espacio disponible */
+.polaroid-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja los botones al final */
+}
+
+/* Clase para truncar descripción larga */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* Efecto de toque para el botón de registro */
+button:active {
+    transform: scale(0.98);
+}

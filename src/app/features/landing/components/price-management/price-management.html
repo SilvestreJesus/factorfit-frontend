@@ -1,0 +1,21 @@
+<section id="price" class="py-24 bg-gradient-to-br from-purple-900 to-gray-600 border-t-4 border-t-black/20">
+<div class="container mx-auto text-center">
+    <h2 class="text-6xl text-purple-200 font-rock font-bold mb-12">Membresías</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        @for (plan of plansData; track plan.id) {
+        <div class="p-8 rounded-3xl h-96 flex flex-col justify-between transition-all duration-300 shadow-purple-900 backdrop-blur-sm p-8 rounded-2xl shadow-xl" [ngClass]="{
+             'bg-black/30 backdrop-blur-sm text-black scale-110 shadow-2xl shadow-purple-1500/30': plan.featured,
+             'bg-black/20 backdrop-blur-sm text-gray-1500': !plan.featured
+           }">
+            <h3 class="text-4xl font-bold">{{ plan.name }}</h3>
+            <div>
+            </div>
+           
+        </div>
+        }
+    </div>
+
+   
+</div>
+</section>

@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@layer base {
+    .nav-link {
+        @apply px-4 py-2 rounded-xl text-gray-700 transition-all duration-300 
+               hover:bg-white/40 hover:text-black font-semibold;
+    }
+
+    .active-link {
+        @apply bg-white/60 text-pink-700 shadow-sm ring-1 ring-pink-200;
+    }
+}
+
+/* IMPORTANTE: Ajustes para móvil */
+@media (max-width: 1023px) {
+    nav {
+        /* Asegura que el fondo sea sólido para que no se vea el formulario detrás */
+        background-color: #f5d0fe; /* O el color exacto bg-fuchsia-300 */
+        border-bottom: 2px solid rgba(0,0,0,0.05);
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
+        /* Sombra más pesada para dar sensación de estar "adelante" */
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+}

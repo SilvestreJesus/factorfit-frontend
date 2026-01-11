@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@layer base {
+    .info-label {
+        @apply block text-[10px] sm:text-[11px] font-black text-gray-500 uppercase tracking-[0.15em] mb-1.5 ml-1;
+    }
+
+    .info-field-readonly {
+        @apply w-full bg-white/95 border-2 border-white rounded-2xl p-4 text-gray-900 font-extrabold shadow-sm;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+}
+
+/* Animación de entrada */
+.animate-in-up {
+    animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpMobile {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Modal Responsive */
+@media (max-width: 640px) {
+    .fixed.inset-0.flex {
+        align-items: flex-end; /* Pega el modal abajo en móvil */
+    }
+    
+    .modal-input {
+        @apply text-sm p-2;
+    }
+}
+
+/* Estilo Inputs */
+.modal-input {
+    @apply w-full bg-white border-2 border-gray-100 rounded-xl p-3 font-black outline-none transition-all;
+    color: #111827 !important;
+}
+
+.modal-input:focus {
+    @apply border-pink-500 ring-4 ring-pink-50;
+}
+
+/* Scroll */
+.custom-scroll::-webkit-scrollbar {
+    width: 0px;
+    display: none;
+}

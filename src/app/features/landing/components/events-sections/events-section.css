@@ -1,0 +1,211 @@
+/* ===============================
+   CONTENEDOR PRINCIPAL
+================================ */
+.carousel-polaroid {
+  max-width: 100%;
+  height: 500px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  perspective: 1800px;
+}
+
+/* ===============================
+   TÍTULO FLUIDO (IGUAL A INSTALACIONES)
+================================ */
+.section-title-fluid {
+  /* Tamaño mínimo: 2.2rem, Tamaño sugerido: 8vw, Tamaño máximo: 3.75rem (equivalente a 6xl) */
+  font-size: clamp(2.2rem, 8vw, 3.75rem);
+  font-family: 'Rock Salt', cursive; /* Asegúrate de que la fuente esté importada */
+  color: #e9d5ff; /* Color púrpura claro */
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 3rem;
+  letter-spacing: 0.05em;
+  padding: 0 15px; /* Evita que el texto toque los bordes en móviles */
+}
+
+#events {
+  overflow-x: hidden;
+}
+
+/* ===============================
+   BOTONES
+================================ */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 999px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 50;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.left {
+  left: 12px;
+}
+
+.carousel-btn.right {
+  right: 12px;
+}
+
+/* ===============================
+   TARJETA POLAROID
+================================ */
+.polaroid-card {
+  position: absolute;
+  background: #FAF7F9;
+  padding: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease,
+    filter 0.5s ease,
+    width 0.5s ease,
+    height 0.5s ease;
+}
+
+/* ===============================
+   IMAGEN
+================================ */
+.polaroid-card img {
+  width: 100%;
+  height: 65%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ===============================
+   TEXTO BASE (NEUTRO)
+================================ */
+.polaroid-info {
+  margin-top: 14px;
+  text-align: center;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.polaroid-info h3 {
+  color: #1F0E2B;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-family: 'Playfair Display', serif;
+}
+
+.polaroid-info p {
+  color: #3A2A44;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+
+}
+
+.polaroid-info span {
+  color: #5A2E78;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.polaroid-info::before {
+  content: "";
+  width: 60px;
+  height: 2px;
+  background: #5A2E78;
+  margin: 8px auto;
+  opacity: 0.6;
+}
+
+/* ===============================
+   TARJETA ACTIVA
+================================ */
+.polaroid-card.active {
+  box-shadow: 0 35px 70px rgba(128, 0, 255, 0.35);
+  opacity:0.35; 
+  border-radius: 20px;
+  filter: none;
+}
+
+.polaroid-card.active .polaroid-info h3 {
+  font-size: 2.1rem;
+  
+  letter-spacing: 0.05em;
+}
+
+.polaroid-card.active .polaroid-info p {
+  font-size: 1.2rem;
+}
+
+.polaroid-card.active .polaroid-info span {
+  font-size: 1rem;
+}
+
+/* ===============================
+   TARJETAS INACTIVAS
+================================ */
+.polaroid-card.inactive {
+  opacity: 0.75;
+  filter: blur(0.4px) saturate(0.85);
+}
+
+.polaroid-card.inactive .polaroid-info h3 {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.polaroid-card.inactive .polaroid-info p {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.polaroid-card.inactive .polaroid-info span {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+/* ===============================
+   AJUSTE DE ALTURA PARA MÓVILES
+================================ */
+@media (max-width: 768px) {
+  .section-title-fluid {
+    margin-bottom: 1.5rem; /* Menos espacio en celulares */
+    letter-spacing: normal;
+  }
+
+  /* Ajuste para que el carrusel polaroid no se vea tan apretado */
+  .carousel-polaroid {
+    height: 450px; /* Un poco más de aire para las tarjetas */
+  }
+
+  .carousel-btn {
+    padding: 10px 14px;
+    font-size: 1.2rem;
+  }
+
+  .polaroid-card.active .polaroid-info h3 {
+    font-size: 1.4rem;
+  }
+
+  .polaroid-card.active .polaroid-info p {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,17 @@
+<header 
+    class="fixed top-0 left-0 right-0 z-50 p-4 bg-black-t-30 backdrop-blur-sm transition-colors duration-300">
+    <div class="container mx-auto flex justify-between items-center">
+        <a href="#" class="text-2xl font-bold flex items-center gap-2">
+            <img src="images/factor_fit-25.webp" alt="Factor Fit Logo" class="w-8 h-8 rounded-full hover:scale-160">
+        </a>
+        <div class="flex gap-5">
+            <nav class="hidden md:flex items-center space-x-8 text-white font-semibold italic justify-center">
+                <a [routerLink]="['/cliente', claveUsuario, 'home']">Home</a>
+                <a [routerLink]="['/cliente', claveUsuario, 'perfil']">Perfil</a>
+            </nav>
+            <button (click)="logout()" class="ml-auto bg-purple-500 hover:bg-purple-600 text-white font-bold py-1.5 px-3 rounded-4xl">
+                Salir
+            </button>
+        </div>
+    </div>
+</header>

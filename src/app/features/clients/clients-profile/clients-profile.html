@@ -1,0 +1,86 @@
+<div class="container mx-auto px-4 pb-20 max-w-5xl">
+    <div class="flex flex-col lg:flex-row gap-8 items-start bg-white/20 backdrop-blur-md p-6 sm:p-10 rounded-3xl border border-white/30 shadow-2xl">
+        
+        <div class="w-full lg:w-1/3 flex flex-col items-center">
+            <h1 class="font-atomic text-pink-600 text-5xl sm:text-6xl mb-6 text-center">Mi Perfil</h1>
+            
+            <div class="relative group">
+                <img [src]="user?.ruta_imagen ? user.ruta_imagen : 'https://placehold.co/200x200/4a0e4e/FFF?text=User'"
+                    alt="Foto de perfil"
+                    class="w-40 h-40 sm:w-52 sm:h-52 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-opacity">
+                
+                <button (click)="fileInput.click()"
+                    class="absolute bottom-1 right-1 bg-pink-600 p-3 rounded-full text-white shadow-lg hover:bg-pink-700 active:scale-90 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    </svg>
+                </button>
+                <input type="file" accept="image/*" #fileInput hidden (change)="subirFoto($event)" />
+
+                <a [routerLink]="['/cliente', user?.clave_usuario, 'estadisticas']"
+                    class="absolute top-1 right-1 bg-cyan-500 p-3 rounded-full text-white shadow-lg hover:bg-cyan-600 active:scale-90 transition-all"
+                    title="Ver estadísticas">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                </a>
+            </div>
+            <p class="mt-4 font-bold text-gray-800 text-lg">ID: {{ user?.clave_usuario || '---' }}</p>
+        </div>
+
+        <div class="w-full lg:w-2/3">
+            <div *ngIf="user" class="space-y-6">
+                <form class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Nombre(s)</label>
+                            <input type="text" [(ngModel)]="user.nombres" name="nombres" class="input-field">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Apellidos</label>
+                            <input type="text" [(ngModel)]="user.apellidos" name="apellidos" class="input-field">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Fecha de Nacimiento</label>
+                            <input type="text" [(ngModel)]="user.fecha_nacimiento" name="fecha_nacimiento" class="input-field" placeholder="DD/MM/AAAA">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Teléfono</label>
+                            <input type="tel" [(ngModel)]="user.telefono" name="telefono" placeholder="123 456 7890" class="input-field">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Email</label>
+                            <input type="email" [(ngModel)]="user.email" name="email" class="input-field">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Sede</label>
+                            <input type="text" [(ngModel)]="user.sede" name="sede" readonly class="input-field bg-gray-100/50 cursor-not-allowed">
+                        </div>
+                        <div class="space-y-1 md:col-span-2">
+                            <label class="text-sm font-bold text-gray-700 ml-1">Nueva Contraseña (opcional)</label>
+                            <input type="password" 
+                                [(ngModel)]="passwordNueva" 
+                                name="passwordNueva" 
+                                class="input-field" 
+                                placeholder="Dejar en blanco para no cambiar">
+                        </div>
+                    </div>
+
+                    <button type="button" (click)="guardarCambios()"
+                        class="w-full mt-6 bg-pink-600 hover:bg-pink-700 text-white font-black py-4 rounded-2xl shadow-lg shadow-pink-200 transition-all active:scale-[0.98] uppercase tracking-wider">
+                        Actualizar mis Datos
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="toast.visible"
+    class="fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 animate-in fade-in slide-in-from-right-10"
+    [ngClass]="{'bg-emerald-600 shadow-emerald-200': toast.tipo === 'success', 'bg-rose-600 shadow-rose-200': toast.tipo === 'error'}">
+    <svg *ngIf="toast.tipo === 'success'" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+    </svg>
+    <span class="font-bold tracking-wide">{{ toast.mensaje }}</span>
+</div>

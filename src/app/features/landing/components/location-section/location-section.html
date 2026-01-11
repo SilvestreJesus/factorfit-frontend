@@ -1,0 +1,173 @@
+<section id="location" class="py-16 md:py-24 bg-gradient-to-br from-purple-900 to-gray-900 border-t-4 border-t-black/20">
+  <div class="container mx-auto px-4 md:px-6">
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+      <div class="text-left">
+        <p class="text-purple-400 font-semibold text-base md:text-lg uppercase tracking-wider">Contáctanos</p>
+        <h2 class="text-4xl md:text-6xl font-extrabold text-white">No podemos esperar a verte</h2>
+      </div>
+
+      <div class="flex bg-black/40 p-1 rounded-2xl border border-white/10 w-full md:w-auto">
+        <button 
+          (click)="cambiarSede(1)"
+          [class]="sedeActual === 1 ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+          class="flex-1 md:flex-none px-8 py-3 rounded-xl font-bold transition-all duration-300">
+          SEDE EMILIANO
+        </button>
+        <button 
+          (click)="cambiarSede(2)"
+          [class]="sedeActual === 2 ? 'bg-pink-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+          class="flex-1 md:flex-none px-8 py-3 rounded-xl font-bold transition-all duration-300">
+          SEDE OBRERA
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-black/30 p-6 md:p-10 rounded-3xl shadow-2xl transition-all duration-500">
+      
+      <div class="flex flex-col items-center text-center space-y-8 mb-12 border-b border-white/10 pb-10">
+        <p class="text-gray-300 text-lg md:text-2xl leading-relaxed max-w-3xl">
+          {{ sedeActual === 1 ? 'Sede Emiliano Zapata: Asesoría cercana a ti con un ambiente increíble.' : 'Sede Obrera: Entrenamiento intensivo en el corazón de la ciudad.' }}
+        </p>
+
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-8 text-gray-200">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-purple-400 shrink-0" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="text-base md:text-lg"> 
+              {{ sedeActual === 1 ? 'Rosales #301 esq. con Alamo, Col. Emiliano Zapata, Cd. Valles' : 'Tampico - Cd Valles # esq. con Bocanegra, Col. Obrera, Cd. Valles' }}
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-purple-400 shrink-0" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span class="text-base md:text-lg font-bold">+52 481 126 5412</span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-purple-400 shrink-0" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span class="text-base md:text-lg font-medium">casegejsistem@gmail.com</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        
+        <div class="overflow-x-auto rounded-2xl bg-black/40 p-5 shadow-inner">
+          <h3 class="text-center text-3xl font-black text-pink-500 mb-8 uppercase tracking-tighter">
+            Horarios {{ sedeActual === 1 ? 'Emiliano' : 'Obrera' }}
+          </h3>
+          <div class="min-w-[645px]">
+            <div class="grid grid-cols-6 gap-2 text-center font-bold text-white text-sm md:text-base mb-4">
+              <div class="bg-pink-500 py-4 rounded-xl shadow">HORA</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">LUN</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">MAR</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">MIE</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">JUE</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">VIE</div>
+            </div>
+            
+            <div *ngIf="sedeActual === 1" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center leading-tight">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">8:00-9:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Zumba</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">9:00-10:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Meta Hit</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">TABATA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>              
+            </div>
+              </div>
+
+            <div *ngIf="sedeActual === 2" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center leading-tight">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">8:00-9:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Zumba</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">9:00-10:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Meta Hit</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">TABATA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>    
+           
+          </div>
+        </div>
+
+        <div class="w-full h-full min-h-[450px] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+          <iframe 
+            *ngIf="sedeActual === 1"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3699.1108590337626!2d-99.0218956!3d22.007062899999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d612aa4818ecdf%3A0xa45c1ad4926a32c4!2sLos%20Delfines%20Sal%C3%B3n%20de%20Eventos!5e0!3m2!1ses!2smx!4v1767058530057!5m2!1ses!2smx" 
+            class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy">
+          </iframe>
+          <iframe 
+            *ngIf="sedeActual === 2"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3699.7266367143366!2d-99.00868919999999!3d21.9834523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d66d99c8e6a805%3A0x7a04e0cfe709160!2sOFICINA%20MUNICIPAL%20DE%20ENLACE%20SECRETARIA%20DE%20RELACIONES%20EXTERIORES%20SRE!5e0!3m2!1ses!2smx!4v1767058431791!5m2!1ses!2smx"
+            class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

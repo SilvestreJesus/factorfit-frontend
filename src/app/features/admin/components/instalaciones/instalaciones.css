@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+@layer base {
+    .input-field {
+        @apply w-full bg-white/10 border border-white/20 rounded-lg p-3 text-black placeholder-gray-900 focus:outline-none focus:border-pink-500;
+    }
+}
+
+/* =========================================
+   CONTENEDOR DEL CARRUSEL MINI
+   ========================================= */
+.carousel-mini-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+}
+
+/* =========================================
+   TARJETA MINI (ESTILO INSTALACIONES)
+   ========================================= */
+.mini-instalacion-card {
+    position: absolute;
+    width: 100%;
+    height: 260px;
+    background: linear-gradient(135deg, #c026d3 0%, #1f2937 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Columna Imagen */
+.mini-image-wrapper {
+    flex: 0 0 45%;
+    height: 100%;
+}
+
+.mini-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+}
+
+/* Columna Texto e Información */
+.mini-info-wrapper {
+    flex: 1;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    min-width: 0; /* Evita que el texto desborde el flex */
+    height: 100%;
+}
+
+.mini-label {
+    text-transform: uppercase;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: #d8b4fe;
+    margin-bottom: 4px;
+}
+
+.mini-info-wrapper h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-info-wrapper p {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   BOTONES DE ACCIÓN (ESTILO EVENTOS)
+   ========================================= */
+.mini-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto; /* Empuja los botones al final */
+    width: 100%;
+}
+
+.mini-actions button {
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-actions button:hover {
+    transform: scale(1.05);
+}
+
+.mini-actions button:active {
+    transform: scale(0.95);
+}
+
+/* Estilo específico de los botones */
+.btn-edit {
+    flex: 1;
+    background-color: #db2777; /* pink-600 */
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.btn-delete {
+    background-color: #1f2937; /* gray-800 */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* =========================================
+   FLECHAS Y NAVEGACIÓN
+   ========================================= */
+.carousel-side-btn {
+    position: absolute;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.carousel-side-btn:hover { background: rgba(0,0,0,0.8); }
+.carousel-side-btn.left { left: 5px; }
+.carousel-side-btn.right { right: 5px; }
+
+/* =========================================
+   AJUSTES PARA MÓVIL (MÁXIMA COMPRESIÓN)
+   ========================================= */
+/* ... (todo el código anterior igual, hasta llegar a los media queries) ... */
+
+@media (max-width: 640px) {
+    /* 1. Reducimos el padding del contenedor principal */
+    .container {
+        padding: 1rem !important; /* p-4 */
+    }
+
+    /* 2. Reducimos el margen del título principal */
+    h1.font-atomic {
+        margin-bottom: 1.5rem !important; /* mb-6 */
+    }
+
+    /* 3. Reducimos drásticamente la altura del área del carrusel en móvil */
+    .relative.w-full.max-w-2xl {
+        height: 180px !important; /* Bajamos de 320px a 180px */
+        margin-bottom: 1rem;
+    }
+
+    .mini-instalacion-card {
+        gap: 8px;
+        padding: 8px;
+        height: 100%; /* Que se adapte al contenedor padre de 180px */
+    }
+
+    .mini-info-wrapper p {
+        display: none; /* Ocultamos la descripción en móvil para ahorrar espacio */
+    }
+
+    .mini-info-wrapper h3 {
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+    }
+
+    /* 4. Comprimimos el formulario */
+    .space-y-4 > * + * {
+        margin-top: 0.5rem !important; /* Menos espacio entre inputs */
+    }
+
+    .input-field {
+        padding: 0.5rem !important; /* Inputs más delgados */
+        font-size: 0.875rem;
+    }
+}

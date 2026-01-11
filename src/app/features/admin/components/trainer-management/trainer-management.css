@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@layer base {
+    .input-field {
+        @apply w-full bg-white/20 border border-black/10 rounded-lg p-3 text-black placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all;
+    }
+}
+
+/* --- CONTENEDOR 3D --- */
+.carousel-container-3d {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    /* Aumentamos un poco la perspectiva para suavizar el ángulo */
+    perspective: 2000px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.carousel-3d-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    /* Forzar GPU */
+    backface-visibility: hidden;
+}
+
+/* --- TARJETA POLAROID 3D --- */
+.polaroid-3d {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 240px;
+    height: 340px;
+    background: #FAF7F9;
+    padding: 12px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    
+    /* SOLUCIÓN AL BORROSO */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    image-rendering: -webkit-optimize-contrast; /* Nitidez en imágenes */
+    
+    /* Transición suave sin parpadeo */
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s;
+    display: flex;
+    flex-direction: column;
+}
+
+.polaroid-3d img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    /* Previene desenfoque al escalar */
+    transform: translateZ(0); 
+}
+
+.polaroid-3d-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    /* Suavizado de fuente en 3D */
+    -webkit-font-smoothing: antialiased;
+    transform: translateZ(1px); 
+}
+
+/* --- ESTADO INACTIVO (QUITAMOS EL BLUR) --- */
+.polaroid-3d:not(.active) {
+    /* Quitamos filter: blur() porque es lo que causa el efecto borroso feo */
+    filter: grayscale(100%); 
+    opacity: 0.5;
+}
+
+.puesto-label {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #db2777;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.polaroid-3d-info h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 5px;
+}
+
+/* --- BOTONES MINI --- */
+.btn-edit {
+    flex: 1;
+    background: #db2777;
+    color: white;
+    font-size: 0.75rem;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-delete {
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* --- NAVEGACIÓN --- */
+.nav-btn {
+    position: absolute;
+    z-index: 150;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s;
+}
+
+.nav-btn:hover { background: #db2777; }
+.nav-btn.left { left: 10px; }
+.nav-btn.right { right: 10px; }
+
+/* Móvil */
+@media (max-width: 768px) {
+    .carousel-container-3d { height: 360px; }
+    .polaroid-3d { width: 200px; height: 300px; }
+    .polaroid-3d img { height: 140px; }
+}

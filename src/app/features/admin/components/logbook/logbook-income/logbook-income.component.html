@@ -1,0 +1,40 @@
+<div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden animate-in fade-in">
+  <div class="p-6 bg-black/10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+    <div class="flex flex-col">
+      <h5 class="text-xl font-black text-pink-600 uppercase leading-none">Ingresos Actuales</h5>
+      <p class="text-emerald-600 font-black text-2xl mt-1">
+        Total: <span class="text-gray-900">${{ totalIngresos() | number:'1.2-2' }}</span>
+      </p>
+    </div>
+    
+    <div class="flex gap-2 w-full lg:w-auto">
+      <button (click)="filtroTipoPago.set('Mensual')" 
+              [class.bg-pink-600]="filtroTipoPago() === 'Mensual'" 
+              class="status-chip border border-pink-400 py-2 px-4 rounded-xl">Mensual</button>
+      <button (click)="filtroTipoPago.set('Quincenal')" 
+              [class.bg-pink-600]="filtroTipoPago() === 'Quincenal'" 
+              class="status-chip border border-pink-400 py-2 px-4 rounded-xl">Quincenal</button>
+    </div>
+  </div>
+  <table class="w-full text-left">
+    <thead class="bg-black/20 text-pink-600 text-xs uppercase font-black">
+      <tr>
+        <th class="p-4">Usuario</th>
+        <th class="p-4">Tipo / Meses</th>
+        <th class="p-4">Monto Pagado</th>
+        <th class="p-4">Corte</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-800">
+      <tr *ngFor="let log of ingresosFiltrados()" class="border-b border-white/10">
+        <td class="p-4">
+          <p class="font-bold lowercase">{{ log.nombre }} {{ log.apellido }}</p>
+          <span class="text-pink-600/70 font-mono font-bold">{{log.clave}}</span>
+        </td>
+        <td class="p-4"><span class="font-black text-purple-600">{{ calcularMeses(log.fecha_corte) }} Meses</span></td>
+        <td class="p-4 text-emerald-600 font-black text-lg">$ {{ log.monto }}</td>
+        <td class="p-4 font-bold text-gray-500">{{ log.fecha_corte | date:'dd/MM/yyyy' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

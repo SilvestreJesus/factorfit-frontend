@@ -1,0 +1,199 @@
+<div
+  id="bg"
+  class="relative min-h-screen flex items-center justify-center p-4 sm:p-6 bg-cover bg-center bg-fixed text-white"
+>
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <a
+    routerLink="/home"
+    class="absolute bottom-4 left-4 z-10 text-xl sm:text-2xl font-bold flex items-center gap-2 text-white"
+  >
+    <img
+      src="images/factor_fit-25.webp"
+      alt="Factor Fit Logo"
+      class="w-7 h-7 sm:w-8 sm:h-8 rounded-full"
+    >
+  </a>
+
+  <div
+    class="z-10 container mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+  >
+
+    <!-- TEXTO / IMAGEN -->
+    <div class="text-center">
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-purple-400 font-atomic mb-6"
+      >
+        Regístrate
+      </h1>
+
+      <div class="flex justify-center">
+        <div class="bg-black rounded-full p-3 sm:p-4 shadow-2xl">
+          <img
+            src="images/fitness1.webp"
+            alt="Ilustración Fitness"
+            class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 object-contain"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="bg-black/10 backdrop-blur-md p-6 sm:p-8 rounded-2xl shadow-xl">
+      <form
+        #registerForm="ngForm"
+        (ngSubmit)="handleRegister(registerForm.value)"
+        class="space-y-4"
+      >
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-white font-medium">Nombres</label>
+            <input
+              type="text"
+              name="firstName"
+              ngModel
+              required
+              placeholder="Juan Carlos"
+              class="input-field"
+            >
+          </div>
+
+          <div>
+            <label class="text-white font-medium">Apellidos</label>
+            <input
+              type="text"
+              name="lastName"
+              ngModel
+              required
+              placeholder="Pérez Gómez"
+              class="input-field"
+            >
+          </div>
+
+          <div>
+            <label class="text-white font-medium">Fecha de Nacimiento</label>
+            <input
+              type="date"
+              name="birthDate"
+              ngModel
+              required
+              max="{{ today }}"
+              class="input-field"
+            >
+          </div>
+
+          <div>
+            <label class="text-white font-medium">Número de Celular</label>
+            <div class="flex gap-2">
+              <select
+                name="phoneExtension"
+                [(ngModel)]="telefonoExtension"
+                class="input-field w-28 text-black"
+              >
+                <option *ngFor="let ext of extensiones" [value]="ext">
+                  {{ ext }}
+                </option>
+              </select>
+
+              <input
+                type="tel"
+                name="phone"
+                ngModel
+                required
+                placeholder="481 123 4567"
+                class="input-field w-full"
+              >
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-white font-medium">Correo Electrónico</label>
+          <input
+            type="email"
+            name="email"
+            ngModel
+            required
+            placeholder="juan.perez@email.com"
+            class="input-field"
+          >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-white font-medium">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              ngModel
+              required
+              placeholder="********"
+              class="input-field"
+            >
+          </div>
+
+          <div>
+            <label class="text-white font-medium">Repetir Contraseña</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              ngModel
+              required
+              placeholder="********"
+              class="input-field"
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-transform hover:scale-105"
+        >
+          Registrar
+        </button>
+
+      </form>
+    </div>
+
+    <!-- MODAL GLOBAL -->
+    <div
+      *ngIf="showModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+    >
+      <div
+        class="bg-gray-900 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl border"
+        [ngClass]="{
+          'border-purple-500': modalType === 'success',
+          'border-red-500': modalType === 'error'
+        }"
+      >
+        <h2
+          class="text-xl sm:text-2xl font-bold mb-4"
+          [ngClass]="{
+            'text-purple-400': modalType === 'success',
+            'text-red-400': modalType === 'error'
+          }"
+        >
+          {{ modalTitle }}
+        </h2>
+
+        <p class="text-gray-200 whitespace-pre-line mb-6">
+          {{ modalMessage }}
+        </p>
+
+        <button
+          (click)="closeModal()"
+          class="w-full py-3 rounded-xl font-bold transition-transform hover:scale-105"
+          [ngClass]="{
+            'bg-purple-600 hover:bg-purple-700 text-white': modalType === 'success',
+            'bg-red-600 hover:bg-red-700 text-white': modalType === 'error'
+          }"
+        >
+          Aceptar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

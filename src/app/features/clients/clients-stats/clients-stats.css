@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@layer base {
+    .info-label {
+        @apply block text-[10px] sm:text-[11px] font-bold text-pink-600 uppercase tracking-widest mb-1 ml-1;
+    }
+
+    .info-field {
+        @apply w-full bg-white/60 border border-white/30 rounded-2xl p-3 text-gray-800 font-bold 
+               shadow-sm transition-all text-xs sm:text-sm backdrop-blur-sm;
+    }
+}
+
+/* --- GRID DEL CALENDARIO --- */
+.grid-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    justify-items: center;
+}
+
+@media (min-width: 640px) {
+    .grid-calendar {
+        gap: 8px;
+    }
+}
+
+/* CELDA DEL CALENDARIO */
+.calendar-day-cell {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    max-width: 42px;
+    @apply flex items-center justify-center rounded-xl sm:rounded-2xl text-[10px] sm:text-sm font-black 
+           transition-all duration-300 shadow-sm cursor-default;
+}
+
+/* ESTADOS DE ASISTENCIA */
+.bg-green-500 {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    @apply shadow-lg shadow-emerald-500/30 text-white;
+}
+
+.bg-red-500 {
+    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+    @apply shadow-lg shadow-rose-500/30 text-white;
+}
+
+.bg-orange-500 {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    @apply shadow-lg shadow-orange-500/40 text-white scale-110 ring-2 ring-white z-10;
+}
+
+.bg-white\/20 {
+    @apply backdrop-blur-sm border border-white/10 text-gray-400;
+}
+
+/* --- ANIMACIONES DE RACHA (ESTILO GAMIFICADO) --- */
+
+/* 1. Racha Normal (Fuego Naranja) */
+.from-orange-600 {
+    filter: drop-shadow(0 0 5px rgba(255, 165, 0, 0.4));
+    animation: flame-pulse 2s infinite ease-in-out;
+}
+
+/* 2. Racha de Oro (Semana Perfecta >= 7 días) */
+.from-yellow-600 {
+    filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.6));
+    animation: gold-glow 2s infinite alternate, flame-pulse 2s infinite ease-in-out;
+}
+
+/* 3. Racha Legendaria / Modo Dios (>= 21 días) */
+.from-purple-600 {
+    filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.7));
+    animation: purple-burn 1.5s infinite alternate;
+}
+
+/* KEYFRAMES */
+@keyframes flame-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes gold-glow {
+    from { filter: drop-shadow(0 0 4px rgba(234, 179, 8, 0.4)); }
+    to { filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.9)); }
+}
+
+@keyframes purple-burn {
+    0% { transform: scale(1); filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(168, 85, 247, 0.6)); }
+    100% { transform: scale(1.08); filter: hue-rotate(15deg) drop-shadow(0 0 20px rgba(192, 38, 211, 0.8)); }
+}
+
+/* EFECTO PARA LOS CÍRCULOS DE LOS ÚLTIMOS 7 DÍAS */
+.bg-green-500.scale-110 {
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ANIMACIÓN DE ENTRADA GENERAL */
+.animate-fade-in {
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* AJUSTE PARA MÓVILES EXTREMOS */
+@media (max-width: 360px) {
+    .grid-calendar { gap: 2px; }
+    .calendar-day-cell { font-size: 9px; }
+}

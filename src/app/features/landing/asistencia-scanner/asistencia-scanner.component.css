@@ -1,0 +1,19 @@
+.animate-laser {
+    position: absolute;
+    top: 0;
+    animation: scan 2.5s infinite ease-in-out;
+}
+
+@keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Para que el video ocupe todo el cuadro del scanner */
+zxing-scanner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

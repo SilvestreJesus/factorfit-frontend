@@ -1,0 +1,28 @@
+<section id="instalaciones" class="instalaciones-section">
+  <h2 class="section-title-fluid font-bold">Instalaciones</h2>
+
+  <div class="container">
+    <div class="controls">
+      <button (click)="scrollLeft()">‹</button>
+      <button (click)="scrollRight()">›</button>
+    </div>
+
+    <!-- CARRUSEL -->
+    <div #carousel class="instalaciones-carousel">
+    @for (item of instalacionesLoop; track $index) {
+        <article class="instalacion-card">
+        <div class="image-wrapper">
+            <img [src]="item.imagen">
+        </div>
+        <div class="info-wrapper">
+            <span class="label">Instalación</span>
+            <h3>{{ item.titulo }}</h3>
+            <p>{{ item.descripcion }}</p>
+           <span class="sede">Sucursal {{ item.sede }}</span>
+        </div>
+        </article>
+    }
+    </div>
+
+  </div>
+</section>

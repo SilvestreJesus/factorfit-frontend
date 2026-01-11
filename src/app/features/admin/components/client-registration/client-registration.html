@@ -1,0 +1,86 @@
+<div class="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center bg-black/10 shadow-purple-600 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl">
+    
+    <div class="text-center order-first">
+        <h1 class="font-atomic text-pink-600 text-5xl md:text-7xl mb-4 lg:mb-8">Registro</h1>
+        <div class="flex justify-center">
+            <div class="bg-black rounded-full p-4 shadow-2xl overflow-hidden">
+                <img src="images/fitness1.webp" alt="Ilustración Fitness" class="w-40 h-40 md:w-70 md:h-70 object-cover">
+            </div>
+        </div>
+    </div>
+
+    <div class="p-2 rounded-2xl">
+        <form class="space-y-4" (ngSubmit)="registrarusuario()" #form="ngForm">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-black font-medium block mb-1">Nombre</label>
+                    <input type="text" placeholder="Juan" [(ngModel)]="usuario.nombres" (ngModelChange)="usuario.nombres = usuario.nombres.toLowerCase()"
+                        name="nombres" required class="input-field">
+                </div>
+                <div>
+                    <label class="text-black font-medium block mb-1">Apellidos</label>
+                    <input type="text" placeholder="Pérez" [(ngModel)]="usuario.apellidos" (ngModelChange)="usuario.apellidos = usuario.apellidos.toLowerCase()"
+                        name="apellidos" required class="input-field">
+                </div>
+                <div>
+                    <label class="text-black font-medium block mb-1">Fecha de Nacimiento</label>
+                    <input type="date" [(ngModel)]="usuario.fecha_nacimiento" name="fecha_nacimiento" required max="{{ today }}" class="input-field">
+                </div>
+                <div>
+                    <label class="text-black font-medium block mb-1">Teléfono</label>
+                    <div class="flex gap-2">
+                        <select [(ngModel)]="telefonoExtension" name="telefonoExtension" class="input-field w-20 sm:w-24 text-center px-1">
+                            <option *ngFor="let ext of extensiones" [value]="ext">{{ ext }}</option>
+                        </select>
+                        <input type="tel" placeholder="123 456 7890" [(ngModel)]="usuario.telefono" name="telefono" required class="input-field flex-1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-black font-medium block mb-1">Peso Inicial</label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" placeholder="86" [(ngModel)]="usuario.peso_inicial" name="peso_inicial" required class="input-field flex-1">
+                        <span class="text-black font-medium shrink-0">Kg</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-black font-medium block mb-1">Correo electrónico</label>
+                    <input type="email" placeholder="abc@gmail.com" [(ngModel)]="usuario.email" name="email" required class="input-field">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-black font-medium block mb-1">Inscripción</label>
+                    <input type="date" [(ngModel)]="usuario.fecha_inscripcion" name="fecha_inscripcion" class="input-field opacity-80" readonly>
+                </div>
+                <div>
+                    <label class="text-black font-medium block mb-1">Fecha de Corte</label>
+                    <input type="text" [value]="fechaCorteDia" class="input-field opacity-80" readonly>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full mt-4 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold py-3 rounded-xl transition-all shadow-lg">
+                Registrar
+            </button>
+        </form>
+    </div>
+</div>
+
+<div
+  *ngIf="toast.visible"
+  class="fixed bottom-6 right-6 z-[100] px-6 py-4 rounded-xl shadow-2xl text-white font-medium
+         transition-all duration-500 animate-bounce-short"
+  [ngClass]="{
+    'bg-green-600': toast.tipo === 'success',
+    'bg-red-600': toast.tipo === 'error'
+  }">
+  <div class="flex items-center gap-2">
+    <svg *ngIf="toast.tipo === 'success'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <svg *ngIf="toast.tipo === 'error'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    {{ toast.mensaje }}
+  </div>
+</div>

@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer base {
+    /* Botones de Filtro */
+    .sub-nav-btn {
+        @apply px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 
+               bg-white/20 border border-white/30 text-gray-800 hover:bg-pink-500 hover:text-white shadow-sm;
+    }
+
+    .active-sub-nav {
+        @apply bg-pink-600 text-white shadow-pink-300 shadow-lg scale-105 border-pink-400;
+    }
+
+    /* Botones de Acción */
+    .action-btn {
+        @apply p-2 rounded-xl transition-all duration-200 hover:bg-white/40 active:scale-90 flex items-center justify-center border border-transparent hover:border-white/50 shadow-sm;
+    }
+
+    /* ESTADOS (BADGES) ESTILO REGISTRO */
+    .status-badge-activo {
+        @apply bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border border-green-200 shadow-sm inline-block;
+    }
+
+    .status-badge-inactivo {
+        @apply bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border border-red-200 shadow-sm inline-block;
+    }
+
+    .status-badge-pending {
+        @apply bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border border-blue-200 shadow-sm inline-block;
+    }
+
+    /* Ajustes de Tabla para Móvil */
+    table {
+        @apply min-w-[600px]; /* Asegura que la tabla no se colapse y permita scroll lateral */
+    }
+}
+
+/* Efecto Glassmorphism más profundo */
+.container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+

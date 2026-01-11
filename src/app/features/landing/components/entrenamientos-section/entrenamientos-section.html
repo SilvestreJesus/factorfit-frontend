@@ -1,0 +1,30 @@
+<section
+  id="entrenamientos"
+  class="scroll-mt-24 py-16 md:py-24 bg-gradient-to-br from-purple-900 to-gray-600 overflow-hidden"
+>
+  <h2 class="section-title-fluid font-bold">Entrenamientos</h2>
+
+  <div class="container">
+    <div class="controls">
+      <button (click)="scrollLeft()">‹</button>
+      <button (click)="scrollRight()">›</button>
+    </div>
+
+    <div #carousel class="instalaciones-carousel">
+      @for (item of entrenamientosLoop; track $index) {
+        <article class="instalacion-card">
+          <div class="image-wrapper">
+            <img [src]="item.imagen" alt="entrenamiento">
+          </div>
+
+          <div class="info-wrapper">
+            <span class="label">Entrenamiento</span>
+            <h3>{{ item.titulo }}</h3>
+            <p class="descripcion">{{ item.descripcion }}</p>
+            <span class="sede">Sucursal {{ item.sede }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

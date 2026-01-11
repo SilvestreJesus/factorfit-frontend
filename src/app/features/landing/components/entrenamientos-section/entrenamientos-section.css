@@ -1,0 +1,160 @@
+.instalaciones-section {
+  background: linear-gradient(135deg, #c026d3 0%, #1f2937 100%);
+  padding: 100px 0;
+  overflow: hidden;
+}
+
+
+.container {
+  max-width: 1300px;
+  margin: auto;
+  padding: 0 16px;
+}
+
+/* ===============================
+   TÍTULO FLUIDO UNIFICADO (CORREGIDO)
+================================ */
+.section-title-fluid {
+  /* Mínimo: 1.5rem (aprox 24px), Preferido: 6vw, Máximo: 3.5rem */
+  font-size: clamp(1.5rem, 6vw, 3.5rem);
+  font-family: 'Rock Salt', cursive;
+  color: #e9d5ff;
+  margin-bottom: 40px;
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 1.3; /* Un poquito más de espacio entre líneas */
+  padding: 0 20px;
+  max-width: 90%; /* Evita que el texto toque los bordes del dispositivo */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* CONTROLES */
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.controls button {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 1.6rem;
+  padding: 8px 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.controls button:hover {
+  background: rgba(0,0,0,0.6);
+  transform: scale(1.1);
+}
+
+/* CARRUSEL */
+.instalaciones-carousel {
+  display: flex;
+  gap: 60px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+
+.instalaciones-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* TARJETA */
+.instalacion-card {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  min-width: 100%;
+  scroll-snap-align: center;
+}
+
+/* IMAGEN */
+.image-wrapper {
+  flex: 1;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 40px 80px rgba(0,0,0,.55);
+}
+
+/* TEXTO */
+.info-wrapper {
+  flex: 1;
+  color: #f5f3ff;
+}
+
+.info-wrapper .label {
+  text-transform: uppercase;
+  font-size: .75rem;
+  letter-spacing: .35em;
+  color: #d8b4fe;
+  margin-bottom: 12px;
+}
+
+.info-wrapper h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #ffffff;
+}
+
+.descripcion {
+  font-size: clamp(1rem, 2.8vw, 1.2rem);
+  line-height: 1.7;
+  color: #ede9fe;
+  max-width: 500px;
+}
+
+.sede {
+  display: block;
+  margin-top: 18px;
+  font-size: 0.95rem;
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
+
+
+@media (max-width: 768px) {
+  .section-title-fluid {
+    /* Forzamos un tamaño más pequeño si clamp no fuera suficiente */
+    font-size: 1.8rem; 
+    margin-bottom: 20px;
+    letter-spacing: normal;
+  }
+
+  /* Para teléfonos muy pequeños (menos de 400px de ancho) */
+  @media (max-width: 400px) {
+    .section-title-fluid {
+      font-size: 1.5rem;
+    }
+  }
+
+  .instalacion-card {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .image-wrapper img {
+    height: 250px; /* Reduje un poco la altura para ahorrar espacio vertical */
+  }
+
+  .descripcion {
+    max-width: 100%;
+    font-size: 0.95rem; /* Texto un poco más pequeño para legibilidad */
+  }
+}

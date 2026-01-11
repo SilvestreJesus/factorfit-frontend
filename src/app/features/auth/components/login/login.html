@@ -1,0 +1,40 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4"
+    style="background-image: url('https://i.ibb.co/272HW3wN/fondo-landing.jpg');">
+    <div class="absolute inset-0 bg-black/70"></div>
+
+    <a routerLink="/home" class="absolute top-6 left-6 z-10 text-2xl font-bold flex items-center gap-2 text-white">
+        <img src="images/factor_fit-25.webp" alt="Factor Fit Logo" class="w-8 h-8 rounded-full hover:scale-160">
+    </a>
+
+    <div class="relative z-10 w-full max-w-md bg-gradient-to-br from-purple-950/50 to-gray-950/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
+        <h1 class="text-6xl font-semibold text-center text-purple-200 mb-6">Hola <span class="font-thin font-atomic-e text-5xl">I</span></h1>
+        <form #loginForm="ngForm" (ngSubmit)="handleLogin(loginForm.value)" class="flex flex-col items-center space-y-6">
+            <div class="relative">
+                <input type="email" name="email" placeholder="usuario@ejemplo.com" ngModel required
+                    class="w-full bg-gray-200 text-gray-900 placeholder-gray-500 py-3 pl-4 pr-10 rounded-lg border-2 border-transparent focus:border-purple-500 focus:outline-none">
+                <i class="absolute right-3 top-1/2 -translate-y-1/2 text-2xl text-gray-500 ph ph-envelope-simple"></i>
+            </div>
+            <div class="relative">
+                <input type="password" name="password" placeholder="* * * * * * * *" ngModel required
+                    class="w-full bg-gray-200 text-gray-900 placeholder-gray-500 py-3 pl-4 pr-10 rounded-lg border-2 border-transparent focus:border-purple-500 focus:outline-none">
+                <i class="absolute right-3 top-1/2 -translate-y-1/2 text-2xl text-gray-500 ph ph-lock"></i>
+            </div>
+
+            @if (loginError()) {
+            <p class="text-red-400 text-sm text-center">{{ loginError() }}</p>
+            }
+
+            <button type="submit"
+                class="w-32 bg-purple-600 hover:bg-purple-700 text-white font-bold p-3 rounded-lg transition-transform transform hover:scale-105">
+                Iniciar sesión
+            </button>
+        </form>
+        <div class="text-center mt-4">
+            <a routerLink="/auth/recover"  class="text-sm text-gray-300 hover:text-white">¿Has olvidado tu contraseña?</a>
+        </div>
+    </div>
+    <a routerLink="/auth/register"
+        class="relative z-10 mt-6 bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors">
+        Registrarse
+    </a>
+</div>

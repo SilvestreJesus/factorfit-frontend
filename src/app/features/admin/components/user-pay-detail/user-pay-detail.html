@@ -1,0 +1,193 @@
+<div class="container mx-auto px-4 py-6">
+  <div class="flex justify-center sm:justify-end mb-8">
+    <div class="relative w-full max-w-md sm:w-80">
+      <input type="text" [(ngModel)]="busqueda" (input)="buscar()" placeholder="Buscar usuario..."
+        class="w-full bg-gradient-to-r from-pink-500 to-purple-600 border-none font-bold py-3 pl-10 pr-4 rounded-xl text-white placeholder:text-white/60 shadow-lg outline-none focus:ring-2 ring-pink-300 transition-all" />
+      
+      <ul *ngIf="resultadosBusqueda.length > 0" class="absolute w-full bg-white rounded-xl mt-2 z-[100] shadow-2xl max-h-60 overflow-y-auto">
+        <li *ngFor="let usuario of resultadosBusqueda" (click)="seleccionarUsuario(usuario)" class="px-4 py-3 cursor-pointer hover:bg-pink-50 border-b last:border-none">
+          <p class="font-bold text-pink-600 text-sm">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto bg-white/20 backdrop-blur-md p-6 sm:p-10 rounded-3xl border border-white/30 shadow-2xl">
+    <div class="flex flex-col lg:flex-row gap-10">
+      
+      <div class="w-full lg:w-1/3 flex flex-col items-center text-center">
+        <h1 class="font-atomic text-pink-600 text-5xl mb-6">Registro</h1>
+        
+        <div class="relative inline-block">
+          <img [src]="user?.ruta_imagen_mostrar ? user.ruta_imagen_mostrar : 'https://placehold.co/200x200/4a0e4e/FFF?text=User'"
+            class="w-48 h-48 sm:w-56 sm:h-56 rounded-full object-cover border-4 border-white shadow-2xl">
+          
+          <div *ngIf="user?.status" 
+               class="absolute bottom-2 right-2 bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl border-2 border-white animate-in zoom-in duration-300"
+               [ngClass]="{
+                 '!bg-emerald-500': user.status === 'activo',
+                 '!bg-rose-600': user.status === 'inactivo',
+                 '!bg-amber-500': user.status === 'proximo a vencer',
+                 '!bg-slate-900': user.status === 'pendiente'
+               }">
+            {{ user.status }}
+          </div>
+        </div>
+        
+        <div *ngIf="user" class="mt-6 animate-in fade-in duration-500">
+          <p class="text-3xl font-black text-gray-800 uppercase leading-tight">{{ user.nombres }}<br>{{ user.apellidos }}</p>
+          <p class="text-pink-600 font-black text-lg mt-1 tracking-widest">ID: {{ user.clave_usuario }}</p>
+          
+          <div class="mt-4 pt-4 border-t border-white/20">
+            <p class="text-[10px] font-black uppercase text-gray-500">Inscrito el</p>
+            <p class="text-sm font-bold text-gray-700">{{ (user.created_at | date:'dd / MMMM / yyyy':'':'es' | lowercase) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-2/3 bg-white/40 p-6 sm:p-8 rounded-3xl border border-white/20 shadow-inner">
+        <div *ngIf="user; else noUser" class="space-y-6">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-gray-400">Próximo Corte Actual</label>
+              <div class="bg-white/60 p-3 rounded-xl font-bold text-rose-600 border border-white/80">
+                {{ (pago.fecha_corte | date:'dd / MMM / yyyy':'':'es' | lowercase) || 'Sin registro' }}
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-gray-400">Nuevo Corte Sugerido</label>
+              <div class="bg-white/60 p-3 rounded-xl font-bold text-blue-700 border border-white/80">
+                {{ (pago.proximo_corte | date:'dd / MMM / yyyy':'':'es' | lowercase) || '-- / -- / --' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/60 p-4 rounded-2xl border border-white/80 shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-black uppercase text-gray-500">Estado de Cuenta</span>
+              <span *ngIf="pago.Tipo_pago !== 'Mensual'" class="text-[10px] bg-purple-600 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                PROMO: {{ pago.Tipo_pago }}
+              </span>
+            </div>
+            
+            <div class="flex justify-between items-end">
+              <div>
+                <p class="text-3xl font-black transition-colors duration-300" 
+                   [ngClass]="pago.nuevo_monto_pendiente < 0 ? 'text-emerald-600' : 'text-gray-800'">
+                  $ {{ Math.abs(pago.nuevo_monto_pendiente) }}
+                  <small class="text-[10px] text-gray-400 block uppercase font-bold mt-1">
+                    {{ pago.nuevo_monto_pendiente < 0 ? 'Saldo a favor' : (pago.nuevo_monto_pendiente === 0 ? 'Cuenta Liquidada' : 'Faltante por cubrir') }}
+                  </small>
+                </p>
+              </div>
+              
+              <div class="text-right">
+                <p *ngIf="pago.monto_recargo > 0" class="text-rose-600 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg border border-rose-100">
+                  + ${{pago.monto_recargo}} Recargo aplicado
+                </p>
+                <p *ngIf="pago.monto_recargo === 0 && !pago.fecha_corte" class="text-emerald-600 font-black text-[9px] uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
+                  ✨ Usuario Nuevo (Sin Recargos)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-white/30">
+            <div class="flex justify-between items-center mb-3">
+              <label class="text-sm font-black text-gray-800 uppercase">Monto a recibir</label>
+              <div class="flex gap-2">
+                <button *ngIf="pago.Tipo_pago !== 'Mensual'" (click)="reintentarUltimaPromo()" 
+                  class="text-[9px] bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full font-black uppercase border border-emerald-200 hover:bg-emerald-600 hover:text-white transition-all">
+                  Retomar {{ pago.Tipo_pago }}
+                </button>
+                <button (click)="mostrarModalPromos = true" class="text-[10px] bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full font-black uppercase border border-purple-200 hover:bg-purple-600 hover:text-white transition-all">
+                  Ver Promociones
+                </button>
+              </div>
+            </div>
+            
+            <div class="relative group">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 font-bold text-pink-600 text-4xl group-focus-within:scale-110 transition-transform">$</span>
+              <input type="number" 
+                     [(ngModel)]="pago.monto_pagado" 
+                     (ngModelChange)="onMontoManualChange($event)" 
+                     (focus)="limpiarMontoSiEsCero()"
+                     class="w-full bg-white border-4 border-pink-100 rounded-3xl p-6 pl-14 text-5xl font-black text-pink-600 outline-none focus:border-pink-500 focus:ring-4 ring-pink-500/10 shadow-xl transition-all"
+                     placeholder="0.00">
+            </div>
+
+            <button (click)="guardarCambios()" 
+                  [disabled]="!puedeConfirmar"
+                  class="w-full mt-8 bg-pink-600 hover:bg-pink-700 text-white font-black py-6 rounded-3xl shadow-2xl transition-all text-2xl uppercase tracking-[0.2em] 
+                        disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed">
+            Confirmar Pago
+          </button>
+          </div>
+        </div>
+
+        <ng-template #noUser>
+          <div class="h-96 flex flex-col items-center justify-center text-center opacity-40">
+            <div class="bg-white/50 p-8 rounded-full mb-6 shadow-inner">
+              <svg class="w-16 h-16 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gray-600 font-black uppercase tracking-[0.3em] text-sm">Busca un usuario para comenzar</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="mostrarModalPromos" class="fixed inset-0 z-[300] flex items-center justify-center sm:p-4 animate-in fade-in duration-300">
+  <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-md" (click)="mostrarModalPromos = false"></div>
+  
+  <div class="relative w-full max-w-sm bg-white rounded-t-[3rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in-up">
+    <div class="sm:hidden w-12 h-1.5 bg-gray-200 rounded-full mx-auto mt-4 mb-2"></div>
+    <div class="p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h4 class="font-black text-gray-800 uppercase text-xl tracking-tighter">Ofertas Disponibles</h4>
+        <button (click)="mostrarModalPromos = false" class="text-3xl text-gray-300 hover:text-pink-500 transition-colors">&times;</button>
+      </div>
+
+      <div class="space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scroll">
+        <div *ngFor="let promo of promociones" 
+             class="p-5 rounded-[1.5rem] bg-pink-50/50 border-2 border-transparent hover:border-pink-300 hover:bg-white flex justify-between items-center transition-all cursor-pointer group"
+             (click)="aplicarPromo(promo)">
+          <div class="flex-1">
+            <p class="text-[10px] font-black text-pink-400 uppercase leading-none mb-1">{{ promo.nombre }}</p>
+            <p class="text-xl font-black text-gray-800 group-hover:text-pink-600">{{ promo.meses }} MESES <span class="text-gray-400 mx-1">/</span> ${{ promo.precio }}</p>
+          </div>
+          <button (click)="$event.stopPropagation(); eliminarPromo(promo.id)" class="p-2 text-gray-300 hover:text-rose-500 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 p-5 rounded-[2rem] border border-gray-100">
+        <p class="text-[10px] font-black text-center text-gray-400 uppercase mb-4 tracking-widest">Configurar Nueva Promo</p>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <input type="number" [(ngModel)]="nuevaPromo.meses" placeholder="Meses" class="w-full bg-white text-black border-2 border-gray-200 rounded-xl p-3 font-bold text-center outline-none focus:border-pink-300">
+          <input type="number" [(ngModel)]="nuevaPromo.precio" placeholder="Precio $" class="w-full bg-white  text-black border-2 border-gray-200 rounded-xl p-3 font-bold text-center outline-none focus:border-pink-300">
+        </div>
+        <button (click)="guardarNuevaPromo()" class="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all">Crear Promo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a routerLink="/admin/pago" class="fixed bottom-6 left-6 bg-gray-900 hover:bg-black text-white p-5 rounded-2xl shadow-2xl z-50 transition-all hover:-translate-x-1 active:scale-90">
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+</a>
+
+<div *ngIf="toast.visible" 
+     class="fixed bottom-6 right-6 z-[400] px-8 py-5 rounded-[1.5rem] shadow-2xl text-white animate-in slide-in-from-right duration-300" 
+     [ngClass]="toast.tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600'">
+  <div class="flex items-center gap-3">
+    <svg *ngIf="toast.tipo === 'success'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="font-black uppercase text-sm tracking-wider">{{ toast.mensaje }}</span>
+  </div>
+</div>

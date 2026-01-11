@@ -1,0 +1,147 @@
+<div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden animate-in fade-in">
+  <div class="p-6 bg-rose-600/10 border-b border-white/10">
+    <h5 class="text-xl font-black text-rose-600 uppercase tracking-tighter">Cuentas para Renovación (Eliminados)</h5>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="bg-black/20 text-rose-600 text-xs uppercase font-black">
+        <tr>
+          <th class="p-4">Usuario</th>
+          <th class="p-4">Celular</th>          
+          <th class="p-4">Ultimo Corte</th>
+          <th class="p-4">Adeudo + Recargo</th>
+          <th class="p-4 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-800">
+        <tr *ngFor="let u of renovacionFiltrados()" class="border-b border-white/10 hover:bg-rose-50/10">
+        <td class="p-4">
+            <p class="font-bold lowercase">{{ u.nombres }} {{ u.apellidos }}</p>
+            <span class="text-[15px] text-rose-600/70 font-mono font-bold">{{ u.clave_usuario }}</span>
+        </td>
+        
+        <td class="p-4 font-bold text-gray-500">{{ u.telefono }}</td>
+        
+        <td class="p-4 font-bold text-gray-500">
+        <ng-container *ngIf="obtenerFechaCorteReal(u) as fecha; else sinFecha">
+            {{ fecha | date:'dd/MM/yyyy' }}
+        </ng-container>
+        <ng-template #sinFecha>Sin fecha</ng-template>
+        </td>
+
+        <td class="p-4 text-rose-600 font-black text-lg">
+            $ {{ calcularMontoTotalRenovacion(u) }}
+        </td>
+        
+        <td class="p-4">
+            <div class="flex justify-center gap-3">
+            <button (click)="abrirPanelRecuperacion(u)" class="p-2 text-blue-600 bg-blue-50 rounded-xl hover:scale-110 transition-all shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+            </button>
+            <button (click)="eliminarDefinitivo(u.clave_usuario)" class="p-2 text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+            </div>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+<div *ngIf="showRecoveryModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[200] p-2 sm:p-4">
+  <div class="bg-white rounded-[30px] sm:rounded-[40px] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in border-4 border-blue-600 relative">
+    
+    <button (click)="showRecoveryModal.set(false)" 
+            class="absolute top-4 right-4 z-10 bg-white/20 hover:bg-black/10 text-blue-600 p-2 rounded-full transition-all">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="bg-blue-600 p-6 sm:p-8 text-white text-center">
+      <h3 class="font-black text-xl sm:text-2xl uppercase tracking-tighter italic">Renovación de Cuenta</h3>
+      <p class="text-xs sm:text-sm font-bold opacity-90 truncate px-8">
+        {{ selectedUserForRecovery()?.nombres }} {{ selectedUserForRecovery()?.apellidos }}
+      </p>
+    </div>
+
+    <div class="p-5 sm:p-8 space-y-4 sm:space-y-6">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-black text-blue-900 uppercase block mb-1 ml-1">Deuda Pendiente</label>
+          <div class="relative group">
+            <div class="absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center pointer-events-none">
+              <span class="font-black text-blue-400">$</span>
+            </div>
+            <input type="number" 
+                   [ngModel]="DeudaAnterior()" 
+                   (ngModelChange)="DeudaAnterior.set($event)"
+                   class="w-full bg-blue-50/50 p-4 pl-10 rounded-2xl border-2 border-transparent focus:border-blue-500 font-black text-xl text-blue-700 outline-none transition-all shadow-inner" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-black text-blue-900 uppercase block mb-1 ml-1">Recargo por Tiempo</label>
+          <div class="relative group">
+            <div class="absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center pointer-events-none">
+              <span class="font-black text-blue-400">$</span>
+            </div>
+            <input type="number" 
+                   [ngModel]="RecargoAplicado()" 
+                   (ngModelChange)="RecargoAplicado.set($event)"
+                   class="w-full bg-blue-50/50 p-4 pl-10 rounded-2xl border-2 border-transparent focus:border-blue-500 font-black text-xl text-blue-700 outline-none transition-all shadow-inner" />
+          </div>
+        </div>
+      </div>
+
+      <div [class.border-rose-500]="montoARecuperar() <= 0" 
+           class="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 rounded-[24px] border-4 border-transparent shadow-lg shadow-blue-900/30">
+        <label class="text-white/70 text-[9px] font-black uppercase mb-1 block">Total a cobrar para reactivar</label>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-black text-white">$</span>
+          <span class="text-4xl font-black text-white tracking-tight">
+            {{ montoARecuperar() | number:'1.2-2' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="p-4 bg-blue-50 rounded-2xl border-2 border-blue-100 border-dashed">
+        <div class="flex justify-between items-center mb-1">
+          <p class="text-[10px] font-black text-blue-600 uppercase">Nueva Fecha de Corte</p>
+          <span class="bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">
+            {{ getDiaPagoFijo() === 1 ? 'Mensual' : 'Quincenal' }}
+          </span>
+        </div>
+        <div class="flex items-center gap-3 text-blue-900 font-black text-xl">
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>{{ proximoCorteCalculado() | date:'dd / MMMM / yyyy':'':'es' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 sm:p-6 bg-gray-50 flex flex-col sm:flex-row gap-3">
+      <button (click)="showRecoveryModal.set(false)" 
+              class="order-2 sm:order-1 flex-1 py-3 text-gray-400 font-black uppercase text-xs hover:text-gray-600 transition-colors">
+        Cancelar
+      </button>
+      <button (click)="confirmarRecuperacion()" 
+              [disabled]="montoARecuperar() <= 0"
+              class="order-1 sm:order-2 flex-[2] bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl disabled:opacity-50 disabled:bg-gray-300 text-sm uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95">
+        Confirmar Pago y Activar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="toast().visible" 
+     class="fixed bottom-6 right-6 z-[400] px-8 py-5 rounded-[1.5rem] shadow-2xl text-white animate-in slide-in-from-right" 
+     [ngClass]="toast().tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600'">
+  <span class="font-black uppercase text-sm tracking-wider">{{ toast().mensaje }}</span>
+</div>

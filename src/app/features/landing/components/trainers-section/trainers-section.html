@@ -1,0 +1,31 @@
+<section id="trainers" class="py-16 md:py-24 bg-gradient-to-tr from-fuchsia-400 to-gray-900">
+  <div class="container mx-auto px-4 md:px-6 text-center">
+
+    <h2 class="text-4xl md:text-6xl text-purple-300 font-rock font-bold mb-8 md:mb-12">
+      Personal
+    </h2>
+
+    <!-- CARRUSEL -->
+    <div class="carousel-wrapper">
+    <button class="nav left" (click)="prev()">⬅</button>
+
+    <div class="carousel-3d">
+        @for (trainer of trainers; let i = $index; track trainer.clave_personal) {
+        <div
+            class="card"
+            [class.active]="i === currentIndex"
+            [style.transform]="getTransform(i)"
+            [style.zIndex]="getZIndex(i)"
+        >
+            <img [src]="trainer.image" />
+            <h3>{{ trainer.name }}</h3>
+            <p>{{ trainer.puesto }}</p>
+        </div>
+        }
+    </div>
+
+    <button class="nav right" (click)="next()">➡</button>
+    </div>
+
+  </div>
+</section>

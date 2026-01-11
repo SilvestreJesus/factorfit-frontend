@@ -1,0 +1,90 @@
+<div class="flex justify-center items-center mb-4 md:mb-12 px-4">
+  <h1 class="font-atomic text-pink-600 text-4xl md:text-7xl text-center leading-tight">
+    Instalaciones
+  </h1>
+</div>
+
+<div class="container mx-auto max-w-6xl bg-black/10 backdrop-blur-sm p-4 md:p-8 rounded-2xl shadow-xl shadow-purple-600">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12 items-start">
+
+    <div class="flex flex-col items-center w-full overflow-hidden">
+      <p class="text-black font-medium mb-2 text-xs md:text-base">Vista previa:</p>
+
+      <div class="relative w-full max-w-2xl h-[180px] md:h-[300px] flex justify-center items-center">
+        <button type="button" class="carousel-side-btn left" (click)="scrollLeft()">‹</button>
+
+        <div class="carousel-mini-container">
+          @for (item of instalacionesData; track item.clave_instalaciones; let i = $index) {
+            <article class="mini-instalacion-card" [ngStyle]="getMiniCardStyle(i)">
+              <div class="mini-image-wrapper">
+                <img [src]="item.ruta_imagen ? apiUrl + '/' + item.ruta_imagen : 'assets/no-image.png'" />
+              </div>
+
+              <div class="mini-info-wrapper p-1">
+                <span class="mini-label">INSTALACIÓN</span>
+                <h3 class="truncate text-sm md:text-lg font-bold">{{ item.titulo }}</h3>
+                <p class="line-clamp-1 text-xs hidden md:block">{{ item.descripcion }}</p>
+
+                <div class="flex gap-2 mt-auto">
+                  <button type="button" class="flex-1 bg-pink-600 text-white text-[10px] md:text-xs py-1.5 rounded-lg transition-colors" (click)="editar(item)">
+                    Editar
+                  </button>
+                  <button type="button" class="bg-gray-800 text-white px-2 rounded-lg flex items-center justify-center transition-colors" (click)="eliminar(item.clave_instalaciones)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H9V5a1 1 0 011-1z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+
+        <button type="button" class="carousel-side-btn right" (click)="scrollRight()">›</button>
+      </div>
+    </div>
+
+    <div class="flex justify-center w-full mt-2 lg:mt-0">
+      <div class="w-full max-w-md bg-white/5 p-3 md:p-4 rounded-xl border border-white/10">
+        <form class="space-y-3 md:space-y-4" (ngSubmit)="guardar()" #form="ngForm">
+          <div>
+            <label class="text-black font-medium text-xs md:text-sm">Nombre de la Instalación</label>
+            <input type="text" [(ngModel)]="instalaciones.titulo" name="titulo" required placeholder="Ej: Área de Pesas" class="input-field">
+          </div>
+          
+          <div>
+            <label class="text-black font-medium text-xs md:text-sm">Descripción del Área</label>
+            <textarea [(ngModel)]="instalaciones.descripcion" name="descripcion" placeholder="Ej: Equipamiento de alta gama..." class="input-field h-16 md:h-24"></textarea>
+          </div>
+
+          <div>
+            <label class="text-black font-medium text-xs block mb-1">Fotografía del Área</label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" 
+                   class="input-field text-xs file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor:pointer">
+          </div>
+
+            <div class="flex gap-2">
+                <button type="submit" class="w-full mt-4 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold py-4 rounded-xl transition-all shadow-lg">
+                    {{ modoEdicion ? 'Actualizar Información' : 'Registrar Instalación' }}
+                </button>
+                <button *ngIf="modoEdicion" type="button" (click)="limpiarFormulario()" class="bg-gray-500 text-white px-4 rounded-lg">✕</button>
+            </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ========================= -->
+<!-- TOAST (FUERA DEL CONTENEDOR) -->
+<!-- ========================= -->
+<div
+  *ngIf="toast.visible"
+  class="fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl text-white
+         transition-all duration-500"
+  [ngClass]="{
+    'bg-green-600': toast.tipo === 'success',
+    'bg-red-600': toast.tipo === 'error'
+  }">
+  {{ toast.mensaje }}
+</div>

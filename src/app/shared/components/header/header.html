@@ -1,0 +1,46 @@
+<header id="header"
+    class="fixed top-0 left-0 right-0 z-50 p-4 bg-transparent backdrop-blur-sm transition-all duration-300">
+    <div class="container mx-auto flex justify-between items-center">
+ 
+    <a href="#" class="text-2xl font-bold flex items-center gap-2">
+    <img src="images/factor_fit-25.webp" alt="Factor Fit Logo" class="w-8 h-8 rounded-full hover:scale-110 transition-transform">
+    </a>
+    <a routerLink="/asistencia-scanner" class="opacity-0 cursor-default select-none">
+        <img src="images/factor_fit-25.webp" alt="Secret" class="w-8 h-8 rounded-full">
+    </a>
+    
+    <div class="flex items-center gap-5">
+    <nav class="hidden lg:flex items-center space-x-8 text-white font-semibold italic justify-center">
+        <a (click)="scrollTo('about')" class="hover:text-pink-300 transition-colors cursor-pointer">Sobre nosotros</a>
+        <a (click)="scrollTo('events')" class="hover:text-pink-300 transition-colors cursor-pointer">Eventos</a>
+        <a (click)="scrollTo('instalaciones')" class="hover:text-pink-300 transition-colors cursor-pointer">Instalaciones</a>
+        <a (click)="scrollTo('entrenamientos')" class="hover:text-pink-300 transition-colors cursor-pointer">Entrenamientos</a>
+        <a (click)="scrollTo('trainers')" class="hover:text-pink-300 transition-colors cursor-pointer">Personal</a>
+        <a (click)="scrollTo('location')" class="hover:text-pink-300 transition-colors cursor-pointer">Ubicación</a>
+    </nav>
+    
+    <div class="flex gap-4 items-center">
+    <a href="https://www.facebook.com/share/19zjGJnm4b/" class="text-white hover:text-pink-300 text-3xl flex items-center">
+    <i class="ph-fill ph-facebook-logo"></i>
+    </a>
+    <a href="https://www.instagram.com/factorfit_cdvalles?igsh=MWxudnJsNngzdDZ3aQ==" class="text-white hover:text-pink-300 text-3xl flex items-center">
+    <i class="ph-bold ph-instagram-logo"></i>
+    </a>
+
+    <button (click)="toggleMenu()" class="lg:hidden text-white text-3xl focus:outline-none">
+    <i [class]="isMenuOpen ? 'ph-bold ph-x' : 'ph-bold ph-list'"></i>
+    </button>
+    </div>
+    </div>
+    </div>
+
+    <div *ngIf="isMenuOpen" 
+    class="lg:hidden absolute top-full left-0 w-full bg-black/80 backdrop-blur-lg border-t border-white/10 py-8 flex flex-col items-center space-y-6 text-white font-bold italic animate-slide-down">
+    <a (click)="scrollTo('about')" class="text-lg hover:text-pink-300">Sobre nosotros</a>
+    <a (click)="scrollTo('events')" class="text-lg hover:text-pink-300">Eventos</a>
+    <a (click)="scrollTo('instalaciones')" class="text-lg hover:text-pink-300">Instalaciones</a>
+    <a (click)="scrollTo('entrenamientos')" class="text-lg hover:text-pink-300">Entrenamientos</a>
+    <a (click)="scrollTo('trainers')" class="text-lg hover:text-pink-300">Personal</a>
+    <a (click)="scrollTo('location')" class="text-lg hover:text-pink-300">Ubicación</a>
+    </div>
+</header>

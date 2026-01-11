@@ -1,0 +1,78 @@
+<div class="flex justify-center items-center mb-4 md:mb-12 px-4">
+  <h1 class="font-atomic text-pink-600 text-4xl md:text-7xl text-center leading-tight">Personal</h1>
+</div>
+
+<div class="container mx-auto max-w-6xl bg-black/10 backdrop-blur-sm p-4 md:p-8 rounded-2xl shadow-xl shadow-purple-600">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12 items-start">
+
+    <div class="flex flex-col items-center w-full">
+      <p class="text-black font-medium mb-2 text-xs md:text-base">Vista previa del equipo:</p>
+      
+      <div class="carousel-container-3d">
+        <button type="button" class="nav-btn left" (click)="scrollLeft()">‹</button>
+        
+        <div class="carousel-3d-viewport">
+          @for (item of personalData; track item.clave_personal; let i = $index) {
+            <div class="polaroid-3d" [ngStyle]="get3DTransform(i)" [class.active]="i === activeIndex">
+              <img [src]="item.ruta_imagen ? apiUrl + '/' + item.ruta_imagen : 'assets/no-image.png'">
+              
+              <div class="polaroid-3d-info">
+                <span class="puesto-label">{{ item.puesto }}</span>
+                <h3 class="truncate">{{ item.nombre_completo }}</h3>
+                
+                <div class="flex gap-2 mt-auto w-full">
+                  <button class="btn-edit" (click)="editar(item)">Editar</button>
+                  <button class="btn-delete" (click)="eliminar(item.clave_personal)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H9V5a1 1 0 011-1z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <button type="button" class="nav-btn right" (click)="scrollRight()">›</button>
+      </div>
+    </div>
+
+    <div class="flex justify-center w-full">
+      <div class="w-full max-w-md bg-white/5 p-4 rounded-xl border border-white/10">
+        <form class="space-y-4" (ngSubmit)="guardar()" #form="ngForm">
+          <div>
+            <label class="text-black font-medium text-sm">Nombre Completo</label>
+            <input type="text" [(ngModel)]="personal.nombre_completo" name="nombre_completo" required class="input-field" placeholder="Nombre del trainer">
+          </div>
+          
+          <div>
+            <label class="text-black font-medium text-sm">Puesto / Cargo</label>
+            <input type="text" [(ngModel)]="personal.puesto" name="puesto" required class="input-field" placeholder="Puesto">
+          </div>
+
+          <div>
+            <label class="text-black font-medium text-sm">Descripción</label>
+            <textarea [(ngModel)]="personal.descripcion" name="descripcion" class="input-field h-24" placeholder="Breve biografía..."></textarea>
+          </div>
+
+          <div>
+            <label class="text-black font-medium text-sm block mb-1">Fotografía</label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="input-field text-xs file:bg-pink-100 file:text-pink-700 file:border-0 file:rounded-full file:px-4 cursor-pointer">
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95">
+              {{ modoEdicion ? 'Actualizar' : 'Registrar' }}
+            </button>
+            <button *ngIf="modoEdicion" type="button" (click)="limpiarFormulario()" class="bg-gray-500 text-white px-4 rounded-xl">✕</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="toast.visible" class="fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl text-white shadow-2xl"
+     [ngClass]="{'bg-green-600': toast.tipo === 'success', 'bg-red-600': toast.tipo === 'error'}">
+  {{ toast.mensaje }}
+</div>

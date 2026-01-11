@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@layer base {
+    .input-field {
+        /* bg-white/40 para que sea más legible en móvil sobre el fondo */
+        @apply w-full bg-white/40 border border-black/10 rounded-xl p-3 text-black 
+               placeholder-gray-600 outline-none transition-all
+               focus:bg-white/60 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20;
+    }
+
+    /* Quitar bordes azules por defecto en móvil */
+    input, select, button {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.fixed {
+  animation: slideIn 0.3s ease-out;
+}
