@@ -13,7 +13,6 @@ import { AsistenciaService } from '../../../core/services/asistencia.service';
 })
 export class AsistenciaScannerComponent {
   scannerEnabled = true;
-  // Definimos el formato usando el ENUM de la librería
   allowedFormats = [BarcodeFormat.QR_CODE]; 
   
   toast = signal({ visible: false, mensaje: '', tipo: 'success' });
@@ -24,17 +23,29 @@ export class AsistenciaScannerComponent {
     if (!this.scannerEnabled) return;
 
     this.scannerEnabled = false;
+    // Limpiamos la clave (por si el QR viene como "ID: 123")
     const claveLimpia = result.includes(':') ? result.split(':')[1].trim() : result.trim();
 
     this.asistenciaService.registrarAsistencia(claveLimpia).subscribe({
       next: (response) => {
-        this.mostrarToast(`Entrada Registrada: ${claveLimpia}`, 'success');
+        this.mostrarToast(`¡Bienvenido! Entrada registrada`, 'success');
+        // Esperamos 4 segundos para reactivar y que no escanee el mismo QR mil veces
         setTimeout(() => this.scannerEnabled = true, 4000);
       },
       error: (err) => {
-        const errorMsg = err.status === 404 ? 'Socio no existe' : 'Error de registro';
+        let errorMsg = 'Error de conexión';
+        
+        if (err.status === 404) {
+          errorMsg = 'Socio no encontrado';
+        } else if (err.status === 422) {
+          errorMsg = 'Ya registró su entrada hoy';
+        } else if (err.status === 400) {
+          errorMsg = 'Código QR inválido';
+        }
+
         this.mostrarToast(errorMsg, 'error');
-        setTimeout(() => this.scannerEnabled = true, 3000);
+        // Reactivamos más rápido en caso de error para que el siguiente pueda pasar
+        setTimeout(() => this.scannerEnabled = true, 2500);
       }
     });
   }

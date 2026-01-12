@@ -125,3 +125,10 @@
     </div>
   </div>
 </div>
+
+
+<div *ngIf="toast().visible" 
+     class="fixed bottom-6 right-6 z-[400] px-8 py-5 rounded-[1.5rem] shadow-2xl text-white animate-in slide-in-from-right" 
+     [ngClass]="toast().tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600'">
+  <span class="font-black uppercase text-sm tracking-wider">{{ toast().mensaje }}</span>
+</div>

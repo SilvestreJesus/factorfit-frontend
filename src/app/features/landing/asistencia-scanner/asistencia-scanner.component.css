@@ -17,3 +17,30 @@ zxing-scanner {
     height: 100%;
     object-fit: cover;
 }
+
+
+/* Obligamos a que el video ocupe el 100% y se recorte correctamente */
+:host ::ng-deep zxing-scanner video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Esto hace que la cámara llene el cuadrado sin deformarse */
+}
+
+.scanner-viewport {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Animación del láser */
+@keyframes laser {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+.animate-laser {
+    position: absolute;
+    animation: laser 2s infinite linear;
+}

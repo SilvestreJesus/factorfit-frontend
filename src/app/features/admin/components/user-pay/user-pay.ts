@@ -82,7 +82,7 @@ export class UserPay implements OnInit {
       const texto = this.busqueda.toLowerCase();
       return (
         user.clave_usuario?.toString().toLowerCase().includes(texto) ||
-        `${user.nombres} ${user.apellidos}`.toLowerCase().includes(texto)
+        `${user.nombres} ${user.apellidos}`.toLowerCase().includes(texto) || user.telefono?.toLowerCase().includes(texto)
       );
     });
   }

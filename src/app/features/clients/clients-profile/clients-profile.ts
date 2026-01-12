@@ -14,59 +14,111 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./clients-profile.css']
 })
 export class ClientsProfile implements OnInit {
+  // Configuración para el selector de teléfono
+  extensiones = [
+    '+52', '+1', '+44', '+33', '+49', '+34',
+    '+55', '+54', '+81', '+82', '+86'
+  ];
+  telefonoExtension = '+52';
 
+  // Datos del usuario
   user: any = null;
-  pago: any = null; 
   clave_usuario!: string;
+  passwordNueva: string = ''; 
 
+  // Búsqueda (en caso de que el cliente pueda buscar otros o para consistencia de UI)
   busqueda: string = '';
   resultadosBusqueda: any[] = [];
-
   sede = localStorage.getItem('sede')?.split(',') || [];
+
+  // Estado del Toast (Notificaciones)
+  toast = {
+    visible: false,
+    mensaje: '',
+    tipo: 'success' as 'success' | 'error'
+  };
 
   constructor(
     private route: ActivatedRoute,
     private usuarioService: UsuarioService
   ) {}
 
-passwordNueva: string = ''; 
+  ngOnInit() {
+    // Intentamos obtener la clave desde la ruta padre o la actual
+    this.clave_usuario = this.route.parent?.snapshot.paramMap.get('clave_usuario') ?? 
+                         this.route.snapshot.paramMap.get('clave_usuario') ?? '';
+    
+    if (this.clave_usuario) {
+      this.cargarUsuario(this.clave_usuario);
+    } else {
+      this.showToast("No se encontró la clave de usuario", "error");
+    }
+  }
 
-guardarCambios() {
+  cargarUsuario(clave_usuario: string) {
+    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+      next: (data) => {
+        this.user = data;
+
+        // 1. TRATAMIENTO DEL TELÉFONO: Separar prefijo del número
+        if (this.user.telefono) {
+          const partes = this.user.telefono.split(" ");
+          if (partes.length > 1) {
+            this.telefonoExtension = partes[0]; 
+            this.user.telefono = partes.slice(1).join(""); 
+          } else {
+            // Si no tiene espacio, limpiamos caracteres no numéricos
+            this.user.telefono = this.user.telefono.replace(/\D/g, '');
+          }
+        }
+
+        // 2. TRATAMIENTO DE IMAGEN: Crear URL completa para la vista
+        if (this.user.ruta_imagen) {
+          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/${this.user.ruta_imagen}`;
+        }
+      },
+      error: () => this.showToast("Error al cargar datos del perfil", "error")
+    });
+  }
+
+  guardarCambios() {
     if (!this.clave_usuario) return;
 
-    // LIMPIEZA DE CLAVE: Esto quita el ":1" o cualquier cosa después de la clave real
+    // Limpiar la clave por si trae parámetros extra (ej. :1)
     const claveLimpia = this.clave_usuario.split(':')[0].trim();
 
+    // Clonamos el objeto para no afectar la vista mientras se envía
     const datosAEnviar = { ...this.user };
 
-    // Limpiar ruta de imagen para la base de datos
-    if (datosAEnviar.ruta_imagen && datosAEnviar.ruta_imagen.includes(environment.apiUrl)) {
-        datosAEnviar.ruta_imagen = datosAEnviar.ruta_imagen.replace(`${environment.apiUrl}/`, '');
-    }
+    // 3. FORMATEAR TELÉFONO: Unir prefijo y número para la DB
+    const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');
+    datosAEnviar.telefono = this.telefonoExtension ? `${this.telefonoExtension} ${numeroSolo}` : numeroSolo;
 
-    // Manejo de contraseña
+    // 4. MANEJO DE CONTRASEÑA: Solo se envía si el usuario escribió algo
     if (this.passwordNueva && this.passwordNueva.trim() !== '') {
-        datosAEnviar.password = this.passwordNueva;
+      datosAEnviar.password = this.passwordNueva;
     } else {
-        delete datosAEnviar.password;
+      delete datosAEnviar.password;
     }
 
-    // USAR CLAVE LIMPIA AQUÍ
+    // 5. LIMPIEZA DE DATOS: Quitamos propiedades que solo son para la vista
+    delete datosAEnviar.ruta_imagen_mostrar;
+
     this.usuarioService.actualizarPerfil(claveLimpia, datosAEnviar)
       .subscribe({
         next: () => {
           this.showToast("¡Perfil actualizado con éxito!", "success");
-          this.passwordNueva = ''; // Limpiar campo
+          this.passwordNueva = ''; // Resetear campo de password
+          // Recargamos datos para confirmar que todo se guardó bien
+          this.cargarUsuario(this.clave_usuario);
         },
         error: (err) => {
-          console.error("Error en la petición:", err);
+          console.error("Error al actualizar:", err);
           this.showToast("Error al guardar cambios", "error");
         }
       });
-}
+  }
 
-
-// El método subirFoto se queda igual, ya que ese actualiza solo la imagen
   subirFoto(event: any) {
     const archivo = event.target.files[0];
     if (!archivo) return;
@@ -77,74 +129,37 @@ guardarCambios() {
     this.usuarioService.subirFoto(this.clave_usuario, formData)
       .subscribe({
         next: (resp: any) => {
-          // Actualizamos la vista con la nueva foto
-          this.user.ruta_imagen = `${environment.apiUrl}/${resp.ruta_imagen}`;
+          // Actualizamos tanto la ruta interna como la que se muestra
+          this.user.ruta_imagen = resp.ruta_imagen;
+          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/${resp.ruta_imagen}`;
           this.showToast("Foto de perfil actualizada", "success");
         },
         error: () => this.showToast("No se pudo subir la foto", "error")
       });
   }
 
-
-
-  toast = {
-    visible: false,
-    mensaje: '',
-    tipo: 'success' as 'success' | 'error'
-  };
-
+  // --- Utilidades ---
 
   showToast(mensaje: string, tipo: 'success' | 'error' = 'success') {
     this.toast.mensaje = mensaje;
     this.toast.tipo = tipo;
     this.toast.visible = true;
-
-    // Se oculta automáticamente tras 3 segundos
     setTimeout(() => {
       this.toast.visible = false;
     }, 3000);
   }
 
-
-  ngOnInit() {
-    this.clave_usuario = this.route.parent?.snapshot.paramMap.get('clave_usuario') ?? '';
-    this.cargarUsuario(this.clave_usuario);
-
-  }
-
-  cargarUsuario(clave_usuario: string) {
-    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-        next: (data) => {
-          this.user = data;
-
-          if (this.user?.ruta_imagen) {
-              this.user.ruta_imagen = `${environment.apiUrl}/${this.user.ruta_imagen}`;
-          }
-        }
-    });
-
-  }
-
-
-  private actualizarUsuario() {
-    this.usuarioService.actualizarUsuario(this.clave_usuario, this.user)
-      .subscribe({
-        next: () => this.showToast("¡Usuario actualizado con éxito!", "success"), // <--- Cambio aquí
-        error: () => this.showToast("Error al actualizar usuario", "error")      // <--- Cambio aquí
-      });
-  }
-
-  // ---------- BUSQUEDA -------------------
   buscar() {
-    if (this.busqueda.trim().length < 2) {
+    const termino = this.busqueda.trim();
+    if (termino.length < 2) {
       this.resultadosBusqueda = [];
       return;
     }
 
-    this.usuarioService.buscarUsuariosDeSede(this.busqueda, this.user?.sede).subscribe({
-      next: (data: any[]) => this.resultadosBusqueda = data
-    });
+    this.usuarioService.buscarUsuariosDeSede(termino, this.user?.sede || this.sede[0])
+      .subscribe({
+        next: (data: any[]) => this.resultadosBusqueda = data,
+        error: () => this.resultadosBusqueda = []
+      });
   }
-
-
 }

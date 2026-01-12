@@ -1,6 +1,7 @@
 import { Component, Input, signal, computed, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../../../core/services/usuario.service';
 
 @Component({
@@ -9,198 +10,216 @@ import { UsuarioService } from '../../../../../core/services/usuario.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './logbook-debtors.component.html'
 })
-export class DebtorsComponent implements OnChanges { // Añadimos OnChanges
+export class DebtorsComponent implements OnChanges {
   private usuarioService = inject(UsuarioService);
+  private http = inject(HttpClient);
   
+  // Inputs
   @Input() busqueda = '';
-  @Input() sede = ''; // Recibimos la sede del padre
+  @Input() sede = ''; 
   
+  // Datos
   financialLogData = signal<any[]>([]);
 
-  // Quitamos la lógica del constructor
-  constructor() {}
-
-  // Detectamos cuando llega la sede
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['sede'] && this.sede) {
-      this.cargarDatos();
-    }
-  }
-
-// En DebtorsComponent
-cargarDatos() {
-  if (!this.sede || this.sede === '') return;
-
-  console.log("Cargando deudores para sede:", this.sede); // Para depurar
-
-  this.usuarioService.getBitacoraIngresos(this.sede).subscribe({
-    next: (resp) => {
-      if (resp.status && resp.data) {
-        this.financialLogData.set(resp.data);
-      } else {
-        this.financialLogData.set([]);
-      }
-    },
-    error: (err) => {
-      console.error("Error cargando deudores:", err);
-      this.financialLogData.set([]);
-    }
-  });
-}
-
-deudoresFiltrados = computed(() => {
-  const texto = this.busqueda.toLowerCase().trim();
-  const datos = this.financialLogData();
-  
-  const filtrados = datos.filter(log => {
-    // Sumamos asegurando que si es null, sea 0
-    const pendiente = Number(log.monto_pendiente ?? 0);
-    const recargo = Number(log.monto_recargo ?? 0);
-    const totalDeuda = pendiente + recargo;
-    
-    // Solo mostrar si realmente debe dinero
-    const esDeudor = totalDeuda > 0;
-    
-    // Filtro de búsqueda
-    const coincideBusqueda = !texto || 
-                             log.nombre?.toLowerCase().includes(texto) || 
-                             log.clave?.toLowerCase().includes(texto);
-                             
-    return esDeudor && coincideBusqueda;
-  });
-
-  return filtrados.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-});
-
-  
-esEnvioIndividual = false;
-  deudorDestino: any = null;
-
-
-
-
-  // En logbook-debtors.component.ts
-
-openWhatsApp(log: any) {
-  const telefono = log.telefono; // Asegúrate que el objeto log tenga la propiedad telefono
-  const nombre = log.nombre || 'Cliente';
-  const deuda = (Number(log.monto_pendiente) || 0) + (Number(log.monto_recargo) || 0);
-  
-  if (!telefono) {
-    alert('Este usuario no tiene un número de teléfono registrado.');
-    return;
-  }
-
-  const mensaje = encodeURIComponent(
-    `Hola ${nombre}, te saludamos de Factor Fit. Te recordamos que presentas un saldo pendiente de $${deuda}. ¡Te esperamos!`
-  );
-  
-  window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
-}
-  // --- Modal de Recuperación ---
-  showRecoveryModal = signal(false);
-  selectedUserForRecovery = signal<any>(null);
-
-  // --- Mensajería Masiva ---
+  // UI States (Signals para modales y carga)
+  cargando = signal<boolean>(false);
   showMailModal = signal(false);
   showWhatsAppModal = signal(false);
-  asuntoCorreo = 'Información Importante - Factor Fit';
+  
+  // Propiedades requeridas por tu HTML (Errores TS2339 corregidos)
+  esEnvioIndividual = false;
+  deudorDestino: any = null;
+
+  // Progreso y Notificaciones
+  progresoEnvio = signal(0);
+  totalEnvio = signal(0);
+  toast = signal({ visible: false, mensaje: '', tipo: 'success' as 'success' | 'error' });
+
+  // Formulario de Mensajería
+  asuntoCorreo = 'Aviso de Pago Pendiente - Factor Fit';
   mensajeCorreo = '';
   mensajeWhatsApp = '';
   imagenSeleccionada: string | null = null;
 
-  cargando = signal<boolean>(false);
-  
-  // Progress para envíos masivos
-  progresoEnvio = signal(0);
-  totalEnvio = signal(0);
+  constructor() {}
 
-  // --- Toast Signal (Corregido para el HTML) ---
-  toast = signal<{ visible: boolean; mensaje: string; tipo: 'success' | 'error' }>({
-    visible: false, mensaje: '', tipo: 'success'
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['sede'] && this.sede) {
+      this.sincronizarYDescargar();
+    }
+  }
+
+  // --- OBTENCIÓN DE DATOS ---
+
+  sincronizarYDescargar() {
+    this.cargando.set(true);
+    this.http.get(`http://localhost:8000/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+      next: () => this.cargarDatos(),
+      error: (err) => {
+        console.error('Error al sincronizar:', err);
+        this.cargarDatos();
+      }
+    });
+  }
+
+  cargarDatos() {
+    this.usuarioService.getBitacoraIngresos(this.sede).subscribe({
+      next: (resp) => {
+        this.financialLogData.set(resp.data || []);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.financialLogData.set([]);
+        this.cargando.set(false);
+      }
+    });
+  }
+
+  deudoresFiltrados = computed(() => {
+    const texto = this.busqueda.toLowerCase().trim();
+    return this.financialLogData()
+      .filter(log => {
+        const totalDeuda = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+        const coincideBusqueda = !texto || 
+                                 log.nombre?.toLowerCase().includes(texto) || 
+                                 log.clave?.toLowerCase().includes(texto);
+        return totalDeuda > 0 && coincideBusqueda;
+      })
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
   });
 
+  // --- LÓGICA DE WHATSAPP ---
+
+  private prepararNumeroWhatsApp(telefono: string): string {
+    if (!telefono) return '';
+    let num = telefono.replace(/\D/g, '');
+    if (num.length === 10) num = '521' + num;
+    else if (num.length === 12 && num.startsWith('52')) num = '521' + num.substring(2);
+    return num;
+  }
+
+  openWhatsApp(log: any) {
+    if (!log.telefono) {
+      this.showToastMessage('Este usuario no tiene teléfono registrado', 'error');
+      return;
+    }
+    const deuda = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+    const numeroLimpio = this.prepararNumeroWhatsApp(log.telefono);
+    const mensaje = encodeURIComponent(`Hola *${log.nombre}*, te saludamos de *Factor Fit*. Te recordamos que presentas un saldo pendiente de *$${deuda}*. ¡Te esperamos!`);
+    window.open(`https://wa.me/${numeroLimpio}?text=${mensaje}`, '_blank');
+  }
+
   openWhatsAppMassModal() {
-    this.mensajeWhatsApp = "Hola {nombre}, te recordamos que tu pago en Factor Fit venció. El monto pendiente es de ${monto}. ¡Te esperamos!";
+    this.mensajeWhatsApp = "Hola {nombre}, te recordamos que presentas un saldo pendiente de {monto} en Factor Fit Sede " + this.sede + ". ¡Te esperamos!";
     this.showWhatsAppModal.set(true);
   }
 
+  // Nombre de función corregido según tu HTML
+  async ejecutarEnvioMasivo() {
+    const lista = this.deudoresFiltrados();
+    this.totalEnvio.set(lista.length);
+    this.progresoEnvio.set(0);
+    this.cargando.set(true);
 
+    for (const user of lista) {
+      const numeroFinal = this.prepararNumeroWhatsApp(user.telefono);
+      const montoTotal = Number(user.monto_pendiente ?? 0) + Number(user.monto_recargo ?? 0);
+
+      if (numeroFinal) {
+        const msgPersonalizado = this.mensajeWhatsApp
+          .replace(/{nombre}/g, user.nombre)
+          .replace(/{monto}/g, `$${montoTotal}`);
+
+        try {
+          await this.http.post('http://localhost:3000/enviar', {
+            numero: numeroFinal,
+            mensaje: msgPersonalizado
+          }).toPromise();
+        } catch (e) {
+          console.error(`Error con ${user.nombre}`, e);
+        }
+      }
+      this.progresoEnvio.update(v => v + 1);
+      await new Promise(res => setTimeout(res, 2000));
+    }
+
+    this.cargando.set(false);
+    this.showWhatsAppModal.set(false);
+    this.showToastMessage('¡Envío masivo de WhatsApp completado!');
+  }
+
+  // --- LÓGICA DE CORREOS ---
+
+  // Nombre de función corregido según tu HTML
+  enviarCorreoIndividual(log: any) {
+    this.esEnvioIndividual = true;
+    this.deudorDestino = log;
+    const monto = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+    
+    this.asuntoCorreo = `Aviso de Adeudo - ${log.nombre}`;
+    this.mensajeCorreo = `Hola ${log.nombre}, detectamos un saldo pendiente de $${monto}. Te invitamos a regularizarlo.\n\nSede: ${this.sede}`;
+    
+    this.showMailModal.set(true);
+  }
+
+  openMassMailModal() {
+    this.esEnvioIndividual = false;
+    this.deudorDestino = null;
+    this.asuntoCorreo = 'Aviso de Pago Pendiente - Factor Fit';
+    this.mensajeCorreo = `Estimado cliente, le informamos que presenta un adeudo...`;
+    this.showMailModal.set(true);
+  }
+
+  // Nombre de función corregido según tu HTML
+  confirmarEnvioCorreo() {
+    this.cargando.set(true);
+
+    let destinatarios: string[] = [];
+    if (this.esEnvioIndividual && this.deudorDestino) {
+      destinatarios = [this.deudorDestino.email];
+    } else {
+      destinatarios = this.deudoresFiltrados().map(u => u.email).filter(e => !!e);
+    }
+
+    if (destinatarios.length === 0) {
+      this.cargando.set(false);
+      this.showToastMessage('No hay correos válidos', 'error');
+      return;
+    }
+
+    this.usuarioService.enviarEmail({
+      emails: destinatarios,
+      asunto: this.asuntoCorreo,
+      mensaje: this.mensajeCorreo,
+      sede: this.sede,
+      imagen: this.imagenSeleccionada
+    }).subscribe({
+      next: () => {
+        this.showMailModal.set(false);
+        this.cargando.set(false);
+        this.imagenSeleccionada = null;
+        this.showToastMessage('¡Correo enviado con éxito!');
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.showToastMessage('Error al enviar correo', 'error');
+      }
+    });
+  }
+
+  // --- UTILIDADES ---
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      // Lógica para previsualizar o cargar imagen
-      this.showToastMessage('Imagen seleccionada');
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.imagenSeleccionada = e.target.result;
+      reader.readAsDataURL(file);
     }
   }
 
-  ejecutarEnvioMasivo() {
-    const lista = this.deudoresFiltrados();
-    if (lista.length === 0) return;
-
-    this.cargando.set(true);
-    this.totalEnvio.set(lista.length);
-    this.progresoEnvio.set(0);
-
-    // Simulación de envío (Aquí iría tu lógica de backend)
-    const intervalo = setInterval(() => {
-      this.progresoEnvio.update(p => p + 1);
-      if (this.progresoEnvio() >= this.totalEnvio()) {
-        clearInterval(intervalo);
-        this.cargando.set(false);
-        this.showWhatsAppModal.set(false);
-        this.showToastMessage(`Enviados ${this.totalEnvio()} mensajes`, 'success');
-      }
-    }, 500);
-  }
-
-
-  // --- CORREO INDIVIDUAL ---
-  enviarCorreoIndividual(log: any) {
-    this.esEnvioIndividual = true;
-    this.deudorDestino = log;
-    
-    // Pre-llenamos el modal con datos específicos (como en tu imagen)
-    this.asuntoCorreo = `Aviso de Pago Pendiente - ${log.nombre}`;
-    this.mensajeCorreo = `Hola ${log.nombre}, detectamos un saldo pendiente de $${(Number(log.monto_pendiente) + Number(log.monto_recargo))}.`;
-    
-    this.showMailModal.set(true);
-  }
-
-  // --- CORREO MASIVO ---
-  openMassMailModal() {
-    this.esEnvioIndividual = false;
-    this.deudorDestino = null;
-    
-    // Limpiamos o ponemos un mensaje genérico
-    this.asuntoCorreo = 'Aviso de Pago Pendiente - Factor Fit';
-    this.mensajeCorreo = 'Estimado cliente, le informamos que presenta un adeudo...';
-    
-    this.showMailModal.set(true);
-  }
-
-  // --- LÓGICA FINAL DE ENVÍO ---
-  confirmarEnvioCorreo() {
-    if (this.esEnvioIndividual && this.deudorDestino) {
-      // AQUÍ LLAMAS A TU SERVICIO PARA UN SOLO CORREO
-      console.log(`Enviando correo único a: ${this.deudorDestino.email}`);
-      this.showToastMessage(`Correo enviado a ${this.deudorDestino.nombre}`);
-    } else {
-      // AQUÍ LLAMAS A TU SERVICIO MASIVO
-      const total = this.deudoresFiltrados().length;
-      console.log(`Enviando correos masivos a ${total} usuarios`);
-      this.showToastMessage(`Iniciando envío masivo a ${total} deudores`);
-    }
-    
-    this.showMailModal.set(false);
-  }
-
-    showToastMessage(mensaje: string, tipo: 'success' | 'error' = 'success') {
+  showToastMessage(mensaje: string, tipo: 'success' | 'error' = 'success') {
     this.toast.set({ visible: true, mensaje, tipo });
-    setTimeout(() => {
-      this.toast.update(prev => ({ ...prev, visible: false }));
-    }, 3000);
+    setTimeout(() => this.toast.update(v => ({ ...v, visible: false })), 3000);
   }
-
 }

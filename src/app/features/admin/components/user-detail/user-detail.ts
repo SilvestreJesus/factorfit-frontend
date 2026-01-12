@@ -60,40 +60,110 @@ export class UserDetail implements OnInit {
     this.cargarPago(this.clave_usuario);
   }
 
+
   cargarUsuario(clave_usuario: string) {
     this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
       next: (data) => {
         this.user = data;
 
-        // Mostrar imagen
-        this.user.ruta_imagen_mostrar = this.user.ruta_imagen
-          ? `${environment.apiUrl}/${this.user.ruta_imagen}`
-          : null;
-
+        // 1. FIJAR LA SEDE: Usamos la sede actual de la aplicación (la del localStorage)
         this.user.sede = this.sede[0];
 
+        // 2. TRATAMIENTO DEL PESO: Quitar "0" y "Kg" para que el input esté limpio
+        if (this.user.peso_inicial) {
+          let pesoLimpio = this.user.peso_inicial
+            .toString()
+            .replace(/kg/i, '')
+            .trim();
+          
+          // Si es "0", lo ponemos como null para que el input se vea vacío
+          this.user.peso_inicial = (pesoLimpio === '0' || pesoLimpio === '') ? null : pesoLimpio;
+        } else {
+          this.user.peso_inicial = null;
+        }
+
+        // 3. TRATAMIENTO DEL TELÉFONO: Separar extensión de número
         if (this.user.telefono) {
           const partes = this.user.telefono.split(" ");
-
-          // Si viene "+52 1234567890"
           if (partes.length > 1) {
-            this.telefonoExtension = partes[0];    // "+52"
-            this.user.telefono = partes.slice(1).join(" "); // "1234567890"
+            this.telefonoExtension = partes[0]; 
+            this.user.telefono = partes.slice(1).join(""); 
           } else {
-            // Si viene sin extensión
             this.user.telefono = this.user.telefono.replace(/\D/g, '');
           }
         }
 
-        if (this.user.peso_inicial) {
-          this.user.peso_inicial = this.user.peso_inicial
-            .toString()
-            .replace(/kg/i, '')     // Quitar "kg" sin importar mayúsculas
-            .trim();
-        }
+        this.user.ruta_imagen_mostrar = this.user.ruta_imagen
+          ? `${environment.apiUrl}/${this.user.ruta_imagen}`
+          : null;
       }
     });
   }
+
+  guardarCambios() {
+    const hoy = new Date();
+    
+    // Creamos una copia para el backend (payload) para NO ensuciar los inputs de la vista
+    const payload = { ...this.user };
+
+    // Formatear Peso para el Backend: Si está vacío mandamos "0 Kg"
+    const valorPeso = this.user.peso_inicial;
+    payload.peso_inicial = (valorPeso && valorPeso != 0) ? `${valorPeso} Kg` : '0 Kg';
+
+    // Formatear Teléfono para el Backend: Unir extensión + número
+    const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');
+    payload.telefono = this.telefonoExtension ? `${this.telefonoExtension} ${numeroSolo}` : numeroSolo;
+
+    // Asegurar que enviamos la sede correcta
+    payload.sede = this.sede[0];
+
+    if (this.user.status === 'sin asignar' || !this.pago) {
+      payload.status = 'pendiente';
+        // ... (Lógica de primer pago y asistencia se mantiene igual)
+        this.usuarioService.registrarAsistencia({
+            clave_cliente: this.clave_usuario,
+            fecha_diario: this.formatLocalDate(hoy),
+        }).subscribe({
+            next: () => {
+                const { fechaPago, tipo_pago } = this.calcularFechaPago(hoy);
+                this.usuarioService.registrarPago({
+                    clave_cliente: this.clave_usuario,
+                    fecha_ingreso: this.formatLocalDate(hoy),
+                    fecha_corte: this.formatLocalDate(fechaPago),
+                    Tipo_pago: tipo_pago,
+                    monto_pendiente: 500
+                }).subscribe({
+                  next: () => {
+                    // Ahora actualizarUsuario lleva payload.status = 'pendiente'
+                    this.actualizarUsuario(payload);
+                    // También actualizamos la vista local para que el usuario vea el cambio
+                    this.user.status = 'pendiente'; 
+                  },
+                    error: () => this.showToast("Error al generar pago inicial", "error")
+                });
+            }
+        });
+    } else {
+        this.actualizarUsuario(payload);
+    }
+  }
+
+  actualizarUsuario(datosAEnviar: any) {
+    this.usuarioService.actualizarUsuario(this.clave_usuario, datosAEnviar)
+      .subscribe({
+        next: () => {
+          this.showToast("Datos guardados correctamente", "success");
+          // No es necesario recargar todo el usuario, para evitar que el input parpadee
+        },
+        error: () => this.showToast("Error al actualizar usuario", "error")
+      });
+  }
+
+
+
+
+
+
 
 buscar() {
     const termino = this.busqueda.trim();
@@ -136,59 +206,8 @@ buscar() {
           }
       });
   }
-
-// Dentro de UserDetail class
-
-guardarCambios() {
-    const hoy = new Date();
-
-    // 1. Limpieza de datos (Peso y Teléfono)
-    let pesoVal = String(this.user.peso_inicial ?? '').trim();
-    if (pesoVal !== '' && !pesoVal.toLowerCase().includes('kg')) {
-        pesoVal = `${pesoVal} Kg`;
-    }
-    this.user.peso_inicial = pesoVal;
-
-    const numeroSolo = String(this.user.telefono ?? '').replace(/\D/g, '');
-    this.user.telefono = this.telefonoExtension ? `${this.telefonoExtension} ${numeroSolo}` : numeroSolo;
-
-    // 2. Lógica de registro para usuarios nuevos o "sin asignar"
-    if (this.user.status === 'sin asignar' || !this.pago) {
-        const { fechaPago, tipo_pago } = this.calcularFechaPago(hoy);
-        const fechaInscripcionBackend = this.formatLocalDate(hoy);
-        const fechaCorteBackend = this.formatLocalDate(fechaPago);
-
-        console.log("Configurando usuario nuevo: Pago + Asistencia inicial...");
-
-        // Flujo idéntico al registro: Asistencia -> Pago -> Actualizar Usuario
-        this.usuarioService.registrarAsistencia({
-            clave_cliente: this.clave_usuario,
-            fecha_diario: fechaInscripcionBackend,
-        }).subscribe({
-            next: () => {
-                this.usuarioService.registrarPago({
-                    clave_cliente: this.clave_usuario,
-                    fecha_ingreso: fechaInscripcionBackend,
-                    fecha_corte: fechaCorteBackend,
-                    Tipo_pago: tipo_pago,
-                    monto_pendiente: 500
-                }).subscribe({
-                    next: () => {
-                        // Finalmente actualizamos el perfil del usuario (esto cambia el status)
-                        this.actualizarUsuario(this.user);
-                    },
-                    error: () => this.showToast("Error al generar pago inicial", "error")
-                });
-            },
-            error: () => this.showToast("Error al registrar asistencia inicial", "error")
-        });
-
-    } else {
-        // Cliente existente: Solo actualizar perfil
-        this.actualizarUsuario(this.user);
-    }
-}
-
+  
+  
 // Sincronizamos la lógica de fechas con la de ClientRegistration para que sean iguales
 private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
     const day = fecha.getDate();
@@ -216,15 +235,6 @@ private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
 }
 
 
-  actualizarUsuario(usuarioActualizado: any) {
-      this.usuarioService.actualizarUsuario(this.clave_usuario, usuarioActualizado)
-        .subscribe({
-          next: () => {
-            this.showToast("Datos guardados correctamente", "success");
-          },
-          error: () => this.showToast("Error al actualizar usuario", "error")
-        });
-    }
 
   subirFoto(event: any) {
       const archivo = event.target.files[0];

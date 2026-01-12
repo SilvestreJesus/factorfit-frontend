@@ -88,35 +88,42 @@ cargarUsuarios() {
   });
 }  
 
-  // Lógica de Filtrado (Computada para mejor rendimiento)
-  usersFiltrados = computed(() => {
-    let filtrados = this.usersData().filter(user => 
-      user.status !== 'pendiente' && user.status !== 'proximo a vencer'
+usersFiltrados = computed(() => {
+  // 1. Filtrar los que no están pendientes o próximos a vencer
+  let filtrados = this.usersData().filter(user => 
+    user.status !== 'pendiente' && user.status !== 'proximo a vencer'
+  );
+
+  // 2. Filtro por Tab (Status)
+  const statusActual = this.filtroStatus();
+  if (statusActual) {
+    filtrados = filtrados.filter(user => {
+      if (statusActual === 'sin asignar') {
+        return !user.status || user.status === '' || user.status === 'ninguno' || user.status === 'sin asignar';
+      }
+      return user.status === statusActual;
+    });
+  }
+
+  // 3. Filtro por Buscador (Texto)
+  const texto = this.busqueda().toLowerCase();
+  if (texto) {
+    filtrados = filtrados.filter(user => 
+      user.clave_usuario?.toString().toLowerCase().includes(texto) ||
+      `${user.nombres} ${user.apellidos}`.toLowerCase().includes(texto) ||
+      user.email?.toLowerCase().includes(texto) || user.telefono?.toLowerCase().includes(texto)
     );
+  }
 
-    // Filtro por Tab
-    const statusActual = this.filtroStatus();
-    if (statusActual) {
-      filtrados = filtrados.filter(user => {
-        if (statusActual === 'sin asignar') {
-          return !user.status || user.status === '' || user.status === 'ninguno' || user.status === 'sin asignar';
-        }
-        return user.status === statusActual;
-      });
-    }
-
-    // Filtro por Buscador
-    const texto = this.busqueda().toLowerCase();
-    if (texto) {
-      filtrados = filtrados.filter(user => 
-        user.clave_usuario?.toString().toLowerCase().includes(texto) ||
-        `${user.nombres} ${user.apellidos}`.toLowerCase().includes(texto) ||
-        user.email?.toLowerCase().includes(texto)
-      );
-    }
-
-    return filtrados;
+  // 4. ORDENAR POR ACTUALIZACIÓN (El más reciente arriba)
+  // Usamos .slice() para no modificar la señal original
+  return filtrados.slice().sort((a, b) => {
+    const fechaA = new Date(a.updated_at || 0).getTime();
+    const fechaB = new Date(b.updated_at || 0).getTime();
+    return fechaB - fechaA; // De mayor (nuevo) a menor (viejo)
   });
+});
+
 
   filtrar(status: string) {
     this.filtroStatus.set(status);

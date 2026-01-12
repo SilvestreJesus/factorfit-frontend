@@ -5,10 +5,9 @@
             <h1 class="font-atomic text-pink-600 text-5xl sm:text-6xl mb-6 text-center">Mi Perfil</h1>
             
             <div class="relative group">
-                <img [src]="user?.ruta_imagen ? user.ruta_imagen : 'https://placehold.co/200x200/4a0e4e/FFF?text=User'"
+               <img [src]="user?.ruta_imagen_mostrar ? user.ruta_imagen_mostrar : 'https://placehold.co/200x200/4a0e4e/FFF?text=User'"
                     alt="Foto de perfil"
                     class="w-40 h-40 sm:w-52 sm:h-52 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-opacity">
-                
                 <button (click)="fileInput.click()"
                     class="absolute bottom-1 right-1 bg-pink-600 p-3 rounded-full text-white shadow-lg hover:bg-pink-700 active:scale-90 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -42,11 +41,20 @@
                         </div>
                         <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Fecha de Nacimiento</label>
-                            <input type="text" [(ngModel)]="user.fecha_nacimiento" name="fecha_nacimiento" class="input-field" placeholder="DD/MM/AAAA">
+                            <input type="date" [(ngModel)]="user.fecha_nacimiento" name="fecha_nacimiento" class="input-field">
                         </div>
                         <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Teléfono</label>
-                            <input type="tel" [(ngModel)]="user.telefono" name="telefono" placeholder="123 456 7890" class="input-field">
+                            <div class="flex gap-2">
+                                <select [(ngModel)]="telefonoExtension" name="telefonoExtension" class="input-field w-24 text-center px-1">
+                                    <option *ngFor="let ext of extensiones" [value]="ext">{{ ext }}</option>
+                                </select>
+                                <input type="tel" 
+                                    [(ngModel)]="user.telefono" 
+                                    name="telefono" 
+                                    placeholder="1234567890" 
+                                    class="input-field flex-1">
+                            </div>
                         </div>
                         <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Email</label>

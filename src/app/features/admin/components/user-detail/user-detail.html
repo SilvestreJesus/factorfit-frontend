@@ -71,13 +71,21 @@
                                 <select [(ngModel)]="telefonoExtension" name="telefonoExtension" class="input-field w-24 text-center px-1">
                                     <option *ngFor="let ext of extensiones" [value]="ext">{{ ext }}</option>
                                 </select>
-                                <input type="tel" [(ngModel)]="user.telefono" name="telefono" placeholder="123 456 7890" class="input-field flex-1">
+                                <input type="tel" 
+                                    [(ngModel)]="user.telefono" 
+                                    name="telefono" 
+                                    placeholder="1234567890" 
+                                    class="input-field flex-1">
                             </div>
                         </div>
                         <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Peso Inicial</label>
                             <div class="relative">
-                                <input type="number" [(ngModel)]="user.peso_inicial" name="peso_inicial" class="input-field pr-12">
+                                <input type="number" 
+                                    [(ngModel)]="user.peso_inicial" 
+                                    name="peso_inicial" 
+                                    placeholder="Ej. 75"
+                                    class="input-field pr-12">
                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">kg</span>
                             </div>
                         </div>
