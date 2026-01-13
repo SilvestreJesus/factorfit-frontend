@@ -52,68 +52,121 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
         
-        <div class="overflow-hidden rounded-2xl bg-black/40 p-4 md:p-5 shadow-inner">
-          <h3 class="text-center text-2xl md:text-3xl font-black text-pink-500 mb-8 uppercase tracking-tighter">
+        <div class="overflow-x-auto rounded-2xl bg-black/40 p-5 shadow-inner">
+          <h3 class="text-center text-3xl font-black text-pink-500 mb-8 uppercase tracking-tighter">
             Horarios {{ sedeActual === 1 ? 'Emiliano' : 'Obrera' }}
           </h3>
-          
-          <div class="overflow-x-auto pb-4">
-            <div class="min-w-[600px]">
-              <div class="grid grid-cols-6 gap-2 text-center font-bold text-white text-xs md:text-base mb-4">
-                <div [class]="sedeActual === 1 ? 'bg-pink-500' : 'bg-purple-600'" class="py-4 rounded-xl shadow">HORA</div>
-                <div class="bg-purple-600 py-4 rounded-xl shadow">LUN</div>
-                <div class="bg-purple-600 py-4 rounded-xl shadow">MAR</div>
-                <div class="bg-purple-600 py-4 rounded-xl shadow">MIE</div>
-                <div class="bg-purple-600 py-4 rounded-xl shadow">JUE</div>
-                <div class="bg-purple-600 py-4 rounded-xl shadow">VIE</div>
-              </div>
-              
-              <div *ngIf="sedeActual === 1" class="space-y-3 text-center text-[10px] md:text-[11px] font-extrabold uppercase tracking-tight">
-                <div class="grid grid-cols-6 gap-2">
-                  <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Glute Bands</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Circuito</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">GAP</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Tabata</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Funcional</div>
-                </div>
-                </div>
-
-              <div *ngIf="sedeActual === 2" class="space-y-3 text-center text-[10px] md:text-[11px] font-extrabold uppercase tracking-tight">
-                <div class="grid grid-cols-6 gap-2">
-                  <div class="bg-pink-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Cross Training</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Pesas</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Hiit</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Pesas</div>
-                  <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Funcional</div>
-                </div>
-                <div class="grid grid-cols-6 gap-2">
-                    <div class="bg-pink-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
-                    <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Boxeo</div>
-                    <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Funcional</div>
-                    <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Gap</div>
-                    <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Pesas</div>
-                    <div class="bg-white text-black p-2 rounded-xl flex items-center justify-center">Circuito</div>
-                  </div>
-                </div>
+          <div class="min-w-[645px]">
+            <div class="grid grid-cols-6 gap-2 text-center font-bold text-white text-sm md:text-base mb-4">
+              <div class="bg-pink-500 py-4 rounded-xl shadow">HORA</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">LUN</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">MAR</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">MIE</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">JUE</div>
+              <div class="bg-purple-600 py-4 rounded-xl shadow">VIE</div>
             </div>
+            
+            <div *ngIf="sedeActual === 1" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center leading-tight">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">8:00-9:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Zumba</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">9:00-10:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Meta Hit</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">TABATA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>              
+            </div>
+              </div>
+
+            <div *ngIf="sedeActual === 2" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center leading-tight">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">8:00-9:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Zumba</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">9:00-10:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Meta Hit</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+              </div>
+               <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">TABATA</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+              </div>    
+           
           </div>
         </div>
 
-        <div class="w-full h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+        <div class="w-full h-full min-h-[450px] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
           <iframe 
             *ngIf="sedeActual === 1"
-            src="https://www.google.com/maps/embed?pb=ZAPATA_URL" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3699.1108590337626!2d-99.0218956!3d22.007062899999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d612aa4818ecdf%3A0xa45c1ad4926a32c4!2sLos%20Delfines%20Sal%C3%B3n%20de%20Eventos!5e0!3m2!1ses!2smx!4v1767058530057!5m2!1ses!2smx" 
             class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy">
           </iframe>
           <iframe 
             *ngIf="sedeActual === 2"
-            src="https://www.google.com/maps/embed?pb=OBRERA_URL"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3699.7266367143366!2d-99.00868919999999!3d21.9834523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d66d99c8e6a805%3A0x7a04e0cfe709160!2sOFICINA%20MUNICIPAL%20DE%20ENLACE%20SECRETARIA%20DE%20RELACIONES%20EXTERIORES%20SRE!5e0!3m2!1ses!2smx!4v1767058431791!5m2!1ses!2smx"
             class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy">
           </iframe>
         </div>
-
       </div>
     </div>
   </div>
