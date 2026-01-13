@@ -14,7 +14,7 @@
         <div class="carousel-3d-viewport">
           @for (item of personalData; track item.clave_personal; let i = $index) {
             <div class="polaroid-3d" [ngStyle]="get3DTransform(i)" [class.active]="i === activeIndex">
-              <img [src]="item.ruta_imagen ? apiUrl + '/' + item.ruta_imagen : 'assets/no-image.png'">
+              <img [src]="item.ruta_imagen ? apiUrl + '/api/' + item.ruta_imagen : 'assets/no-image.png'">
               
               <div class="polaroid-3d-info">
                 <span class="puesto-label">{{ item.puesto }}</span>

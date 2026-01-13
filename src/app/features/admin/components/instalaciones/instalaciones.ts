@@ -91,22 +91,19 @@ export class Instalaciones implements OnInit {
     });
   }
 
-
   cargarInstalacion() {
-    this.instalacionesService.getInstalaciones(this.sede).subscribe({
-      next: (data) => {
-        this.instalacionesData = Array.isArray(data)
-          ? data.map(ev => ({
-              ...ev,
-              image: ev.ruta_imagen
-                ? `${environment.apiUrl}/api/${ev.ruta_imagen}`
-                : 'assets/no-image.png'
-            }))
-          : [];
+    this.instalacionesService.getInstalacionesByClave(this.clave).subscribe({
+      next: data => {
+        this.instalaciones = {
+          titulo: data.titulo,
+          descripcion: data.descripcion,
+          sede: data.sede
+        };
 
-        this.activeIndex = 0;
-      },
-      error: err => console.error(err)
+        this.previewImage = data.ruta_imagen
+          ? `${this.apiUrl}/api/${data.ruta_imagen}`
+          : null;
+      }
     });
   }
 
