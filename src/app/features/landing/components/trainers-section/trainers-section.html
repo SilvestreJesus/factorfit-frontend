@@ -9,20 +9,21 @@
     <div class="carousel-wrapper">
     <button class="nav left" (click)="prev()">⬅</button>
 
-    <div class="carousel-3d">
-        @for (trainer of trainers; let i = $index; track trainer.clave_personal) {
-        <div
-            class="card"
-            [class.active]="i === currentIndex"
-            [style.transform]="getTransform(i)"
-            [style.zIndex]="getZIndex(i)"
-        >
-            <img [src]="trainer.image" />
-            <h3>{{ trainer.name }}</h3>
-            <p>{{ trainer.puesto }}</p>
-        </div>
-        }
+<div class="carousel-3d">
+    @for (trainer of trainers; let i = $index; track trainer.clave_personal) {
+    <div
+        class="card"
+        [class.active]="i === currentIndex"
+        [style.transform]="getTransform(i)"
+        [style.zIndex]="getZIndex(i)"
+    >
+        <img [src]="trainer.image" [alt]="trainer.name" (error)="trainer.image = 'assets/no-image.png'" />
+        
+        <h3>{{ trainer.name }}</h3>
+        <p>{{ trainer.puesto }}</p>
     </div>
+    }
+</div>
 
     <button class="nav right" (click)="next()">➡</button>
     </div>

@@ -10,21 +10,30 @@
       <button (click)="scrollRight()">›</button>
     </div>
 
-    <div #carousel class="instalaciones-carousel">
-      @for (item of entrenamientosLoop; track $index) {
-        <article class="instalacion-card">
-          <div class="image-wrapper">
-            <img [src]="item.imagen" alt="entrenamiento">
-          </div>
+<div #carousel class="instalaciones-carousel scroll-smooth flex overflow-x-hidden">
+  @for (item of entrenamientosLoop; track $index) {
+    <article class="instalacion-card flex-shrink-0">
+      <div class="image-wrapper overflow-hidden rounded-2xl">
+        <img [src]="item.imagen" 
+             [alt]="item.titulo"
+             class="w-full h-64 object-cover transition-transform duration-500 hover:scale-110">
+      </div>
 
-          <div class="info-wrapper">
-            <span class="label">Entrenamiento</span>
-            <h3>{{ item.titulo }}</h3>
-            <p class="descripcion">{{ item.descripcion }}</p>
-            <span class="sede">Sucursal {{ item.sede }}</span>
-          </div>
-        </article>
-      }
-    </div>
+      <div class="info-wrapper p-6 bg-white/10 backdrop-blur-sm rounded-b-2xl">
+        <span class="label text-pink-400 font-black text-[10px] uppercase tracking-widest">Entrenamiento</span>
+        <h3 class="text-white text-2xl font-bold mt-1">{{ item.titulo }}</h3>
+        <p class="descripcion text-gray-300 text-sm mt-2 line-clamp-2 italic">
+          {{ item.descripcion }}
+        </p>
+        <div class="mt-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"/>
+          </svg>
+          <span class="sede text-pink-200 font-bold text-xs uppercase">Sucursal {{ item.sede }}</span>
+        </div>
+      </div>
+    </article>
+  }
+</div>
   </div>
 </section>

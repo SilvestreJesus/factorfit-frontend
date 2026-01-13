@@ -17,7 +17,7 @@
           @for (item of instalacionesData; track item.clave_instalaciones; let i = $index) {
             <article class="mini-instalacion-card" [ngStyle]="getMiniCardStyle(i)">
               <div class="mini-image-wrapper">
-                <img [src]="item.ruta_imagen ? apiUrl + '/api/' + item.ruta_imagen : 'assets/no-image.png'" />
+                <img [src]="item.image || 'assets/no-image.png'" class="w-full h-full object-cover" />
               </div>
 
               <div class="mini-info-wrapper p-1">

@@ -8,40 +8,51 @@ import { Observable } from 'rxjs';
 })
 export class EventosService {
 
-  private eventosUrl = `${environment.apiUrl}/api/eventos`;
+  // Usamos la variable base para mayor limpieza
+  private readonly apiUrl = `${environment.apiUrl}/api/eventos`;
 
   constructor(private http: HttpClient) {}
 
+  // Obtener todos con filtro de sede
+  getEventos(sede: string = ''): Observable<any[]> {
+    let params = new HttpParams();
+    if (sede) {
+      params = params.set('sede', sede);
+    }
+    return this.http.get<any[]>(this.apiUrl, { params });
+  }
 
-// =====================================
-//               Eventos
-// =====================================
+  // Obtener uno solo
+  getEventosByClave(clave: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${clave}`);
+  }
 
-getEventos(sede: string = '') {
-  let params: any = {};
-  if (sede !== '') params.sede = sede;
-  return this.http.get<any[]>(`${environment.apiUrl}/api/eventos`, { params });
-}
+  // Registrar (FormData incluye la imagen)
+  registrarEventos(formData: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, formData);
+  }
 
-getEventosByClave(clave: string) {
-  return this.http.get<any>(`${environment.apiUrl}/api/eventos/${clave}`);
-}
+  // Actualizar (FormData + Simulación de PUT para Laravel)
+  actualizarEventos(clave: string, formData: FormData): Observable<any> {
+    // Es vital el ?_method=PUT para que Laravel detecte los archivos en el Request
+    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
+  }
 
-registrarEventos(formData: FormData) {
-  return this.http.post<any>(`${environment.apiUrl}/api/eventos`, formData);
-}
+  // Eliminar
+  eliminarEventos(clave: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${clave}`);
+  }
 
-actualizarEventos(clave: string, formData: FormData) {
-  return this.http.post<any>(`${environment.apiUrl}/api/eventos/${clave}?_method=PUT`, formData);
-}
+  // Gestor de imágenes inteligente
+  getImagenEvento(ruta: string): string {
+    if (!ruta) return 'assets/images/no-image.png';
 
-eliminarEventos(clave: string) {
-  return this.http.delete<any>(`${environment.apiUrl}/api/eventos/${clave}`);
-}
+    // Si es Cloudinary (empieza con http)
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
 
-getImagenEvento(ruta: string) {
-  if (!ruta) return 'assets/no-image.png';
-  return `${environment.apiUrl}/${ruta}`;
-}
-
+    // Si es una imagen local vieja (fallback)
+    return `${environment.apiUrl}/${ruta}`;
+  }
 }

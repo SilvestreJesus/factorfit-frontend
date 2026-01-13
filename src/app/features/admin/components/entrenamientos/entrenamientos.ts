@@ -64,32 +64,50 @@ export class Entrenamientos implements OnInit {
     }
   }
 
-  /* ===============================
-      MÉTODOS DE CARGA
-  ================================ */
-  cargarListado() {
-    this.entrenamientosService.getEntrenamientos(this.sede).subscribe({
-      next: data => {
-        this.entrenamientosData = Array.isArray(data) ? data : [];
-        this.activeIndex = 0;
-      },
-      error: err => console.error(err)
-    });
-  }
 
-  cargarEntrenamiento() {
-    this.entrenamientosService.getEntrenamientosByClave(this.clave).subscribe({
-      next: data => {
-        this.entrenamientos = {
-          titulo: data.titulo,
-          descripcion: data.descripcion,
-          sede: data.sede
-        };
-        this.previewImage = data.ruta_imagen ? `${this.apiUrl}/api/${data.ruta_imagen}` : null;
-      }
-    });
-  }
+/* ===============================
+    MÉTODOS DE CARGA
+================================ */
+cargarListado() {
+  this.entrenamientosService.getEntrenamientos(this.sede).subscribe({
+    next: data => {
+      // PROCESAMOS LAS IMÁGENES AL CARGAR EL LISTADO
+      this.entrenamientosData = Array.isArray(data) ? data.map(item => ({
+        ...item,
+        // Usamos el helper del servicio para que decida si es URL local o Cloudinary
+        image: this.entrenamientosService.getImagenEntrenamiento(item.ruta_imagen)
+      })) : [];
+      this.activeIndex = 0;
+    },
+    error: err => console.error(err)
+  });
+}
 
+cargarEntrenamiento() {
+  this.entrenamientosService.getEntrenamientosByClave(this.clave).subscribe({
+    next: data => {
+      this.entrenamientos = {
+        titulo: data.titulo,
+        descripcion: data.descripcion,
+        sede: data.sede
+      };
+      // CORRECCIÓN: Usar el servicio
+      this.previewImage = this.entrenamientosService.getImagenEntrenamiento(data.ruta_imagen);
+    }
+  });
+}
+
+editar(item: any) {
+  this.clave = item.clave_entrenamientos;
+  this.modoEdicion = true;
+  this.entrenamientos = {
+    titulo: item.titulo,
+    descripcion: item.descripcion,
+    sede: item.sede
+  };
+  // CORRECCIÓN: Usar el servicio
+  this.previewImage = this.entrenamientosService.getImagenEntrenamiento(item.ruta_imagen);
+}
   /* ===============================
       LÓGICA CARRUSEL
   ================================ */
@@ -129,20 +147,7 @@ export class Entrenamientos implements OnInit {
     };
   }
 
-  /* ===============================
-      ACCIONES
-  ================================ */
-  editar(item: any) {
-    this.clave = item.clave_entrenamientos;
-    this.modoEdicion = true;
-    this.entrenamientos = {
-      titulo: item.titulo,
-      descripcion: item.descripcion,
-      sede: item.sede
-    };
-    this.previewImage = item.ruta_imagen ? `${this.apiUrl}/${item.ruta_imagen}` : null;
-  }
-
+ 
   eliminar(clave: string) {
     this.entrenamientosService.eliminarEntrenamientos(clave).subscribe({
       next: () => {

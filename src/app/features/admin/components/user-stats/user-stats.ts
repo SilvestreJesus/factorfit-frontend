@@ -56,18 +56,19 @@ nombreMes: string = '';
   // ================================
   //       CARGA DE SERVICIOS
   // ================================
+/* --- CARGAR USUARIO --- */
 
-  cargarUsuario(clave_usuario: string) {
-    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-      next: (data) => {
-        this.user = data;
-        if (this.user?.ruta_imagen && !this.user.ruta_imagen.startsWith('http')) {
-          this.user.ruta_imagen = `${environment.apiUrl}/api/${this.user.ruta_imagen}`;
-        }
-      },
-      error: (err) => console.error('Error al cargar usuario:', err)
-    });
-  }
+cargarUsuario(clave_usuario: string) {
+  this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+    next: (data) => {
+      this.user = data;
+      // Usamos el servicio directamente. 
+      // Si data.ruta_imagen es null, el servicio devolverá null o una ruta vacía.
+      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
+    },
+    error: (err) => console.error('Error al cargar usuario:', err)
+  });
+}
 
   cargarPagos(clave_usuario: string) {
     this.usuarioService.getPagosByClave(clave_usuario).subscribe({

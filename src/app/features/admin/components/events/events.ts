@@ -76,42 +76,21 @@ export class Events implements OnInit {
     setTimeout(() => (this.toast.visible = false), 3000);
   }
 
-  /* ===============================
-     CARGAR EVENTOS
-  ================================ */
-  cargarListado() {
-    this.eventsService.getEventos(this.sede).subscribe({
-      next: (data) => {
-        this.eventsData = Array.isArray(data)
-          ? data.map(ev => ({
-              ...ev,
-              image: ev.ruta_imagen
-                ? `${environment.apiUrl}/api/${ev.ruta_imagen}`
-                : 'assets/no-image.png'
-            }))
-          : [];
 
-        this.activeIndex = 0;
-      },
-      error: err => console.error(err)
-    });
-  }
+cargarEvento() {
+  this.eventsService.getEventosByClave(this.clave).subscribe({
+    next: (data) => {
+      this.eventos = {
+        titulo: data.titulo,
+        descripcion: data.descripcion,
+        sede: data.sede
+      };
 
-  cargarEvento() {
-    this.eventsService.getEventosByClave(this.clave).subscribe({
-      next: (data) => {
-        this.eventos = {
-          titulo: data.titulo,
-          descripcion: data.descripcion,
-          sede: data.sede
-        };
-
-        this.previewImage = data.ruta_imagen
-          ? `${environment.apiUrl}/${data.ruta_imagen}`
-          : null;
-      }
-    });
-  }
+      // CAMBIO AQUÍ: Usar el servicio en lugar de concatenar manualmente
+      this.previewImage = this.eventsService.getImagenEvento(data.ruta_imagen);
+    }
+  });
+}
 
   /* ===============================
      CARRUSEL INFINITO REAL
@@ -169,21 +148,34 @@ export class Events implements OnInit {
   /* ===============================
      EDITAR / ELIMINAR
   ================================ */
-  editar(ev: any) {
-    this.clave = ev.clave_eventos;
-    this.modoEdicion = true;
+cargarListado() {
+  this.eventsService.getEventos(this.sede).subscribe({
+    next: (data) => {
+      this.eventsData = Array.isArray(data)
+        ? data.map(ev => ({
+            ...ev,
+            // Usamos la lógica inteligente para la imagen
+            image: this.eventsService.getImagenEvento(ev.ruta_imagen)
+          }))
+        : [];
+      this.activeIndex = 0;
+    },
+    error: err => console.error(err)
+  });
+}
 
-    this.eventos = {
-      titulo: ev.titulo,
-      descripcion: ev.descripcion,
-      sede: ev.sede
-    };
-
-    this.previewImage = ev.ruta_imagen
-      ? `${environment.apiUrl}/${ev.ruta_imagen}`
-      : null;
-  }
-
+// También corrige la función editar para la vista previa
+editar(ev: any) {
+  this.clave = ev.clave_eventos;
+  this.modoEdicion = true;
+  this.eventos = {
+    titulo: ev.titulo,
+    descripcion: ev.descripcion,
+    sede: ev.sede
+  };
+  // Vista previa inteligente
+  this.previewImage = this.eventsService.getImagenEvento(ev.ruta_imagen);
+}
   eliminar(clave: string) {
     this.eventsService.eliminarEventos(clave).subscribe({
       next: () => {

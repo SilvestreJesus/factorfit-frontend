@@ -35,29 +35,42 @@ export class InstalacionesSection implements OnInit, AfterViewInit {
     setTimeout(() => this.initPosition(), 0);
   }
 
-  cargarInstalaciones() {
-    this.instalacionesService.getInstalaciones().subscribe({
-      next: (data) => {
-        this.instalaciones = data.map(e => ({
+cargarInstalaciones() {
+  this.instalacionesService.getInstalaciones().subscribe({
+    next: (data) => {
+      this.instalaciones = data.map(e => {
+        // Lógica de detección de imagen
+        let rutaFinal = 'assets/no-image.png'; // Imagen por defecto
+
+        if (e.ruta_imagen) {
+          if (e.ruta_imagen.startsWith('http')) {
+            // Si ya es una URL completa (Cloudinary), la usamos tal cual
+            rutaFinal = e.ruta_imagen;
+          } else {
+            // Si es solo el nombre del archivo, le ponemos el prefijo del servidor local
+            rutaFinal = `${environment.apiUrl}/api/${e.ruta_imagen}`;
+          }
+        }
+
+        return {
           titulo: e.titulo,
           descripcion: e.descripcion ?? '',
           sede: e.sede,
-          imagen: e.ruta_imagen
-            ? `${environment.apiUrl}/api/${e.ruta_imagen}`
-            : 'assets/no-image.png'
-        }));
+          imagen: rutaFinal
+        };
+      });
 
-        // CLONES
-        this.instalacionesLoop = [
-          this.instalaciones[this.instalaciones.length - 1],
-          ...this.instalaciones,
-          this.instalaciones[0]
-        ];
+      // CLONES para el loop infinito
+      this.instalacionesLoop = [
+        this.instalaciones[this.instalaciones.length - 1],
+        ...this.instalaciones,
+        this.instalaciones[0]
+      ];
 
-        setTimeout(() => this.initPosition(), 0);
-      }
-    });
-  }
+      setTimeout(() => this.initPosition(), 50);
+    }
+  });
+}
 
   initPosition() {
     const el = this.carousel.nativeElement;

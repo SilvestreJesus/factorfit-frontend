@@ -30,46 +30,57 @@ export class EventsSection implements OnInit {
   }
 
   cargarEventos() {
-    this.eventosService.getEventos().subscribe({
-      next: (data) => {
-        this.eventos = data.map(e => ({
-          clave_eventos: e.clave_eventos,
-          titulo: e.titulo,
-          descripcion: e.descripcion ?? '',
-          sede: e.sede,
-          imagen: e.ruta_imagen
-            ? `${environment.apiUrl}/api/${e.ruta_imagen}`
-            : 'assets/no-image.png'
-        }));
-      }
-    });
-  }
+  this.eventosService.getEventos().subscribe({
+    next: (data) => {
+      this.eventos = data.map(e => ({
+        ...e,
+        // Lógica unificada para imágenes
+        imagen: this.procesarImagenEvento(e.ruta_imagen)
+      }));
+    },
+    error: (err) => console.error('Error al cargar eventos:', err)
+  });
+}
 
-  /* 🎯 ESTILO DINÁMICO */
+// Mantenemos la consistencia con Entrenamientos y Perfil
+private procesarImagenEvento(ruta: string | null): string {
+  if (!ruta) return 'assets/no-image.png';
+  if (ruta.startsWith('http')) return ruta; // Cloudinary o URL externa
+  return `${environment.apiUrl}/api/${ruta}`; // Servidor local
+}
+
 getCardStyle(index: number) {
+  if (!this.eventos.length) return {};
+
   const total = this.eventos.length;
   let offset = index - this.activeIndex;
 
+  // Lógica de loop para que el offset siempre sea el camino más corto
   if (offset > total / 2) offset -= total;
   if (offset < -total / 2) offset += total;
 
   const isActive = offset === 0;
   const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
-
-  const scale = isActive ? 1 : (isMobile ? 0.75 : 0.65);
+  
+  // Suavizamos el escalado para que no sea tan agresivo el cambio
+  const scale = isActive ? 1 : (isMobile ? 0.8 : 0.7);
 
   return {
-    width: `${isActive ? (isMobile ? 300 : 900) : (isMobile ? 220 : 260)}px`,
-    height: `${isActive ? (isMobile ? 380 : 520) : (isMobile ? 300 : 340)}px`,
+    width: `${isActive ? (isMobile ? 280 : 800) : (isMobile ? 200 : 240)}px`,
+    height: `${isActive ? (isMobile ? 360 : 480) : (isMobile ? 280 : 320)}px`,
     transform: `
-      translateX(${offset * (isMobile ? 180 : 300)}px)
-      rotateY(${offset * 8}deg)
+      translateX(${offset * (isMobile ? 160 : 280)}px)
+      rotateY(${offset * 12}deg)
       scale(${scale})
+      translateZ(${isActive ? 100 : 0}px)
     `,
-    opacity: isActive ? 1 : 0.35,
-    zIndex: 10 - Math.abs(offset)
+    opacity: isActive ? 1 : 0.4,
+    zIndex: 10 - Math.abs(offset),
+    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' // Animación suave
   };
 }
+
+
 
 
 

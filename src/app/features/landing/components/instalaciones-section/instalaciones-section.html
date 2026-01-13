@@ -8,21 +8,21 @@
     </div>
 
     <!-- CARRUSEL -->
-    <div #carousel class="instalaciones-carousel">
-    @for (item of instalacionesLoop; track $index) {
-        <article class="instalacion-card">
-        <div class="image-wrapper">
-            <img [src]="item.imagen">
-        </div>
-        <div class="info-wrapper">
-            <span class="label">Instalación</span>
-            <h3>{{ item.titulo }}</h3>
-            <p>{{ item.descripcion }}</p>
-           <span class="sede">Sucursal {{ item.sede }}</span>
-        </div>
-        </article>
-    }
-    </div>
+<div #carousel class="instalaciones-carousel">
+  @for (item of instalacionesLoop; track $index) {
+    <article class="instalacion-card">
+      <div class="image-wrapper">
+        <img [src]="item.imagen" [alt]="item.titulo" (error)="item.imagen = 'assets/no-image.png'">
+      </div>
+      <div class="info-wrapper">
+        <span class="label">Instalación</span>
+        <h3>{{ item.titulo }}</h3>
+        <p>{{ item.descripcion }}</p>
+        <span class="sede">Sucursal {{ item.sede }}</span>
+      </div>
+    </article>
+  }
+</div>
 
   </div>
 </section>

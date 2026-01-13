@@ -61,6 +61,31 @@ export class UserDetail implements OnInit {
   }
 
 
+
+
+/* --- SUBIR FOTO --- */
+subirFoto(event: any) {
+  const archivo = event.target.files[0];
+  if (!archivo) return;
+
+  const formData = new FormData();
+  formData.append('foto', archivo);
+
+  this.usuarioService.subirFoto(this.clave_usuario, formData)
+    .subscribe({
+      next: (resp: any) => {
+        // Al subir, el backend devuelve la URL de Cloudinary o el path local
+        this.user.ruta_imagen = resp.ruta_imagen;
+        
+        // CORRECCIÓN: No concatenar manualmente, usar el helper
+        this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(resp.ruta_imagen);
+        
+        this.showToast("Foto de perfil actualizada", "success");
+      },
+      error: () => this.showToast("Error al subir la foto", "error")
+    });
+}
+
   cargarUsuario(clave_usuario: string) {
     this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
       next: (data) => {
@@ -93,9 +118,9 @@ export class UserDetail implements OnInit {
           }
         }
 
-        this.user.ruta_imagen_mostrar = this.user.ruta_imagen
-          ? `${environment.apiUrl}/api/${this.user.ruta_imagen}`
-          : null;
+
+
+      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
       }
     });
   }
@@ -236,23 +261,7 @@ private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
 
 
 
-  subirFoto(event: any) {
-      const archivo = event.target.files[0];
-      if (!archivo) return;
 
-      const formData = new FormData();
-      formData.append('foto', archivo);
-
-      this.usuarioService.subirFoto(this.clave_usuario, formData)
-        .subscribe({
-          next: (resp: any) => {
-            this.user.ruta_imagen = resp.ruta_imagen;
-            this.user.ruta_imagen_mostrar = `${environment.apiUrl}/${resp.ruta_imagen}`;
-            this.showToast("Foto de perfil actualizada", "success");
-          },
-          error: () => this.showToast("Error al subir la foto", "error")
-        });
-    }
 
   private formatLocalDate(fecha: Date): string {
     const y = fecha.getFullYear();

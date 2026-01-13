@@ -43,23 +43,34 @@ export class TrainersSection implements OnInit {
     }
     }
 
+cargarPersonal() {
+    this.usuarioService.getPersonal().subscribe({
+        next: (data) => {
+            this.trainers = data.map((p: any) => {
+                // Lógica de detección de imagen
+                let rutaFinal = 'assets/no-image.png';
 
+                if (p.ruta_imagen) {
+                    if (p.ruta_imagen.startsWith('http')) {
+                        // Si es Cloudinary o URL externa
+                        rutaFinal = p.ruta_imagen;
+                    } else {
+                        // Si es ruta del servidor local
+                        rutaFinal = `${environment.apiUrl}/api/${p.ruta_imagen}`;
+                    }
+                }
 
-    cargarPersonal() {
-        this.usuarioService.getPersonal().subscribe({
-            next: (data) => {
-                this.trainers = data.map((p: any) => ({
+                return {
                     clave_personal: p.clave_personal,
                     name: p.nombre_completo,
                     puesto: p.puesto,
                     description: p.descripcion ?? '',
-                    image: p.ruta_imagen
-                        ? `${environment.apiUrl}/api/${p.ruta_imagen}`
-                        : 'assets/no-image.png'
-                }));
-            }
-        });
-    }
+                    image: rutaFinal // Usamos la ruta ya procesada
+                };
+            });
+        }
+    });
+}
 
 
     currentIndex = 0;

@@ -55,31 +55,48 @@ export class ClientsProfile implements OnInit {
     }
   }
 
+
+
   cargarUsuario(clave_usuario: string) {
-    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-      next: (data) => {
-        this.user = data;
+  this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+    next: (data) => {
+      this.user = data;
 
-        // 1. TRATAMIENTO DEL TELÉFONO: Separar prefijo del número
-        if (this.user.telefono) {
-          const partes = this.user.telefono.split(" ");
-          if (partes.length > 1) {
-            this.telefonoExtension = partes[0]; 
-            this.user.telefono = partes.slice(1).join(""); 
-          } else {
-            // Si no tiene espacio, limpiamos caracteres no numéricos
-            this.user.telefono = this.user.telefono.replace(/\D/g, '');
-          }
+      // 1. TRATAMIENTO DEL TELÉFONO
+      if (this.user.telefono) {
+        const partes = this.user.telefono.split(" ");
+        if (partes.length > 1) {
+          this.telefonoExtension = partes[0]; 
+          this.user.telefono = partes.slice(1).join(""); 
+        } else {
+          this.user.telefono = this.user.telefono.replace(/\D/g, '');
         }
+      }
 
-        // 2. TRATAMIENTO DE IMAGEN: Crear URL completa para la vista
-        if (this.user.ruta_imagen) {
-          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/${this.user.ruta_imagen}`;
-        }
-      },
-      error: () => this.showToast("Error al cargar datos del perfil", "error")
-    });
-  }
+      // 2. TRATAMIENTO DE IMAGEN (Consistente con los otros componentes)
+      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
+    },
+    error: () => this.showToast("Error al cargar datos del perfil", "error")
+  });
+}
+
+subirFoto(event: any) {
+  const archivo = event.target.files[0];
+  if (!archivo) return;
+
+  const formData = new FormData();
+  formData.append('foto', archivo);
+
+  this.usuarioService.subirFoto(this.clave_usuario, formData).subscribe({
+    next: (resp: any) => {
+      // Actualizamos la ruta interna y refrescamos la vista procesándola de nuevo
+      this.user.ruta_imagen = resp.ruta_imagen;
+      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(resp.ruta_imagen);
+      this.showToast("Foto de perfil actualizada", "success");
+    },
+    error: () => this.showToast("No se pudo subir la foto", "error")
+  });
+}
 
   guardarCambios() {
     if (!this.clave_usuario) return;
@@ -116,25 +133,6 @@ export class ClientsProfile implements OnInit {
           console.error("Error al actualizar:", err);
           this.showToast("Error al guardar cambios", "error");
         }
-      });
-  }
-
-  subirFoto(event: any) {
-    const archivo = event.target.files[0];
-    if (!archivo) return;
-
-    const formData = new FormData();
-    formData.append('foto', archivo);
-
-    this.usuarioService.subirFoto(this.clave_usuario, formData)
-      .subscribe({
-        next: (resp: any) => {
-          // Actualizamos tanto la ruta interna como la que se muestra
-          this.user.ruta_imagen = resp.ruta_imagen;
-          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/api/${resp.ruta_imagen}`;
-          this.showToast("Foto de perfil actualizada", "success");
-        },
-        error: () => this.showToast("No se pudo subir la foto", "error")
       });
   }
 

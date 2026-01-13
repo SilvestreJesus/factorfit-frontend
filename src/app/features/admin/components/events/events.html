@@ -24,7 +24,7 @@
                              [class.inactive]="i !== activeIndex"
                              [ngStyle]="getMiniCardStyle(i)">
 
-                            <img [src]="ev.image || 'images/fitness1.webp'" class="w-full object-cover">
+                            <img [src]="ev.image || 'assets/images/fitness1.webp'" class="w-full object-cover">
 
                             <div class="polaroid-info p-2">
                                 <h3 class="truncate text-lg font-bold">{{ ev.titulo }}</h3>
@@ -66,6 +66,9 @@
                     <label class="text-black font-medium block mb-1">Descripción</label>
                     <textarea placeholder="Actividad dirigida..." [(ngModel)]="eventos.descripcion" name="descripcion" rows="3" class="input-field"></textarea>
                 </div>
+
+
+
 
                 <div>
                     <label class="text-black font-medium block mb-1">Fotografía</label>

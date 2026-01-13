@@ -19,20 +19,33 @@ export class QrCodeModal {
         this.close.emit();
     }
 
+    // URL para mostrar en el HTML
+getQRUrl() {
+    if (!this.user?.qr_imagen) return '';
 
-    // URL para mostrar en el HTML (la que ya tenías)
-    getQRUrl() {
-        if (!this.user?.qr_imagen) return '';
-        const filename = this.user.qr_imagen.split('/').pop();
-        return `${this.apiUrl}/api/qr/${filename}`;
+    // Si la ruta ya es una URL completa (Cloudinary o externa), la retornamos
+    if (this.user.qr_imagen.startsWith('http')) {
+        return this.user.qr_imagen;
     }
 
-    // NUEVA: URL específica para descargar
-    getDownloadUrl() {
-        if (!this.user?.qr_imagen) return '';
-        const filename = this.user.qr_imagen.split('/').pop();
-        return `${this.apiUrl}/api/qr-download/${filename}`;
+    // Si es una ruta local, extraemos solo el nombre del archivo para evitar duplicar carpetas
+    const filename = this.user.qr_imagen.split('/').pop();
+    return `${this.apiUrl}/api/qr/${filename}`;
+}
+
+// URL específica para descargar (ajustada con la misma lógica)
+getDownloadUrl() {
+    if (!this.user?.qr_imagen) return '';
+    
+    if (this.user.qr_imagen.startsWith('http')) {
+        return this.user.qr_imagen;
     }
+
+    const filename = this.user.qr_imagen.split('/').pop();
+    return `${this.apiUrl}/api/qr-download/${filename}`;
+}
+
+
 
     async downloadQR() {
         if (!this.user?.qr_imagen) return;

@@ -50,9 +50,7 @@ cargarTodo(clave: string) {
     this.usuarioService.getUsuarioByClave(clave).subscribe((data: any) => {
       this.user = data;
       if (this.user) {
-        this.user.ruta_imagen_mostrar = this.user.ruta_imagen
-          ? `${environment.apiUrl}/api/${this.user.ruta_imagen}`
-          : null;
+        this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
         if (this.user.sede) this.cargarListaPromociones();
       }
 

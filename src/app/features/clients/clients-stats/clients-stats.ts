@@ -65,17 +65,18 @@ export class ClientsStats implements OnInit {
     this.generarCalendarioYEstadisticas(clave);
   }
 
-  cargarUsuario(clave_usuario: string) {
-    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-      next: (data) => {
-        this.user = data;
-        if (this.user?.ruta_imagen) {
-          this.user.ruta_imagen = `${environment.apiUrl}/api/${this.user.ruta_imagen}`;
-        }
-      },
-      error: (err) => console.error('Error al cargar usuario:', err)
-    });
-  }
+cargarUsuario(clave_usuario: string) {
+  this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+    next: (data) => {
+      this.user = data;
+      // Usamos el método del servicio para procesar la imagen (Local vs Cloudinary)
+      if (this.user) {
+        this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
+      }
+    },
+    error: (err) => console.error('Error al cargar usuario:', err)
+  });
+}
 
   cargarPagos(clave_usuario: string) {
     this.usuarioService.getPagosByClave(clave_usuario).subscribe({

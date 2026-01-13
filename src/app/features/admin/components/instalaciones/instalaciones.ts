@@ -78,34 +78,50 @@ export class Instalaciones implements OnInit {
     }
   }
 
-  /* ===============================
-     CARGAR DATA
-  ================================ */
-  cargarListado() {
-    this.instalacionesService.getInstalaciones(this.sede).subscribe({
-      next: data => {
-        this.instalacionesData = Array.isArray(data) ? data : [];
-        this.activeIndex = 0;
-      },
-      error: err => console.error(err)
-    });
-  }
 
-  cargarInstalacion() {
-    this.instalacionesService.getInstalacionesByClave(this.clave).subscribe({
-      next: data => {
-        this.instalaciones = {
-          titulo: data.titulo,
-          descripcion: data.descripcion,
-          sede: data.sede
-        };
+/* ===============================
+    CARGAR DATA
+================================ */
+cargarListado() {
+  this.instalacionesService.getInstalaciones(this.sede).subscribe({
+    next: data => {
+      // PROCESAMOS LAS IMÁGENES AL CARGAR EL LISTADO
+      this.instalacionesData = Array.isArray(data) ? data.map(item => ({
+        ...item,
+        // Usamos el servicio para resolver la URL de Cloudinary o local
+        image: this.instalacionesService.getImagenInstalacion(item.ruta_imagen)
+      })) : [];
+      this.activeIndex = 0;
+    },
+    error: err => console.error(err)
+  });
+}
 
-        this.previewImage = data.ruta_imagen
-          ? `${this.apiUrl}/api/${data.ruta_imagen}`
-          : null;
-      }
-    });
-  }
+cargarInstalacion() {
+  this.instalacionesService.getInstalacionesByClave(this.clave).subscribe({
+    next: data => {
+      this.instalaciones = {
+        titulo: data.titulo,
+        descripcion: data.descripcion,
+        sede: data.sede
+      };
+      // CAMBIO: Usar el servicio
+      this.previewImage = this.instalacionesService.getImagenInstalacion(data.ruta_imagen);
+    }
+  });
+}
+
+editar(item: any) {
+  this.clave = item.clave_instalaciones;
+  this.modoEdicion = true;
+  this.instalaciones = {
+    titulo: item.titulo,
+    descripcion: item.descripcion,
+    sede: item.sede
+  };
+  // CAMBIO: Usar el servicio
+  this.previewImage = this.instalacionesService.getImagenInstalacion(item.ruta_imagen);
+}
 
   /* ===============================
      CARRUSEL
@@ -150,21 +166,6 @@ export class Instalaciones implements OnInit {
         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
     };
     }
-  /* ===============================
-     EDITAR / ELIMINAR
-  ================================ */
-
-
-  editar(item: any) {
-    this.clave = item.clave_instalaciones;
-    this.modoEdicion = true;
-    this.instalaciones = {
-      titulo: item.titulo,
-      descripcion: item.descripcion,
-      sede: item.sede
-    };
-    this.previewImage = item.ruta_imagen ? `${this.apiUrl}/${item.ruta_imagen}` : null;
-  }
 
 
   eliminar(clave: string) {

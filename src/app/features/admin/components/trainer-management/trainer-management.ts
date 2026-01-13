@@ -59,15 +59,38 @@ export class TrainerManagement implements OnInit {
     this.isMobile = window.innerWidth <= 768;
   }
 
-  cargarListado() {
-    this.trainerservice.getPersonal(this.sede).subscribe({
-      next: (data) => {
-        this.personalData = data;
-        this.activeIndex = 0;
-      },
-      error: (err) => console.error(err)
-    });
-  }
+/* --- CARGA DE DATOS --- */
+cargarListado() {
+  this.trainerservice.getPersonal(this.sede).subscribe({
+    next: (data) => {
+      // Procesamos las imágenes para detectar Cloudinary automáticamente
+      this.personalData = Array.isArray(data) ? data.map(item => ({
+        ...item,
+        image: this.trainerservice.getImagenPersonal(item.ruta_imagen)
+      })) : [];
+      this.activeIndex = 0;
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+cargarPersonal() {
+  this.trainerservice.getPersonalByClave(this.clave).subscribe({
+    next: (data) => {
+      this.personal = { ...data };
+      // Usar el servicio para la vista previa inicial
+      this.previewImage = this.trainerservice.getImagenPersonal(data.ruta_imagen);
+    }
+  });
+}
+
+editar(item: any) {
+  this.clave = item.clave_personal;
+  this.modoEdicion = true;
+  this.personal = { ...item };
+  // Usar la propiedad 'image' ya procesada o el servicio
+  this.previewImage = this.trainerservice.getImagenPersonal(item.ruta_imagen);
+}
 
   // Lógica de Navegación 3D
   scrollRight() {
@@ -103,24 +126,7 @@ export class TrainerManagement implements OnInit {
       'backface-visibility': 'hidden'
       };
   }
-  // --- CRUD ---
-  cargarPersonal() {
-    this.trainerservice.getPersonalByClave(this.clave).subscribe({
-      next: (data) => {
-        this.personal = { ...data };
-        if (data.ruta_imagen) {
-          this.previewImage = `${this.apiUrl}/api/${data.ruta_imagen}`;
-        }
-      }
-    });
-  }
 
-  editar(item: any) {
-    this.clave = item.clave_personal;
-    this.modoEdicion = true;
-    this.personal = { ...item };
-    this.previewImage = item.ruta_imagen ? `${this.apiUrl}/${item.ruta_imagen}` : null;
-  }
 
 
   eliminar(clave: string) {

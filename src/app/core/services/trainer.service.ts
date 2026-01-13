@@ -8,47 +8,53 @@ import { Observable } from 'rxjs';
 })
 export class TrainerService {
 
-    
-  private personalUrl = `${environment.apiUrl}/api/personal`;
+  private readonly apiUrl = `${environment.apiUrl}/api/personal`;
 
   constructor(private http: HttpClient) {}
-
 
   // =====================================
   //               Personal
   // =====================================
- 
 
-  registrarPersonal(data: FormData) {
-    return this.http.post<any>(`${environment.apiUrl}/api/personal`, data);
+  registrarPersonal(data: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, data);
   }
 
-
-  getPersonalByClave(clave: string) {
-    return this.http.get<any>(`${environment.apiUrl}/api/personal/${clave}`);
-  }
-  getPersonal(sede: string = '') {
-    let params: any = {};
-    if (sede !== '') params.sede = sede;
-    return this.http.get<any[]>(`${environment.apiUrl}/api/personal`, { params });
+  getPersonalByClave(clave: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${clave}`);
   }
 
-
-  eliminarPersonal(clave: string) {
-    return this.http.delete(`${environment.apiUrl}/api/personal/${clave}`);
+  getPersonal(sede: string = ''): Observable<any[]> {
+    let params = new HttpParams();
+    if (sede) {
+      params = params.set('sede', sede);
+    }
+    return this.http.get<any[]>(this.apiUrl, { params });
   }
 
- actualizarPersonal(clave: string, formData: FormData) {
-    return this.http.post(`${environment.apiUrl}/api/personal/${clave}?_method=PUT`, formData);
+  eliminarPersonal(clave: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${clave}`);
   }
 
-  getPersonalPorSede(sede: string) {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/personal`, { params: { sede } });
+  actualizarPersonal(clave: string, formData: FormData): Observable<any> {
+    // Correcto: usamos POST con ?_method=PUT para archivos en Laravel
+    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
   }
 
-  getImagenPersonal(ruta: string) {
+  getPersonalPorSede(sede: string): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl, { params: { sede } });
+  }
+
+  // --- CORRECCIÓN PARA CLOUDINARY ---
+  getImagenPersonal(ruta: string): string {
     if (!ruta) return 'assets/no-image.png';
-    return `${environment.apiUrl}/${ruta}`;
-}
 
+    // Si la ruta ya es una URL completa (Cloudinary), no le añadimos el apiUrl
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
+
+    // Solo si es una ruta local antigua
+    return `${environment.apiUrl}/${ruta}`;
+  }
 }

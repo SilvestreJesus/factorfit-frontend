@@ -92,11 +92,31 @@ export class UsuarioService {
     return this.http.put(`${this.apiUrl}/${clave_usuario}/eliminar`, {});
   }
 
-  getQrUrl(path: string) {
-    return `${environment.apiUrl}/${path}`;
+
+
+// 1. Modifica el método getQrUrl (O cámbiale el nombre a resolverImagen)
+getQrUrl(path: string): string {
+  if (!path) return 'assets/no-image.png';
+
+  // Si la ruta ya es una URL de Cloudinary (empieza con http)
+  if (path.startsWith('http')) {
+    return path;
   }
 
+  // Fallback para registros antiguos que guardaban solo el nombre del archivo
+  return `${environment.apiUrl}/${path}`;
+}
 
+// 2. Te recomiendo añadir este método genérico para las fotos de perfil
+getFotoPerfil(ruta: string): string {
+  if (!ruta) return 'assets/no-user-image.png'; // Una imagen de avatar por defecto
+
+  if (ruta.startsWith('http')) {
+    return ruta;
+  }
+
+  return `${environment.apiUrl}/${ruta}`;
+}
 
   // =====================================
   //               Pagos

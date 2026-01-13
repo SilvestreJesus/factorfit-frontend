@@ -35,30 +35,38 @@ export class EntrenamientosSection implements OnInit, AfterViewInit {
     setTimeout(() => this.initPosition(), 0);
   }
 
-  cargarEntrenamientos() {
-    this.entrenamientosService.getEntrenamientos().subscribe({
-      next: (data) => {
-        this.entrenamientos = data.map(e => ({
-          clave_entrenamientos: e.clave_entrenamientos,
-          titulo: e.titulo,
-          descripcion: e.descripcion ?? '',
-          sede: e.sede,
-          imagen: e.ruta_imagen
-            ? `${environment.apiUrl}/api/${e.ruta_imagen}`
-            : 'assets/no-image.png'
-        }));
+cargarEntrenamientos() {
+  this.entrenamientosService.getEntrenamientos().subscribe({
+    next: (data) => {
+      this.entrenamientos = data.map(e => ({
+        clave_entrenamientos: e.clave_entrenamientos,
+        titulo: e.titulo,
+        descripcion: e.descripcion ?? '',
+        sede: e.sede,
+        // Usamos una lógica de procesamiento de imagen consistente
+        imagen: this.procesarImagen(e.ruta_imagen)
+      }));
 
-        // 🔁 CLONES (MISMA LÓGICA QUE INSTALACIONES)
+      // Lógica de bucle infinito (Clones)
+      if (this.entrenamientos.length > 0) {
         this.entrenamientosLoop = [
           this.entrenamientos[this.entrenamientos.length - 1],
           ...this.entrenamientos,
           this.entrenamientos[0]
         ];
-
-        setTimeout(() => this.initPosition(), 0);
       }
-    });
-  }
+
+      setTimeout(() => this.initPosition(), 50); // Un pequeño delay para renderizado
+    }
+  });
+}
+
+// Función auxiliar para validar la procedencia de la imagen
+procesarImagen(ruta: string | null): string {
+  if (!ruta) return 'assets/no-image.png'; // Imagen por defecto local
+  if (ruta.startsWith('http')) return ruta; // Ya es una URL completa (Cloudinary/S3)
+  return `${environment.apiUrl}/api/${ruta}`; // Ruta local del backend
+}
 
   initPosition() {
     const el = this.carousel.nativeElement;

@@ -8,34 +8,63 @@ import { Observable } from 'rxjs';
 })
 export class InstalacionesService {
 
-  private instalacionesUrl = `${environment.apiUrl}/api/instalaciones`;
+  // Centralizamos la URL usando la constante del environment
+  private readonly apiUrl = `${environment.apiUrl}/api/instalaciones`;
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Obtiene la lista de instalaciones, filtrada opcionalmente por sede
+   */
+  getInstalaciones(sede: string = ''): Observable<any[]> {
+    let params = new HttpParams();
+    if (sede) {
+      params = params.set('sede', sede);
+    }
+    return this.http.get<any[]>(this.apiUrl, { params });
+  }
 
-// =====================================
-//               instalaciones
-// =====================================
+  /**
+   * Busca una instalación específica por su clave única (INST001...)
+   */
+  getInstalacionesByClave(clave: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${clave}`);
+  }
 
-getInstalaciones(sede: string = '') {
-  let params: any = {};
-  if (sede !== '') params.sede = sede;
-  return this.http.get<any[]>(`${environment.apiUrl}/api/instalaciones`, { params });
-}
+  /**
+   * Crea una nueva instalación subiendo imagen a Cloudinary mediante FormData
+   */
+  registrarInstalaciones(formData: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, formData);
+  }
 
-getInstalacionesByClave(clave: string) {
-  return this.http.get<any>(`${environment.apiUrl}/api/instalaciones/${clave}`);
-}
+  /**
+   * Actualiza una instalación existente. 
+   * IMPORTANTE: Se usa POST con ?_method=PUT para que Laravel procese el FormData con archivos.
+   */
+  actualizarInstalaciones(clave: string, formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
+  }
 
-registrarInstalaciones(formData: FormData) {
-  return this.http.post<any>(`${environment.apiUrl}/api/instalaciones`, formData);
-}
+  /**
+   * Elimina el registro y la imagen vinculada en Cloudinary
+   */
+  eliminarInstalaciones(clave: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${clave}`);
+  }
 
-actualizarInstalaciones(clave: string, formData: FormData) {
-  return this.http.post<any>(`${environment.apiUrl}/api/instalaciones/${clave}?_method=PUT`, formData);
-}
-
-eliminarInstalaciones(clave: string) {
-  return this.http.delete<any>(`${environment.apiUrl}/api/instalaciones/${clave}`);
-}
+  /**
+   * Resuelve la URL de la imagen de forma segura
+   */
+  getImagenInstalacion(ruta: string): string {
+    if (!ruta) return 'assets/images/no-image.png';
+    
+    // Si la ruta viene de Cloudinary (comienza con http), se retorna directa
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
+    
+    // Fallback para rutas locales antiguas si existieran
+    return `${environment.apiUrl}/${ruta}`;
+  }
 }
