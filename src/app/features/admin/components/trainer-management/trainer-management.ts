@@ -122,16 +122,18 @@ export class TrainerManagement implements OnInit {
     this.previewImage = item.ruta_imagen ? `${this.apiUrl}/${item.ruta_imagen}` : null;
   }
 
+
   eliminar(clave: string) {
-    if (!confirm('¿Eliminar a este integrante del personal?')) return;
     this.trainerservice.eliminarPersonal(clave).subscribe({
       next: () => {
-        this.mostrarToast('Personal eliminado', 'error');
+        this.mostrarToast('Personal eliminado correctamente', 'error');
         this.cargarListado();
         this.limpiarFormulario();
-      }
+      },
+      error: err => console.error(err)
     });
   }
+
 
   guardar() {
     const formData = new FormData();
