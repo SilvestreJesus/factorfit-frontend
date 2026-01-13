@@ -53,7 +53,7 @@ export class DebtorsComponent implements OnChanges {
 
   sincronizarYDescargar() {
     this.cargando.set(true);
-    this.http.get(`http://localhost:8000/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+    this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
       next: () => this.cargarDatos(),
       error: (err) => {
         console.error('Error al sincronizar:', err);

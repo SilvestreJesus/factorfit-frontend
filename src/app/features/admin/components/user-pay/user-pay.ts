@@ -42,7 +42,7 @@ export class UserPay implements OnInit {
 
   // Sincronización automática
   sincronizarYDescargar() {
-    this.http.get(`http://localhost:8000/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+    this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
       next: () => {
         console.log('Sincronización exitosa para sede: ' + this.sede);
         this.cargarUsuarios(); 

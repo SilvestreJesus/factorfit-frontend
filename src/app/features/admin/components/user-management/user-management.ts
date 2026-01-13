@@ -60,7 +60,7 @@ export class UserManagement implements OnInit {
 // Nueva función para asegurar que la tabla siempre esté fresca
 sincronizarYDescargar() {
   // Pasamos la sede como parámetro ?sede=NombreDeLaSede
-  this.http.get(`http://localhost:8000/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+  this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
     next: () => {
       console.log(`Sincronización de la sede ${this.sede} completada`);
       // Una vez actualizado el servidor, descargamos los usuarios (que ya vienen filtrados por sede)
