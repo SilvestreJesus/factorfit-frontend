@@ -38,7 +38,7 @@ export class EventsSection implements OnInit {
           descripcion: e.descripcion ?? '',
           sede: e.sede,
           imagen: e.ruta_imagen
-            ? `${environment.apiUrl}/${e.ruta_imagen}`
+            ? `${environment.apiUrl}/api/${e.ruta_imagen}`
             : 'assets/no-image.png'
         }));
       }

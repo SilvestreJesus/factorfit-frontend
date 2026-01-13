@@ -54,7 +54,7 @@ export class TrainersSection implements OnInit {
                     puesto: p.puesto,
                     description: p.descripcion ?? '',
                     image: p.ruta_imagen
-                        ? `${environment.apiUrl}/${p.ruta_imagen}`
+                        ? `${environment.apiUrl}/api/${p.ruta_imagen}`
                         : 'assets/no-image.png'
                 }));
             }

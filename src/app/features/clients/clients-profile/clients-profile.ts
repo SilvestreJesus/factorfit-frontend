@@ -131,7 +131,7 @@ export class ClientsProfile implements OnInit {
         next: (resp: any) => {
           // Actualizamos tanto la ruta interna como la que se muestra
           this.user.ruta_imagen = resp.ruta_imagen;
-          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/${resp.ruta_imagen}`;
+          this.user.ruta_imagen_mostrar = `${environment.apiUrl}/api/${resp.ruta_imagen}`;
           this.showToast("Foto de perfil actualizada", "success");
         },
         error: () => this.showToast("No se pudo subir la foto", "error")

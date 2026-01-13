@@ -51,7 +51,7 @@ cargarTodo(clave: string) {
       this.user = data;
       if (this.user) {
         this.user.ruta_imagen_mostrar = this.user.ruta_imagen
-          ? `${environment.apiUrl}/${this.user.ruta_imagen}`
+          ? `${environment.apiUrl}/api/${this.user.ruta_imagen}`
           : null;
         if (this.user.sede) this.cargarListaPromociones();
       }

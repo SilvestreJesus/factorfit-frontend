@@ -101,7 +101,7 @@ export class Instalaciones implements OnInit {
         };
 
         this.previewImage = data.ruta_imagen
-          ? `${this.apiUrl}/${data.ruta_imagen}`
+          ? `${this.apiUrl}/api/${data.ruta_imagen}`
           : null;
       }
     });

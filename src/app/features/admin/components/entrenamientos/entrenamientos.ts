@@ -85,7 +85,7 @@ export class Entrenamientos implements OnInit {
           descripcion: data.descripcion,
           sede: data.sede
         };
-        this.previewImage = data.ruta_imagen ? `${this.apiUrl}/${data.ruta_imagen}` : null;
+        this.previewImage = data.ruta_imagen ? `${this.apiUrl}/api/${data.ruta_imagen}` : null;
       }
     });
   }

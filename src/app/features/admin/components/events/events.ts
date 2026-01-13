@@ -86,7 +86,7 @@ export class Events implements OnInit {
           ? data.map(ev => ({
               ...ev,
               image: ev.ruta_imagen
-                ? `${environment.apiUrl}/${ev.ruta_imagen}`
+                ? `${environment.apiUrl}/api/${ev.ruta_imagen}`
                 : 'assets/no-image.png'
             }))
           : [];

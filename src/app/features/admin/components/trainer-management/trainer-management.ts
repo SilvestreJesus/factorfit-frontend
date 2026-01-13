@@ -109,7 +109,7 @@ export class TrainerManagement implements OnInit {
       next: (data) => {
         this.personal = { ...data };
         if (data.ruta_imagen) {
-          this.previewImage = `${this.apiUrl}/${data.ruta_imagen}`;
+          this.previewImage = `${this.apiUrl}/api/${data.ruta_imagen}`;
         }
       }
     });

@@ -70,7 +70,7 @@ export class ClientsStats implements OnInit {
       next: (data) => {
         this.user = data;
         if (this.user?.ruta_imagen) {
-          this.user.ruta_imagen = `${environment.apiUrl}/${this.user.ruta_imagen}`;
+          this.user.ruta_imagen = `${environment.apiUrl}/api/${this.user.ruta_imagen}`;
         }
       },
       error: (err) => console.error('Error al cargar usuario:', err)

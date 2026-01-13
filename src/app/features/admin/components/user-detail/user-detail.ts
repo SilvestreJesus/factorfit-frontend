@@ -94,7 +94,7 @@ export class UserDetail implements OnInit {
         }
 
         this.user.ruta_imagen_mostrar = this.user.ruta_imagen
-          ? `${environment.apiUrl}/${this.user.ruta_imagen}`
+          ? `${environment.apiUrl}/api/${this.user.ruta_imagen}`
           : null;
       }
     });
