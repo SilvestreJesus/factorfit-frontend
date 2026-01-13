@@ -12,7 +12,9 @@ export class LocationSection {
   // 1 = Sede Zapata, 2 = Sede Central
   sedeActual: number = 1;
 
-  cambiarSede(numero: number) {
-    this.sedeActual = numero;
-  }
+cambiarSede(numero: number) {
+  this.sedeActual = numero;
+  // Opcional: imprimir en consola para verificar que el clic funciona
+  console.log('Cambiando a sede:', numero);
+}
 }
