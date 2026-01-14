@@ -1,41 +1,40 @@
-<section id="events" class="py-24 bg-gradient-to-tr from-fuchsia-600 to-gray-900 overflow-hidden">
-  <div class="container mx-auto px-6 text-center relative">
+<section id="events" class="py-24 bg-gradient-to-tr from-fuchsia-400 to-gray-900">
+  <div class="container mx-auto px-6 text-center">
 
-    <h2 class="section-title-fluid font-bold mb-16 text-white drop-shadow-md">
-      Próximos Eventos
+    <h2 class="section-title-fluid font-bold mb-12">
+      Eventos
     </h2>
 
-    <div class="carousel-polaroid relative h-[550px] flex items-center justify-center perspective-1000">
+    <div class="carousel-polaroid">
       
-      <button class="carousel-btn left-4 sm:left-10" (click)="scrollLeft()" aria-label="Anterior">
-        <span class="text-3xl sm:text-5xl text-white hover:text-fuchsia-400 transition-colors">‹</span>
-      </button>
 
-      @for (evento of eventos; track evento.clave_eventos; let i = $index) {
-        <div class="polaroid-card absolute shadow-2xl bg-white p-3 pb-12 transition-all duration-500" 
-             [class.active]="i === activeIndex"
-             [ngStyle]="getCardStyle(i)">
+    <!-- BOTÓN IZQUIERDA -->
+    <button
+        class="carousel-btn left"
+        (click)="scrollLeft()">
+        ⬅
+    </button>
 
-          <div class="w-full h-full overflow-hidden bg-gray-200">
-            <img [src]="evento.imagen" 
-                 [alt]="evento.titulo"
-                 class="w-full h-full object-cover grayscale-[30%] hover:grayscale-0 transition-all">
-          </div>
+    @for (evento of eventos; track evento.clave_eventos; let i = $index) {
+        <div class="polaroid-card" [class.active]="i === activeIndex" [class.inactive]="i !== activeIndex"
+        [ngStyle]="getCardStyle(i)">
 
-          <div class="polaroid-info mt-4 text-left px-2">
-            <h3 class="font-handwriting text-2xl text-gray-800 font-bold leading-none">{{ evento.titulo }}</h3>
-            <p class="text-gray-500 text-xs mt-2 line-clamp-2">{{ evento.descripcion }}</p>
-            <div class="flex items-center justify-between mt-4">
-               <span class="text-[10px] font-black text-fuchsia-600 uppercase tracking-widest">Sucursal {{ evento.sede }}</span>
-               <div class="w-2 h-2 rounded-full bg-fuchsia-500 animate-ping"></div>
-            </div>
-          </div>
+        <img [src]="evento.imagen" alt="evento">
+
+        <div class="polaroid-info">
+            <h3>{{ evento.titulo }}</h3>
+            <p>{{ evento.descripcion }}</p>
+            <span class="sede">Sucursal {{ evento.sede }}</span>
         </div>
-      }
+        </div>
+    }
 
-      <button class="carousel-btn right-4 sm:right-10" (click)="scrollRight()" aria-label="Siguiente">
-        <span class="text-3xl sm:text-5xl text-white hover:text-fuchsia-400 transition-colors">›</span>
-      </button>
+    <!-- BOTÓN DERECHA -->
+    <button
+        class="carousel-btn right"
+        (click)="scrollRight()">
+        ➡
+    </button>
 
     </div>
   </div>

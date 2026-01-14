@@ -107,15 +107,33 @@ getQrUrl(path: string): string {
   return `${environment.apiUrl}/${path}`;
 }
 
-// 2. Te recomiendo añadir este método genérico para las fotos de perfil
-getFotoPerfil(ruta: string): string {
-  if (!ruta) return 'assets/no-user-image.png'; // Una imagen de avatar por defecto
 
+getFotoPerfil(ruta: string | null): string | null {
+  // Si la ruta es nula, indefinida, vacía o literalmente el texto "null"
+  if (!ruta || ruta === 'null' || ruta.trim() === '') {
+    return null; 
+  }
+
+  // Si ya es una URL de Cloudinary
   if (ruta.startsWith('http')) {
     return ruta;
   }
 
+  // Si es una ruta local vieja
   return `${environment.apiUrl}/${ruta}`;
+}
+
+
+
+subirImagenCloudinaryDirecto(file: File): Observable<any> {
+  const url = `https://api.cloudinary.com/v1_1/dwvcefm84/image/upload`;
+  const formData = new FormData();
+  
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Necesitas crear un "Unsigned Upload Preset" en Cloudinary
+  formData.append('folder', 'usuarios/perfiles');
+
+  return this.http.post(url, formData);
 }
 
   // =====================================

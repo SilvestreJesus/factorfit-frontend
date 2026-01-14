@@ -8,12 +8,12 @@ import { Observable } from 'rxjs';
 })
 export class EntrenamientosService {
 
-  // Centralizamos la URL para evitar errores de escritura
+  // Usamos la variable base para mayor limpieza
   private readonly apiUrl = `${environment.apiUrl}/api/entrenamientos`;
 
   constructor(private http: HttpClient) {}
 
-  // Obtener todos con filtro opcional de sede
+  // Obtener todos con filtro de sede
   getEntrenamientos(sede: string = ''): Observable<any[]> {
     let params = new HttpParams();
     if (sede) {
@@ -22,32 +22,51 @@ export class EntrenamientosService {
     return this.http.get<any[]>(this.apiUrl, { params });
   }
 
-  // Obtener un entrenamiento específico por su clave (ETRE001...)
+  // Obtener uno solo
   getEntrenamientosByClave(clave: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${clave}`);
   }
 
-  // Registrar nuevo entrenamiento con imagen
-  registrarEntrenamientos(formData: FormData): Observable<any> {
-    return this.http.post<any>(this.apiUrl, formData);
-  }
 
-  // Actualizar usando el "spoofing" de método PUT para Laravel
-  actualizarEntrenamientos(clave: string, formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
-  }
 
-  // Eliminar entrenamiento
+  // Eliminar
   eliminarEntrenamientos(clave: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${clave}`);
   }
 
-  /**
-   * Método útil para el renderizado de imágenes en el HTML
-   */
-  getImagenEntrenamiento(ruta: string): string {
-    if (!ruta) return 'assets/images/no-image.png';
-    // Si es URL de Cloudinary (empieza con http), se devuelve tal cual
-    return ruta.startsWith('http') ? ruta : `${environment.apiUrl}/${ruta}`;
-  }
+
+
+// Entrenamientos.service.ts
+
+subirImagenCloudinary(file: File): Observable<any> {
+  const url = `https://api.cloudinary.com/v1_1/dwvcefm84/image/upload`;
+  const formData = new FormData();
+  
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Tu preset configurado
+  formData.append('folder', 'Entrenamientos'); // Carpeta específica para Entrenamientos
+
+  return this.http.post(url, formData);
+}
+
+// Cambiamos FormData por 'any' porque ahora enviaremos JSON con la URL ya lista
+registrarEntrenamientos(data: any): Observable<any> {
+  return this.http.post<any>(this.apiUrl, data);
+}
+
+actualizarEntrenamientos(clave: string, data: any): Observable<any> {
+  // Al ser JSON, podemos usar PUT directamente sin el truco de ?_method=PUT
+  return this.http.put<any>(`${this.apiUrl}/${clave}`, data);
+}
+
+getImagenEntrenamientos(ruta: string): string {
+  if (!ruta) return 'assets/images/no-image.png';
+  if (ruta.startsWith('http')) return ruta;
+  return `${environment.apiUrl}/${ruta}`;
+}
+// Nuevo método para pedirle a Laravel que borre una imagen específica de la nube
+borrarImagenCloudy(url: string): Observable<any> {
+  // Enviamos la URL completa al backend para que él extraiga el ID y la borre
+  return this.http.post(`${this.apiUrl}/destruir-imagen`, { url });
+}
 }

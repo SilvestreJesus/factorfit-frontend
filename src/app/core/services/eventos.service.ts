@@ -27,32 +27,46 @@ export class EventosService {
     return this.http.get<any>(`${this.apiUrl}/${clave}`);
   }
 
-  // Registrar (FormData incluye la imagen)
-  registrarEventos(formData: FormData): Observable<any> {
-    return this.http.post<any>(this.apiUrl, formData);
-  }
 
-  // Actualizar (FormData + Simulación de PUT para Laravel)
-  actualizarEventos(clave: string, formData: FormData): Observable<any> {
-    // Es vital el ?_method=PUT para que Laravel detecte los archivos en el Request
-    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
-  }
 
   // Eliminar
   eliminarEventos(clave: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${clave}`);
   }
 
-  // Gestor de imágenes inteligente
-  getImagenEvento(ruta: string): string {
-    if (!ruta) return 'assets/images/no-image.png';
 
-    // Si es Cloudinary (empieza con http)
-    if (ruta.startsWith('http')) {
-      return ruta;
-    }
 
-    // Si es una imagen local vieja (fallback)
-    return `${environment.apiUrl}/${ruta}`;
-  }
+// eventos.service.ts
+
+subirImagenCloudinary(file: File): Observable<any> {
+  const url = `https://api.cloudinary.com/v1_1/dwvcefm84/image/upload`;
+  const formData = new FormData();
+  
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Tu preset configurado
+  formData.append('folder', 'eventos'); // Carpeta específica para eventos
+
+  return this.http.post(url, formData);
+}
+
+// Cambiamos FormData por 'any' porque ahora enviaremos JSON con la URL ya lista
+registrarEventos(data: any): Observable<any> {
+  return this.http.post<any>(this.apiUrl, data);
+}
+
+actualizarEventos(clave: string, data: any): Observable<any> {
+  // Al ser JSON, podemos usar PUT directamente sin el truco de ?_method=PUT
+  return this.http.put<any>(`${this.apiUrl}/${clave}`, data);
+}
+
+getImagenEvento(ruta: string): string {
+  if (!ruta) return 'assets/images/no-image.png';
+  if (ruta.startsWith('http')) return ruta;
+  return `${environment.apiUrl}/${ruta}`;
+}
+// Nuevo método para pedirle a Laravel que borre una imagen específica de la nube
+borrarImagenCloudy(url: string): Observable<any> {
+  // Enviamos la URL completa al backend para que él extraiga el ID y la borre
+  return this.http.post(`${this.apiUrl}/destruir-imagen`, { url });
+}
 }

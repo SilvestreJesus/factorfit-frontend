@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-header',
@@ -80,7 +81,7 @@ export class AdminHeader implements OnInit {
   irAPagos2() {
     if (isPlatformBrowser(this.platformId)) {
       // Llamada en segundo plano, no bloquea la navegación
-      this.http.get('https://factorfit-backend-production.up.railway.app/api/pagos/actualizar').subscribe({
+      this.http.get(`${environment.apiUrl}/api/pagos/actualizar`).subscribe({
         next: () => console.log('Pagos actualizados en segundo plano'),
         error: (err) => console.error('Error actualizando pagos:', err)
       });
@@ -93,8 +94,8 @@ export class AdminHeader implements OnInit {
 irAPagos() {
   if (isPlatformBrowser(this.platformId)) {
     // Agregamos la sede a la URL para que solo actualice lo necesario
-    const url = `https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`;
-    
+      const url = `${environment.apiUrl}/api/pagos/actualizar?sede=${this.sede}`;
+        
     this.http.get(url).subscribe({
       next: () => console.log(`Pagos de ${this.sede} actualizados`),
       error: (err) => console.error('Error:', err)

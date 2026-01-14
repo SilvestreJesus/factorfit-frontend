@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../../../core/services/usuario.service';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-logbook-debtors',
@@ -53,7 +54,7 @@ export class DebtorsComponent implements OnChanges {
 
   sincronizarYDescargar() {
     this.cargando.set(true);
-    this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+    this.http.get(`${environment.apiUrl}/api/pagos/actualizar?sede=${this.sede}`).subscribe({
       next: () => this.cargarDatos(),
       error: (err) => {
         console.error('Error al sincronizar:', err);

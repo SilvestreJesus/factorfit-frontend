@@ -61,31 +61,32 @@ export class UserDetail implements OnInit {
   }
 
 
-
-
-/* --- SUBIR FOTO --- */
 subirFoto(event: any) {
   const archivo = event.target.files[0];
   if (!archivo) return;
 
-  const formData = new FormData();
-  formData.append('foto', archivo);
+  // 1. Subir directamente a Cloudinary
+  this.usuarioService.subirImagenCloudinaryDirecto(archivo).subscribe({
+    next: (res: any) => {
+      const urlSegura = res.secure_url; // Esta es la URL que nos da Cloudinary
 
-  this.usuarioService.subirFoto(this.clave_usuario, formData)
-    .subscribe({
-      next: (resp: any) => {
-        // Al subir, el backend devuelve la URL de Cloudinary o el path local
-        this.user.ruta_imagen = resp.ruta_imagen;
-        
-        // CORRECCIÓN: No concatenar manualmente, usar el helper
-        this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(resp.ruta_imagen);
-        
-        this.showToast("Foto de perfil actualizada", "success");
-      },
-      error: () => this.showToast("Error al subir la foto", "error")
-    });
+      // 2. Enviar solo la URL a Laravel para que la guarde en la DB
+      this.usuarioService.actualizarUsuario(this.clave_usuario, { ruta_imagen: urlSegura })
+        .subscribe({
+          next: () => {
+            this.user.ruta_imagen = urlSegura;
+            this.user.ruta_imagen_mostrar = urlSegura;
+            this.showToast("Foto actualizada correctamente", "success");
+          },
+          error: () => this.showToast("Error al guardar la ruta en la base de datos", "error")
+        });
+    },
+    error: (err) => {
+      console.error(err);
+      this.showToast("Error al subir imagen a Cloudinary", "error");
+    }
+  });
 }
-
   cargarUsuario(clave_usuario: string) {
     this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
       next: (data) => {
@@ -117,7 +118,6 @@ subirFoto(event: any) {
             this.user.telefono = this.user.telefono.replace(/\D/g, '');
           }
         }
-
 
 
       this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);

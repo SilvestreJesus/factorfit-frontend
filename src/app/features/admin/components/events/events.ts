@@ -164,28 +164,20 @@ cargarListado() {
   });
 }
 
-// También corrige la función editar para la vista previa
 editar(ev: any) {
   this.clave = ev.clave_eventos;
   this.modoEdicion = true;
   this.eventos = {
     titulo: ev.titulo,
     descripcion: ev.descripcion,
-    sede: ev.sede
+    sede: ev.sede,
+    ruta_imagen: ev.ruta_imagen // MANTENER LA URL AQUÍ
   };
-  // Vista previa inteligente
   this.previewImage = this.eventsService.getImagenEvento(ev.ruta_imagen);
+  this.imagenFile = null; // Resetear el archivo seleccionado
 }
-  eliminar(clave: string) {
-    this.eventsService.eliminarEventos(clave).subscribe({
-      next: () => {
-        this.mostrarToast('Evento eliminado correctamente', 'error');
-        this.cargarListado();
-        this.limpiarFormulario();
-      },
-      error: err => console.error(err)
-    });
-  }
+
+
 
   /* ===============================
      FORMULARIO
@@ -201,34 +193,89 @@ editar(ev: any) {
     reader.readAsDataURL(file);
   }
 
-  guardar() {
-    const formData = new FormData();
-    formData.append('titulo', this.eventos.titulo);
-    formData.append('descripcion', this.eventos.descripcion);
-    formData.append('sede', this.eventos.sede);
+async guardar() {
+  try {
+    let urlImagenFinal = this.eventos.ruta_imagen;
 
     if (this.imagenFile) {
-      formData.append('ruta_imagen', this.imagenFile);
+      // 1. Si hay una imagen vieja y el usuario subió una nueva, mandamos a borrar la vieja primero
+      if (this.modoEdicion && this.eventos.ruta_imagen && this.eventos.ruta_imagen.includes('cloudinary')) {
+        await this.eventsService.borrarImagenCloudy(this.eventos.ruta_imagen).toPromise();
+      }
+
+      // 2. Subimos la nueva imagen
+      const res = await this.eventsService.subirImagenCloudinary(this.imagenFile).toPromise();
+      urlImagenFinal = res.secure_url;
     }
 
+    const datosParaGuardar = {
+      titulo: this.eventos.titulo,
+      descripcion: this.eventos.descripcion,
+      sede: this.eventos.sede,
+      ruta_imagen: urlImagenFinal
+    };
+
     const peticion = this.modoEdicion
-      ? this.eventsService.actualizarEventos(this.clave, formData)
-      : this.eventsService.registrarEventos(formData);
+      ? this.eventsService.actualizarEventos(this.clave, datosParaGuardar)
+      : this.eventsService.registrarEventos(datosParaGuardar);
 
     peticion.subscribe({
       next: () => {
-        this.mostrarToast(
-          this.modoEdicion
-            ? 'Evento actualizado correctamente'
-            : 'Evento registrado correctamente',
-          'success'
-        );
+        this.mostrarToast(this.modoEdicion ? 'Actualizado' : 'Registrado');
         this.cargarListado();
         this.limpiarFormulario();
       },
-      error: err => this.mostrarError(err)
+      error: (err) => this.mostrarError(err)
     });
+
+  } catch (error) {
+    console.error("Error en el proceso de imagen:", error);
+    this.mostrarToast('Error al gestionar la imagen en la nube', 'error');
   }
+}
+
+
+// Agrega esta propiedad al inicio de tu clase Events
+eventoAEliminar: any = null;
+
+// Modifica el método eliminar para que solo abra el modal
+eliminar(ev: any) {
+  this.eventoAEliminar = ev;
+}
+
+// Agrega el método que realmente ejecuta la acción al confirmar
+async confirmarEliminacion() {
+  if (!this.eventoAEliminar) return;
+  
+  const clave = this.eventoAEliminar.clave_eventos;
+  const rutaImagen = this.eventoAEliminar.ruta_imagen;
+
+  try {
+    // 1. Intentar borrar de la nube
+    if (rutaImagen && rutaImagen.includes('cloudinary')) {
+      await this.eventsService.borrarImagenCloudy(rutaImagen).toPromise();
+    }
+  } catch (e) {
+    console.warn("No se pudo borrar la imagen de la nube, procediendo con la BD", e);
+  }
+
+  // 2. Borrar de la base de datos
+  this.eventsService.eliminarEventos(clave).subscribe({
+    next: () => {
+      this.mostrarToast('Evento eliminado correctamente', 'success');
+      this.cargarListado();
+      this.eventoAEliminar = null; // Cerrar modal
+    },
+    error: (err) => {
+      this.mostrarError(err);
+      this.eventoAEliminar = null;
+    }
+  });
+}
+
+
+
+
 
   limpiarFormulario() {
     this.eventos = {

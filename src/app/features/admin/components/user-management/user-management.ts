@@ -6,6 +6,7 @@ import localeEs from '@angular/common/locales/es';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { QrCodeModal } from '../../../../shared/components/qr-code-modal/qr-code-modal';
 import { HttpClient } from '@angular/common/http'; // <--- Agrega esta línea
+import { environment } from '../../../../../environments/environment';
 
 registerLocaleData(localeEs);
 
@@ -60,7 +61,7 @@ export class UserManagement implements OnInit {
 // Nueva función para asegurar que la tabla siempre esté fresca
 sincronizarYDescargar() {
   // Pasamos la sede como parámetro ?sede=NombreDeLaSede
-  this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+  this.http.get(`${environment.apiUrl}/api/pagos/actualizar?sede=${this.sede}`).subscribe({
     next: () => {
       console.log(`Sincronización de la sede ${this.sede} completada`);
       // Una vez actualizado el servidor, descargamos los usuarios (que ya vienen filtrados por sede)

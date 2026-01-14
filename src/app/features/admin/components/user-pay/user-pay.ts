@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import localeEs from '@angular/common/locales/es';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { environment } from '../../../../../environments/environment';
 
 registerLocaleData(localeEs);
 
@@ -42,7 +43,7 @@ export class UserPay implements OnInit {
 
   // Sincronización automática
   sincronizarYDescargar() {
-    this.http.get(`https://factorfit-backend-production.up.railway.app/api/pagos/actualizar?sede=${this.sede}`).subscribe({
+    this.http.get(`${environment.apiUrl}/api/pagos/actualizar?sede=${this.sede}`).subscribe({
       next: () => {
         console.log('Sincronización exitosa para sede: ' + this.sede);
         this.cargarUsuarios(); 
