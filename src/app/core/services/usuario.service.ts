@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -130,8 +131,20 @@ getConteosBitacora(sede: string): Observable<any> {
   return this.http.get(`${this.apiUrl}/conteos-bitacora?sede=${sede}`);
 }
 
-getCambiosHoy(sede: string): Observable<any> {
-  return this.http.get(`${this.apiUrl}/cambios-hoy?sede=${sede}`);
+getCambiosHoy(sede: string, vistos: number = 0): Observable<any> {
+  // Construimos los parámetros de la URL
+  const params = new HttpParams()
+    .set('sede', sede)
+    .set('vistos', vistos.toString());
+
+  return this.http.get(`${this.apiUrl}/cambios-hoy`, { params });
+}
+
+private notificaciónLimpiadaSource = new BehaviorSubject<boolean>(false);
+notificaciónLimpiada$ = this.notificaciónLimpiadaSource.asObservable();
+
+notificarLimpieza() {
+  this.notificaciónLimpiadaSource.next(true);
 }
 
 

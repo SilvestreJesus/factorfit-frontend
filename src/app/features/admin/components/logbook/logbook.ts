@@ -26,8 +26,8 @@ export class Logbook implements OnInit {
   private usuarioService = inject(UsuarioService);
   conteos = signal({ pagos: 0, asistencias: 0, renovacion: 0 });
   vistos = signal({
-    ganancias: Number(localStorage.getItem('visto_ganancias') ?? 0),
-    asistencia: Number(localStorage.getItem('visto_asistencia') ?? 0),
+    pagos: Number(localStorage.getItem('visto_pagos') ?? 0),
+    asistencias: Number(localStorage.getItem('visto_asistencias') ?? 0),
     renovacion: Number(localStorage.getItem('visto_renovacion') ?? 0)
   });
   // --- Signals de Control ---
@@ -54,6 +54,8 @@ export class Logbook implements OnInit {
     setInterval(() => this.fechaHoraActual.set(new Date()), 1000);
   }
 
+
+
   // 2. Mapeo correcto de la respuesta del Backend
 cargarConteos() {
     this.usuarioService.getConteosBitacora(this.sede).subscribe({
@@ -74,16 +76,24 @@ cargarConteos() {
     this.currentSubView.set(vista);
   }
 
-  // 4. Lógica de limpieza mejorada
-  marcarComoVisto(view: string) {
-    const totalActual = (this.conteos() as any)[view] || 0;
-    
-    // Solo actualizamos si el número de la base de datos es mayor a lo visto
-    if (totalActual >= 0) {
-      localStorage.setItem(`visto_${view}`, totalActual.toString());
-      this.vistos.update(v => ({ ...v, [view]: totalActual }));
-    }
-  }
+marcarComoVisto(view: string) {
+  const keyMap: { [key: string]: string } = {
+    'ganancias': 'pagos',
+    'asistencia': 'asistencias',
+    'renovacion': 'renovacion'
+  };
+
+  const key = keyMap[view];
+  if (!key) return;
+
+  const totalActual = (this.conteos() as any)[key] || 0;
+  
+  localStorage.setItem(`visto_${key}`, totalActual.toString());
+  this.vistos.update(v => ({ ...v, [key]: totalActual }));
+
+  // AVISAMOS AL HEADER QUE CAMBIARON LOS VISTOS
+  this.usuarioService.notificarLimpieza(); 
+}
 
   // 5. Helper único para el HTML (Usa este en los *ngIf)
   getContador(view: string): number {
@@ -93,16 +103,21 @@ cargarConteos() {
     const resultado = total - visto;
     return resultado > 0 ? resultado : 0;
   }
-    // Helper para el HTML
-  getBadge(view: string): number {
-    const total = view === 'ganancias' ? this.conteos().pagos : 
-                  view === 'asistencia' ? this.conteos().asistencias : 0;
-    const visto = view === 'ganancias' ? this.vistos().ganancias : 
-                  view === 'asistencia' ? this.vistos().asistencia : 0;
-    
-    return Math.max(0, total - visto);
-  }
 
+  getBadge(view: string): number {
+  const keyMap: { [key: string]: string } = {
+    'ganancias': 'pagos',
+    'asistencia': 'asistencias',
+    'renovacion': 'renovacion'
+  };
+
+  const key = keyMap[view];
+  const total = (this.conteos() as any)[key] || 0;
+  const visto = (this.vistos() as any)[key] || 0;
+  
+  const diferencia = total - visto;
+  return diferencia > 0 ? diferencia : 0;
+}
 
   // --- MÉTODO PRINCIPAL DE DESCARGA ---
   async descargarReportes() {

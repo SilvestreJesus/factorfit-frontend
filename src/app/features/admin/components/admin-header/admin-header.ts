@@ -5,6 +5,7 @@ import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-admin-header',
@@ -36,26 +37,48 @@ cambiosHoy = 0;
     private usuarioService: UsuarioService
   ) {}
 
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.rol = localStorage.getItem('rol') ?? '';
-      this.sede = localStorage.getItem('sede') ?? '';
-
-      // Si es superadmin, cargamos el contador inicialmente
-      if (this.rol === 'superadmin' && this.sede) {
-        this.obtenerCambiosBitacora();
+ngOnInit() {
+  if (isPlatformBrowser(this.platformId)) {
+    this.rol = localStorage.getItem('rol') ?? '';
+    
+    // 1. Obtener lo que hay en storage
+    let sedeGuardada = localStorage.getItem('sede');
+    
+    // 2. Lógica de corrección para Superadmin
+    if (this.rol === 'superadmin') {
+      // Si la sede guardada contiene una coma o es inválida para el select, forzamos 'Emiliano'
+      if (!sedeGuardada || sedeGuardada.includes(',') || sedeGuardada === 'ninguno' || sedeGuardada === '') {
+        sedeGuardada = 'Emiliano';
+        localStorage.setItem('sede', 'Emiliano'); 
       }
     }
+
+    // 3. Asignar a la variable (Ahora sí coincidirá con el <option value="Emiliano">)
+    this.sede = sedeGuardada ?? '';
+
+    this.usuarioService.notificaciónLimpiada$.subscribe(limpio => {
+      if (limpio) this.obtenerCambiosBitacora();
+    });
+
+    if (this.rol === 'superadmin' && this.sede) {
+      this.obtenerCambiosBitacora();
+    }
   }
+}
 
-
-  obtenerCambiosBitacora() {
+obtenerCambiosBitacora() {
   if (!this.sede) return;
 
-  // Usamos el endpoint que cuenta creaciones y actualizaciones de HOY
-  this.usuarioService.getCambiosHoy(this.sede).subscribe({
+  // Sumamos lo que el usuario ya marcó como visto en las 3 pestañas
+  const vistoPagos = Number(localStorage.getItem('visto_pagos') ?? 0);
+  const vistoAsistencias = Number(localStorage.getItem('visto_asistencias') ?? 0);
+  const vistoRenovacion = Number(localStorage.getItem('visto_renovacion') ?? 0);
+  
+  const totalVistos = vistoPagos + vistoAsistencias + vistoRenovacion;
+
+  // Enviamos ese número al backend
+  this.usuarioService.getCambiosHoy(this.sede, totalVistos).subscribe({
     next: (res) => {
-      // res.total viene del conteo de created_at o updated_at de hoy en tu PHP
       this.cambiosHoy = res.total; 
     },
     error: (err) => {
@@ -63,6 +86,7 @@ cambiosHoy = 0;
     }
   });
 }
+
   // Al cambiar de sede, recargamos el contador antes de refrescar
   changeSede() {
     if (isPlatformBrowser(this.platformId)) {

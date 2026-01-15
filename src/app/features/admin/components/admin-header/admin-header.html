@@ -30,10 +30,14 @@
                 <div class="flex items-center justify-center gap-2 px-4 py-2 bg-white/30 rounded-full border border-white/20 w-full lg:w-auto">
                     <span class="text-xs font-bold uppercase text-gray-700">Sede:</span>
                     <ng-container *ngIf="rol === 'superadmin'; else sedeFija">
-                        <select [(ngModel)]="sede" (change)="changeSede()" class="bg-transparent text-black font-semibold focus:outline-none cursor-pointer">
-                            <option value="Emiliano">Emiliano</option>
-                            <option value="Obrera">Obrera</option>
-                        </select>
+                    <select 
+                    [(ngModel)]="sede" 
+                    (change)="changeSede()" 
+                    name="selectSede"
+                    class="bg-transparent text-black font-semibold focus:outline-none cursor-pointer">
+                        <option value="Emiliano">Emiliano</option>
+                        <option value="Obrera">Obrera</option>
+                    </select>
                     </ng-container>
                     <ng-template #sedeFija>
                         <span class="font-semibold text-black">{{ sede }}</span>
