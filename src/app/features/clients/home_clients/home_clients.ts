@@ -37,19 +37,26 @@ export class HomeClients implements OnInit {
     this.cargarPago(this.clave_usuario);
   }
 
-  cargarUsuario(clave_usuario: string) {
-    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-      next: (data) => {
-        this.user = data;
+cargarUsuario(clave_usuario: string) {
+  this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+    next: (data) => {
+      this.user = data;
 
-        if (this.user?.qr_imagen) {
-          this.user.qr_imagen = `${environment.apiUrl}/${this.user.qr_imagen}`;
-        }
+      // ELIMINA ESTA LÓGICA:
+      // if (this.user?.qr_imagen) {
+      //   this.user.qr_imagen = `${environment.apiUrl}/${this.user.qr_imagen}`;
+      // }
 
-        this.user.sede = this.sede[0];
-      }
-    });
-  }
+      // Solo asegúrate de que el QR exista. Si la URL viene de Cloudinary, 
+      // ya es una URL completa y funcional.
+      
+      this.user.sede = this.sede[0];
+    },
+    error: (err) => {
+      this.mostrarToast('Error al cargar datos del usuario', 'error');
+    }
+  });
+}
 
   cargarPago(clave_usuario: string) {
     this.usuarioService.getPagosByClave(clave_usuario).subscribe({
@@ -69,37 +76,36 @@ apiUrl = environment.apiUrl;
 
   // ... ngOnInit y cargarUsuario ...
 
-  async downloadQR() {
-    if (!this.user?.qr_imagen) return;
 
-    // Obtenemos solo el nombre del archivo CLI00X.png
-    const filename = this.user.qr_imagen.split('/').pop();
-    const downloadUrl = `${this.apiUrl}/api/qr-download/${filename}`;
+async downloadQR() {
+  if (!this.user?.qr_imagen) return;
 
-    try {
-      const response = await fetch(downloadUrl);
-      if (!response.ok) throw new Error('Error en la descarga');
+  const downloadUrl = this.user.qr_imagen;
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+  try {
+    const response = await fetch(downloadUrl);
+    if (!response.ok) throw new Error('Error en la descarga');
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `QR_${this.user.nombres}.png`;
-      document.body.appendChild(link);
-      link.click();
-      
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
 
-      this.mostrarToast('QR Descargado', 'success');
-    } catch (error) {
-      console.error(error);
-      this.mostrarToast('No se pudo descargar el QR', 'error');
-      // Intento de respaldo si falla el fetch
-      window.open(downloadUrl, '_blank');
-    }
+    const link = document.createElement('a');
+    link.href = url;
+    // Nombre del archivo personalizado
+    link.download = `QR_FactorFit_${this.user.clave_usuario}.png`;
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    this.mostrarToast('QR Descargado', 'success');
+  } catch (error) {
+    console.error(error);
+    // Si falla por CORS de Cloudinary, lo abrimos en otra pestaña como respaldo
+    window.open(downloadUrl, '_blank');
   }
+}
 
   mostrarToast(mensaje: string, tipo: 'success' | 'error') {
     this.toast.set({ visible: true, mensaje, tipo });

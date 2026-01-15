@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { lastValueFrom } from 'rxjs'; // Para manejar promesas más fácil
+import { UsuarioService } from '../../../../core/services/usuario.service'; // Asegúrate de que la ruta sea correcta
 
 @Component({
   selector: 'app-register',
@@ -19,6 +21,7 @@ export class Register {
   modalTitle = '';
   modalMessage = '';
   modalType: 'success' | 'error' = 'success';
+  loading = false; // Bloquear botón mientras sube imágenes
 
   // ===== FECHA =====
   today: string = new Date().toISOString().split('T')[0];
@@ -33,7 +36,8 @@ export class Register {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private usuarioService: UsuarioService
   ) {}
 
   // ===== MODAL =====
@@ -56,74 +60,65 @@ export class Register {
     }
   }
 
-  // ===== REGISTRO =====
-  handleRegister(formValue: any) {
 
-    //Contraseñas no coinciden
+  async handleRegister(formValue: any) {
+    if (this.loading) return;
+
     if (formValue.password !== formValue.confirmPassword) {
-      this.openModal(
-        'error',
-        'Contraseñas no coinciden',
-        'Por favor verifica que ambas contraseñas sean iguales.'
-      );
+      this.openModal('error', 'Contraseñas no coinciden', 'Verifica que sean iguales.');
       return;
     }
 
-    // Contraseña corta
-    if (formValue.password.length < 6) {
-      this.openModal(
-        'error',
-        'Contraseña inválida',
-        'La contraseña debe tener mínimo 6 caracteres.'
-      );
-      return;
-    }
+    this.loading = true;
 
-    const telefonoCompleto = `${this.telefonoExtension} ${formValue.phone}`;
+    try {
+      // 1. GENERAR QR
+      const qrData = `USUARIO:${formValue.email}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
 
-    const payload = {
-      nombres          : formValue.firstName.toLowerCase().trim(),
-      apellidos        : formValue.lastName.toLowerCase().trim(),
-      fecha_nacimiento : formValue.birthDate,
-      telefono         : telefonoCompleto,
-      email            : formValue.email,
-      password         : formValue.password,
+      // 2. CONVERTIR QR A ARCHIVO
+      const qrResponse = await fetch(qrApiUrl);
+      const blob = await qrResponse.blob();
+      const qrFile = new File([blob], 'qr_autoregistro.png', { type: 'image/png' });
 
-      sede             : 'ninguno',
-      status           : 'sin asignar',
-      rol              : 'cliente',
-      peso_inicial     : '0 kg',
-      ruta_imagen      : null,
-      qr_imagen        : null
-    };
+      // 3. SUBIR A CLOUDINARY USANDO TU SERVICIO
+      // Usamos lastValueFrom para convertir el observable a promesa y esperar el resultado
+      const cloudinaryRes = await lastValueFrom(this.usuarioService.subirImagenCloudinaryDirecto(qrFile));
+      const urlQrCloudinary = cloudinaryRes.secure_url;
 
-    this.http.post(`${environment.apiUrl}/api/usuarios`, payload).subscribe({
-      next: () => {
-        this.openModal(
-          'success',
-          'Registro exitoso',
-          'Tu cuenta fue creada correctamente.\nEspera la activación de tu cuenta.'
-        );
-      },
-      error: (error) => {
+      // 4. PREPARAR PAYLOAD
+      const payload = {
+        nombres: formValue.firstName.toLowerCase().trim(),
+        apellidos: formValue.lastName.toLowerCase().trim(),
+        fecha_nacimiento: formValue.birthDate,
+        telefono: `${this.telefonoExtension} ${formValue.phone}`,
+        email: formValue.email,
+        password: formValue.password,
+        sede: 'ninguno',
+        status: 'sin asignar',
+        rol: 'cliente',
+        peso_inicial: '0 kg',
+        ruta_imagen: null,
+        qr_imagen: urlQrCloudinary // URL obtenida de Cloudinary
+      };
 
-        let mensaje = 'Error inesperado, intenta nuevamente.';
-
-        if (error.status === 422) {
-          if (error.error?.errors?.email) {
-            mensaje = 'El correo ya está registrado.';
-          }
-          if (error.error?.errors?.telefono) {
-            mensaje = 'El teléfono no es válido.';
-          }
+      // 5. ENVIAR A LARAVEL
+      this.usuarioService.registrarUsuario(payload).subscribe({
+        next: () => {
+          this.openModal('success', 'Registro exitoso', 'Tu cuenta fue creada correctamente.');
+          this.loading = false;
+        },
+        error: (error) => {
+          this.loading = false;
+          this.openModal('error', 'Error en el registro', error.status === 422 ? 'El correo ya existe' : 'Error servidor');
         }
+      });
 
-        this.openModal(
-          'error',
-          'Error en el registro',
-          mensaje
-        );
-      }
-    });
+    } catch (e) {
+      console.error(e);
+      this.loading = false;
+      this.openModal('error', 'Error', 'No se pudo procesar el QR. Verifica el Upload Preset de Cloudinary.');
+    }
   }
+
 }

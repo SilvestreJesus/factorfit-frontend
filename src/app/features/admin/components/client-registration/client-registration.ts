@@ -16,7 +16,7 @@ export class ClientRegistration {
     '+52', '+1', '+44', '+33', '+49', '+34',
     '+55', '+54', '+81', '+82', '+86'
   ];
-
+cargando = false; // Para deshabilitar el botón mientras procesa
   telefonoExtension = '+52';
 
   // Fecha de hoy solo YYYY-MM-DD para mostrar en el input
@@ -71,45 +71,81 @@ export class ClientRegistration {
   }
 
 
-  registrarusuario() {
+async registrarusuario() {
+    if (this.cargando) return;
+    this.cargando = true;
+
     const now = new Date();
     const { fechaPago, tipo_pago } = this.calcularFechaPago(now);
-
-    const fechaInscripcionBackend = this.formatLocalDate(now);
-    const fechaCorteBackend = this.formatLocalDate(fechaPago);
-
-    let pesoFinal = this.usuario.peso_inicial?.trim() || '';
-    if (pesoFinal !== '' && !pesoFinal.toLowerCase().includes('kg')) {
-      pesoFinal = `${pesoFinal} Kg`;
-    }
-
-    const payload = {
-      nombres: this.usuario.nombres,
-      apellidos: this.usuario.apellidos,
-      fecha_nacimiento: this.usuario.fecha_nacimiento,
-      telefono: `${this.telefonoExtension} ${this.usuario.telefono}`,
-      email: this.usuario.email,
-      password: this.usuario.email,
-      fecha_inscripcion: fechaInscripcionBackend,
-      fecha_corte: fechaCorteBackend,
-      tipo_pago: tipo_pago,
-      sede: this.sede,
-      status: "pendiente",
-      rol: "cliente",
-      ruta_imagen: null,
-      qr_imagen: null,
-      peso_inicial: pesoFinal
-    };
     
+    try {
+      // 1. GENERAR QR USANDO EL EMAIL (que es único)
+      const qrData = `USUARIO:${this.usuario.email}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+
+      // 2. CONVERTIR QR A ARCHIVO PARA CLOUDINARY
+      const response = await fetch(qrApiUrl);
+      const blob = await response.blob();
+      const qrFile = new File([blob], 'qr_code.png', { type: 'image/png' });
+
+      // 3. SUBIR QR A CLOUDINARY
+      this.usuarioService.subirImagenCloudinaryDirecto(qrFile).subscribe({
+        next: (cloudinaryRes) => {
+          const urlQrCloudinary = cloudinaryRes.secure_url;
+
+          // 4. PREPARAR PAYLOAD PARA LARAVEL
+          let pesoFinal = this.usuario.peso_inicial?.trim() || '';
+          if (pesoFinal !== '' && !pesoFinal.toLowerCase().includes('kg')) {
+            pesoFinal = `${pesoFinal} Kg`;
+          }
+
+          const payload = {
+            nombres: this.usuario.nombres,
+            apellidos: this.usuario.apellidos,
+            fecha_nacimiento: this.usuario.fecha_nacimiento,
+            telefono: `${this.telefonoExtension} ${this.usuario.telefono}`,
+            email: this.usuario.email,
+            password: this.usuario.email, // Password inicial es su email
+            fecha_inscripcion: this.formatLocalDate(now),
+            fecha_corte: this.formatLocalDate(fechaPago),
+            tipo_pago: tipo_pago,
+            sede: this.sede,
+            status: "pendiente",
+            rol: "cliente",
+            ruta_imagen: null,
+            qr_imagen: urlQrCloudinary, // Enviamos la URL ya lista
+            peso_inicial: pesoFinal
+          };
+
+          // 5. ENVIAR A LARAVEL
+          this.ejecutarRegistroFinal(payload, tipo_pago);
+        },
+        error: () => {
+          this.mostrarToast('Error al subir el QR a la nube', 'error');
+          this.cargando = false;
+        }
+      });
+
+    } catch (error) {
+      this.mostrarToast('Error al procesar el registro', 'error');
+      this.cargando = false;
+    }
+  }
+
+  private ejecutarRegistroFinal(payload: any, tipo_pago: string) {
     this.usuarioService.registrarUsuario(payload).subscribe({
       next: (res) => {
         const clave = res.usuario.clave_usuario;
+        const fechaInscripcionBackend = payload.fecha_inscripcion;
+        const fechaCorteBackend = payload.fecha_corte;
 
+        // Registro de Asistencia inicial
         this.usuarioService.registrarAsistencia({
           clave_cliente: clave,
           fecha_diario: fechaInscripcionBackend,
         }).subscribe({
           next: () => {
+            // Registro de Pago inicial
             this.usuarioService.registrarPago({
               clave_cliente: clave,
               fecha_ingreso: fechaInscripcionBackend,
@@ -118,26 +154,31 @@ export class ClientRegistration {
               monto_pendiente: 500
             }).subscribe({
               next: () => {
-                // CAMBIO AQUÍ: Usar el Toast en lugar de alert
                 this.mostrarToast('¡Usuario registrado correctamente!', 'success');
                 this.limpiarFormulario();
+                this.cargando = false;
               },
-              error: () => this.mostrarToast('Error al registrar el pago', 'error')
+              error: () => this.finalizarConError('Error al registrar el pago')
             });
           },
-          error: () => this.mostrarToast('Error al registrar asistencia', 'error')
+          error: () => this.finalizarConError('Error al registrar asistencia')
         });
       },
       error: (err) => {
-        if (err.status === 422 && err.error?.errors?.email) {
+        if (err.status === 422) {
           this.mostrarToast('El correo ya está registrado', 'error');
         } else {
-          this.mostrarToast('Error al registrar usuario', 'error');
+          this.mostrarToast('Error en el servidor Laravel', 'error');
         }
+        this.cargando = false;
       }
     });
   }
-  
+
+  private finalizarConError(msg: string) {
+    this.mostrarToast(msg, 'error');
+    this.cargando = false;
+  }
 
 private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
   const day = fecha.getDate();
