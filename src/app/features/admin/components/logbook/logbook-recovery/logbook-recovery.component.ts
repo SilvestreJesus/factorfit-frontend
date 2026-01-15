@@ -2,6 +2,8 @@ import { Component, Input, signal, computed, inject, SimpleChanges, OnChanges } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // <--- Asegúrate que este import esté presente
 import { UsuarioService } from '../../../../../core/services/usuario.service';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../../../core/services/user.service';
 
 @Component({
   selector: 'app-logbook-recovery',
@@ -11,7 +13,13 @@ import { UsuarioService } from '../../../../../core/services/usuario.service';
 })
 
 export class RecoveryComponent implements OnChanges {
+    constructor(
+    private UserService: UserService,
+    private route: ActivatedRoute
+  ) {}
+
 private usuarioService = inject(UsuarioService);
+
 
   @Input() busqueda = '';
   @Input() sede = '';
@@ -32,21 +40,21 @@ private usuarioService = inject(UsuarioService);
     }
   }
 
-cargarTodo() {
-  if (!this.sede) return;
+    cargarTodo() {
+    if (!this.sede) return;
 
-  this.usuarioService.getUsuariosRenovacion(this.sede).subscribe({
-    next: (data) => this.usersData.set(data),
-  });
+    this.usuarioService.getUsuariosRenovacion(this.sede).subscribe({
+        next: (data) => this.usersData.set(data),
+    });
 
-  this.usuarioService.getBitacoraRecuperacion(this.sede).subscribe({
-    next: (resp) => {
-      if (resp.status) {
-        this.financialLogData.set(resp.data);
-      }
+    this.usuarioService.getBitacoraRecuperacion(this.sede).subscribe({
+        next: (resp) => {
+        if (resp.status) {
+            this.financialLogData.set(resp.data);
+        }
+        }
+    });
     }
-  });
-}
 
   obtenerFechaCorteReal(u: any): string {
     const finData = this.financialLogData().find(f => f.clave === u.clave_usuario);
@@ -152,69 +160,68 @@ cargarTodo() {
 
 
 
-eliminarDefinitivo(clave: string) {
-  // Eliminamos la confirmación y ejecutamos la petición directamente
-  this.usuarioService.eliminarUsuarioPermanente(clave).subscribe({
-    next: () => {
-      this.mostrarToast('Usuario eliminado permanentemente', 'success');
-      this.cargarTodo(); // Recarga las listas para reflejar el cambio
-    },
-    error: (err) => {
-      this.mostrarToast('Error al eliminar el usuario', 'error');
-      console.error(err);
+    eliminarDefinitivo(clave: string) {
+    // Eliminamos la confirmación y ejecutamos la petición directamente
+    this.usuarioService.eliminarUsuarioPermanente(clave).subscribe({
+        next: () => {
+        this.mostrarToast('Usuario eliminado permanentemente', 'success');
+        this.cargarTodo(); // Recarga las listas para reflejar el cambio
+        },
+        error: (err) => {
+        this.mostrarToast('Error al eliminar el usuario', 'error');
+        console.error(err);
+        }
+    });
     }
-  });
-}
 
 
-ajustarDeudaBase() {
-  this.DeudaAnterior.set(500);
-  this.RecargoAplicado.set(300);
-}
+    ajustarDeudaBase() {
+    this.DeudaAnterior.set(500);
+    this.RecargoAplicado.set(300);
+    }
 
   // AÑADIR SEÑAL PARA TOAST
   toast = signal({ visible: false, mensaje: '', tipo: 'success' });
 
-  // ... (ngOnChanges, cargarTodo, etc.)
 
-confirmarRecuperacion() {
-  const user = this.selectedUserForRecovery();
-  const fechaCalculada = this.proximoCorteCalculado();
-  
-  if (!user || !fechaCalculada) return;
+    confirmarRecuperacion() {
+    const user = this.selectedUserForRecovery();
+    const fechaCalculada = this.proximoCorteCalculado();
+    
+    if (!user || !fechaCalculada) return;
 
-  // 1. Validar que el monto sea mayor a 0 (Igual que en UserPayDetail)
-  const montoARegistrar = this.montoARecuperar();
-  if (montoARegistrar <= 0) {
-    this.mostrarToast('Debes ingresar un monto mayor a $0', 'error');
-    return;
-  }
-
-  // 2. Preparamos el payload EXACTO que espera el PagoController->update
-  const payload = {
-    monto_pagado: montoARegistrar,
-    monto_pendiente: 0, // Al renovar, asumimos que liquida la deuda
-    monto_recargo: 0,   // Al renovar, limpiamos recargos
-    // Formato YYYY-MM-DD para MySQL
-    fecha_corte: fechaCalculada.toISOString().split('T')[0] 
-  };
-
-  // 3. CAMBIO CLAVE: Usar actualizarPago en lugar de actualizarUsuario
-  // Esto es lo que hace que se guarde el dinero y la fecha en la bitácora financiera
-  this.usuarioService.actualizarPago(user.clave_usuario, payload).subscribe({
-    next: () => {
-      this.mostrarToast('¡Renovación y pago registrados con éxito!', 'success');
-      this.showRecoveryModal.set(false);
-      
-      // 4. Recargar todo para que la tabla se actualice y el usuario desaparezca de "Eliminados"
-      this.cargarTodo(); 
-    },
-    error: (err) => {
-      this.mostrarToast('Error al guardar en el servidor', 'error');
-      console.error(err);
+    // 1. Validar que el monto sea mayor a 0 (Igual que en UserPayDetail)
+    const montoARegistrar = this.montoARecuperar();
+    if (montoARegistrar <= 0) {
+        this.mostrarToast('Debes ingresar un monto mayor a $0', 'error');
+        return;
     }
-  });
-}
+
+    // 2. Preparamos el payload EXACTO que espera el PagoController->update
+    const payload = {
+        monto_pagado: montoARegistrar,
+        monto_pendiente: 0, // Al renovar, asumimos que liquida la deuda
+        monto_recargo: 0,   // Al renovar, limpiamos recargos
+        // Formato YYYY-MM-DD para MySQL
+        fecha_corte: fechaCalculada.toISOString().split('T')[0] 
+    };
+
+    // 3. CAMBIO CLAVE: Usar actualizarPago en lugar de actualizarUsuario
+    // Esto es lo que hace que se guarde el dinero y la fecha en la bitácora financiera
+    this.usuarioService.actualizarPago(user.clave_usuario, payload).subscribe({
+        next: () => {
+        this.mostrarToast('¡Renovación y pago registrados con éxito!', 'success');
+        this.showRecoveryModal.set(false);
+        
+        // 4. Recargar todo para que la tabla se actualice y el usuario desaparezca de "Eliminados"
+        this.cargarTodo(); 
+        },
+        error: (err) => {
+        this.mostrarToast('Error al guardar en el servidor', 'error');
+        console.error(err);
+        }
+    });
+    }
 
   // Función para manejar el mensaje visual
   mostrarToast(mensaje: string, tipo: 'success' | 'error') {
@@ -224,7 +231,64 @@ confirmarRecuperacion() {
     }, 3000);
   }
 
-  // ... (el resto de tus funciones)
+  
+
+
+    usuarioAEliminar: any = null;
+
+    // Modifica el método eliminar para que solo abra el modal
+    eliminar(ev: any) {
+    this.usuarioAEliminar = ev;
+    }
+
+    // ... dentro de la clase RecoveryComponent
+
+async confirmarEliminacion() {
+  if (!this.usuarioAEliminar) return;
+  
+  const clave = this.usuarioAEliminar.clave_usuario;
+  const rutaImagen = this.usuarioAEliminar.ruta_imagen;
+
+  // 1. Intentar borrar la imagen de la nube primero
+  if (rutaImagen && rutaImagen.includes('cloudinary')) {
+    try {
+      // Usamos await para asegurar que se intente borrar antes de eliminar el registro
+      await this.UserService.borrarImagenCloudy(rutaImagen).toPromise();
+      console.log("Imagen eliminada de Cloudinary");
+    } catch (e) {
+      // Si falla Cloudinary, igual procedemos a borrar de la DB para no dejar basura en el sistema
+      console.warn("No se pudo borrar la imagen de la nube o ya no existía", e);
+    }
+  }
+
+  // 2. Borrar de la base de datos definitivamente
+  // Nota: Asegúrate que el método eliminarUsuarios en tu UserService 
+  // apunte al endpoint de eliminación permanente (el que borra el registro de la DB)
+  this.UserService.eliminarUsuarios(clave).subscribe({
+    next: () => {
+      this.mostrarToast('Usuario e imagen eliminados permanentemente', 'success');
+      this.usuarioAEliminar = null; // Cerramos el modal
+      this.cargarTodo(); // Recargamos la lista de la tabla
+    },
+    error: (err) => {
+      this.mostrarToast('Error al eliminar de la base de datos', 'error');
+      console.error(err);
+      this.usuarioAEliminar = null;
+    }
+  });
+}
+
+  /* ===============================
+     ERRORES
+  ================================ */
+  mostrarError(err: any) {
+    this.mostrarToast('Error inesperado en el servidor', 'error');
+    console.error(err);
+  }
+
+
+
+
 }
 
 

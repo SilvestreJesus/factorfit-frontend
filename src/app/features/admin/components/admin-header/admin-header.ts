@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { UsuarioService } from '../../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -19,8 +20,66 @@ import { environment } from '../../../../../environments/environment';
 })
 export class AdminHeader implements OnInit {
 
-  // Añadir al inicio de la clase
+cambiosHoy = 0;
+
+
+
+
+  rol = '';
+  sede = '';
   isMenuOpen = false;
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private http: HttpClient,
+    private usuarioService: UsuarioService
+  ) {}
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.rol = localStorage.getItem('rol') ?? '';
+      this.sede = localStorage.getItem('sede') ?? '';
+
+      // Si es superadmin, cargamos el contador inicialmente
+      if (this.rol === 'superadmin' && this.sede) {
+        this.obtenerCambiosBitacora();
+      }
+    }
+  }
+
+
+  obtenerCambiosBitacora() {
+  if (!this.sede) return;
+
+  // Usamos el endpoint que cuenta creaciones y actualizaciones de HOY
+  this.usuarioService.getCambiosHoy(this.sede).subscribe({
+    next: (res) => {
+      // res.total viene del conteo de created_at o updated_at de hoy en tu PHP
+      this.cambiosHoy = res.total; 
+    },
+    error: (err) => {
+      console.error('Error en el contador de header:', err);
+    }
+  });
+}
+  // Al cambiar de sede, recargamos el contador antes de refrescar
+  changeSede() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('sede', this.sede);
+      this.obtenerCambiosBitacora();
+      location.reload(); 
+    }
+  }
+
+  cargarContadorBitacora() {
+    if (!this.sede) return;
+    this.usuarioService.getCambiosHoy(this.sede).subscribe({
+      next: (res) => this.cambiosHoy = res.total,
+      error: (err) => console.error('Error cargando contador:', err)
+    });
+  }
+
 
   logout() {
     if (isPlatformBrowser(this.platformId)) {
@@ -41,40 +100,11 @@ export class AdminHeader implements OnInit {
       });
     }
   }  
-  rol = '';
-  sede = '';
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
-    private http: HttpClient // <- agregado
-  ) {}
 
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.rol = localStorage.getItem('rol') ?? '';
-      const sedeGuardada = localStorage.getItem('sede') ?? '';
 
-      if (this.rol === 'superadmin') {
-        let sedes = sedeGuardada.split(',').map(s => s.trim());
-        if (sedes.length > 1) {
-          this.sede = sedes[0];
-          localStorage.setItem('sede', this.sede); 
-        } else {
-          this.sede = sedeGuardada;
-        }
-      } else {
-        this.sede = sedeGuardada;
-      }
-    }
-  }
 
-  changeSede() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('sede', this.sede);
-      location.reload();
-    }
-  }
+  
 
 
 

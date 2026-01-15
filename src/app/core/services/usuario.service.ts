@@ -125,6 +125,16 @@ getFotoPerfil(ruta: string | null): string | null {
 
 
 
+// En usuario.service.ts
+getConteosBitacora(sede: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/conteos-bitacora?sede=${sede}`);
+}
+
+getCambiosHoy(sede: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/cambios-hoy?sede=${sede}`);
+}
+
+
 subirImagenCloudinaryDirecto(file: File): Observable<any> {
   const url = `https://api.cloudinary.com/v1_1/dwvcefm84/image/upload`;
   const formData = new FormData();

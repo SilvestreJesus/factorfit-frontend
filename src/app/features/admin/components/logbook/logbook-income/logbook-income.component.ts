@@ -38,7 +38,6 @@ cargarDatos() {
     next: (resp) => {
       if (resp.status && resp.data) {
         // LOG DE DEPURACIÓN: Abre la consola del navegador para ver qué llega
-        console.log("Datos recibidos de la sede:", this.sede, resp.data);
 
         // OPCIÓN RECOMENDADA: Si el backend ya filtró por sede, 
         // solo asigna los datos directamente para evitar errores de comparación de strings

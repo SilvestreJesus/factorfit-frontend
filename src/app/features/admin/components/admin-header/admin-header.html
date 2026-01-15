@@ -16,9 +16,17 @@
                 <a (click)="irAPagos2(); isMenuOpen=false" routerLink="usuarios" routerLinkActive="active-link" class="nav-link w-full text-center lg:w-auto">Usuarios</a>
                 <a (click)="irAPagos(); isMenuOpen=false" routerLink="pago" routerLinkActive="active-link" class="nav-link w-full text-center lg:w-auto">Pagos</a>
                 <a routerLink="registros" routerLinkActive="active-link" (click)="isMenuOpen=false" class="nav-link w-full text-center lg:w-auto">Contenido</a>
-                
-                <a *ngIf="rol === 'superadmin'" routerLink="bitacora" routerLinkActive="active-link" (click)="isMenuOpen=false" class="nav-link w-full text-center lg:w-auto">Bitácora</a>
-
+                <a *ngIf="rol === 'superadmin'" 
+                routerLink="bitacora" 
+                routerLinkActive="active-link" 
+                (click)="isMenuOpen=false" 
+                class="nav-link w-full text-center lg:w-auto relative flex items-center justify-center gap-2">
+                    Bitácora
+                    <span *ngIf="cambiosHoy > 0" 
+                        class="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg animate-bounce">
+                        {{ cambiosHoy }}
+                    </span>
+                </a>
                 <div class="flex items-center justify-center gap-2 px-4 py-2 bg-white/30 rounded-full border border-white/20 w-full lg:w-auto">
                     <span class="text-xs font-bold uppercase text-gray-700">Sede:</span>
                     <ng-container *ngIf="rol === 'superadmin'; else sedeFija">

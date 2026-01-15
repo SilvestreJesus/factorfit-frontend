@@ -23,12 +23,43 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-8 items-center">
-    <button (click)="currentSubView.set('ganancias')" [class.active-sub-nav]="currentSubView() === 'ganancias'" class="sub-nav-btn">Ingresos</button>
-    <button (click)="currentSubView.set('deudores')" [class.active-sub-nav]="currentSubView() === 'deudores'" class="sub-nav-btn">Deudores</button>
-    <button (click)="currentSubView.set('asistencia')" [class.active-sub-nav]="currentSubView() === 'asistencia'" class="sub-nav-btn">Asistencia</button>
-    <button (click)="currentSubView.set('renovacion')" [class.active-sub-nav]="currentSubView() === 'renovacion'" class="sub-nav-btn">Renovación</button>
-  </div>
+<div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-8 items-center">
+  <button (click)="seleccionarVista('ganancias')" 
+          [class.active-sub-nav]="currentSubView() === 'ganancias'" 
+          class="sub-nav-btn relative">
+    Ingresos
+    <span *ngIf="getContador('ganancias') > 0" 
+          class="absolute -top-2 -right-2 bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">
+      {{ getContador('ganancias') }}
+    </span>
+  </button>
+
+  <button (click)="seleccionarVista('deudores')" 
+          [class.active-sub-nav]="currentSubView() === 'deudores'" 
+          class="sub-nav-btn">
+    Deudores
+  </button>
+
+  <button (click)="seleccionarVista('asistencia')" 
+          [class.active-sub-nav]="currentSubView() === 'asistencia'" 
+          class="sub-nav-btn relative">
+    Asistencia
+    <span *ngIf="getContador('asistencia') > 0" 
+          class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">
+      {{ getContador('asistencia') }}
+    </span>
+  </button>
+
+  <button (click)="seleccionarVista('renovacion')" 
+          [class.active-sub-nav]="currentSubView() === 'renovacion'" 
+          class="sub-nav-btn relative">
+    Renovación
+    <span *ngIf="getContador('renovacion') > 0" 
+          class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">
+      {{ getContador('renovacion') }}
+    </span>
+  </button>
+</div>
 
   <div [ngSwitch]="currentSubView()">
     <app-logbook-income *ngSwitchCase="'ganancias'" [busqueda]="busqueda()" [sede]="sede"></app-logbook-income>

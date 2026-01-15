@@ -21,7 +21,9 @@
                 
                 <div class="flex gap-2 mt-auto w-full">
                   <button class="btn-edit" (click)="editar(item)">Editar</button>
-                  <button class="btn-delete" (click)="eliminar(item.clave_personal)">
+                  <button type="button" 
+                    class="bg-gray-800 text-white px-2 rounded-lg flex items-center justify-center transition-colors" 
+                    (click)="eliminar(item)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H9V5a1 1 0 011-1z"/>
                     </svg>
@@ -74,4 +76,42 @@
 <div *ngIf="toast.visible" class="fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl text-white shadow-2xl"
      [ngClass]="{'bg-green-600': toast.tipo === 'success', 'bg-red-600': toast.tipo === 'error'}">
   {{ toast.mensaje }}
+</div>
+
+
+<div *ngIf="personalAEliminar" 
+     class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[120] p-4">
+  <div class="bg-[#0f172a] border-2 border-red-600/50 w-full max-w-[350px] rounded-[32px] p-8 shadow-2xl shadow-red-900/20">
+    <div class="text-center space-y-4">
+      <div class="flex justify-center">
+        <div class="bg-red-600/20 p-4 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="text-red-500 text-2xl sm:text-3xl font-black uppercase tracking-tighter">
+        ¿Eliminar Instalacion?
+      </h2>
+      
+      <p class="text-white/80 text-sm sm:text-base font-medium leading-relaxed">
+        Estás por eliminar el personal <br>
+        <span class="text-white font-bold text-lg">"{{ personalAEliminar.nombre_completo }}"</span>. <br>
+        Esta acción borrará también la imagen en la nube.
+      </p>
+
+      <div class="pt-4 space-y-3">
+        <button (click)="confirmarEliminacion()" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm">
+          Confirmar y Borrar
+        </button>
+        
+        <button (click)="personalAEliminar = null" 
+                class="w-full bg-transparent text-gray-400 hover:text-white font-bold py-2 transition-colors text-xs uppercase">
+          No, mantener personal
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

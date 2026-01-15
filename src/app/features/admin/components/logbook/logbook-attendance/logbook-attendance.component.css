@@ -57,3 +57,20 @@ input[type="text"], textarea {
 input[type="text"], input[type="number"], textarea {
   color: #111827 !important; /* Gray-900 */
 }
+
+
+/* Elimina la barra de scroll visualmente pero mantiene la funcionalidad */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ajuste para que los tooltips se vean al tocar en móvil */
+@media (max-width: 768px) {
+  .group:active .absolute {
+    opacity: 1;
+  }
+}

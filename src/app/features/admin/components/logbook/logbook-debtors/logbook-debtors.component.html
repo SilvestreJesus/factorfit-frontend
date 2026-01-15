@@ -1,54 +1,75 @@
 <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden animate-in slide-in-from-bottom">
-  <div class="p-6 bg-black/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-    <h5 class="text-xl font-black text-pink-600 uppercase">Lista de Deudores</h5>
-    <div class="flex flex-wrap gap-2">
-      <button (click)="openWhatsAppMassModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Cobro WhatsApp Masivo</button>
-      <button (click)="openMassMailModal()" class="bg-gray-800 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Correo Masivo</button>
+  <div class="p-6 bg-black/10 flex flex-col lg:flex-row justify-between items-center gap-4">
+    <h5 class="text-xl font-black text-pink-600 uppercase tracking-tighter">Lista de Deudores</h5>
+    <div class="flex flex-row sm:flex-nowrap gap-2 w-full lg:w-auto">
+      <button (click)="openWhatsAppMassModal()" class="flex-1 bg-emerald-600 text-white px-3 py-3 rounded-xl font-black text-[9px] sm:text-[10px] uppercase shadow-lg shadow-emerald-900/20">Cobro WhatsApp Masivo</button>
+      <button (click)="openMassMailModal()" class="flex-1 bg-gray-800 text-white px-3 py-3 rounded-xl font-black text-[9px] sm:text-[10px] uppercase">Correo Masivo</button>
     </div>
   </div>
-  <table class="w-full text-left">
-    <thead class="bg-black/20 text-pink-600 text-xs uppercase font-black">
-      <tr>
-        <th class="p-4">Usuario</th>
-        <th class="p-4">Venció</th>
-        <th class="p-4">Adeudo Total</th>
-        <th class="p-4 text-center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody class="text-gray-800">
-      <tr *ngFor="let log of deudoresFiltrados()" class="border-b border-white/10">
-        <td class="p-4">
-          <p class="font-bold lowercase">{{ log.nombre }} {{ log.apellido }}</p>
-          <span class="text-pink-600/70 font-mono font-bold">{{log.clave}}</span>
-        </td>
-        <td class="p-4 text-rose-600 font-black">{{ log.fecha_corte | date:'dd/MM/yyyy' }}</td>
-        <td class="p-4 font-black text-lg text-rose-700">
-        $ {{ (log.monto_pendiente * 1) + (log.monto_recargo * 1) | number:'1.2-2' }}
-        </td>
-        <td class="p-4 text-center">
-        <div class="flex justify-center gap-3">
-            <button (click)="openWhatsApp(log)" 
-                    class="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors"
-                    title="Enviar WhatsApp">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-            </svg>
-            </button>
 
-            <button (click)="enviarCorreoIndividual(log)" 
-                    class="p-2 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors"
-                    title="Enviar Correo">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="5" width="20" height="16" rx="2"/>
-            </svg>
-            </button>
+  <div class="block md:hidden">
+    <div *ngFor="let log of deudoresFiltrados()" class="p-4 border-b border-white/10 bg-white/5 space-y-3">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="font-bold text-gray-900 lowercase leading-tight">{{ log.nombre }} {{ log.apellido }}</p>
+          <span class="text-pink-600 text-xs font-mono font-bold">{{log.clave}}</span>
         </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <div class="text-right">
+          <p class="text-rose-700 font-black text-lg leading-none">
+            ${{ (log.monto_pendiente * 1) + (log.monto_recargo * 1) | number:'1.2-2' }}
+          </p>
+          <span class="text-[10px] font-bold text-rose-500 uppercase italic">Venció: {{ log.fecha_corte | date:'dd/MM' }}</span>
+        </div>
+      </div>
+      
+      <div class="flex gap-2 pt-2">
+        <button (click)="openWhatsApp(log)" class="flex-1 flex justify-center items-center gap-2 bg-emerald-50 text-emerald-600 py-2 rounded-lg font-bold text-xs">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          WhatsApp
+        </button>
+        <button (click)="enviarCorreoIndividual(log)" class="flex-1 flex justify-center items-center gap-2 bg-blue-50 text-blue-500 py-2 rounded-lg font-bold text-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="5" width="20" height="16" rx="2"/></svg>
+          Correo
+        </button>
+      </div>
+    </div>
+  </div>
 
+  <div class="hidden md:block overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="bg-black/20 text-pink-600 text-xs uppercase font-black">
+        <tr>
+          <th class="p-4">Usuario</th>
+          <th class="p-4">Venció</th>
+          <th class="p-4">Adeudo Total</th>
+          <th class="p-4 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-800">
+        <tr *ngFor="let log of deudoresFiltrados()" class="border-b border-white/10 hover:bg-white/5 transition-colors">
+          <td class="p-4">
+            <p class="font-bold lowercase">{{ log.nombre }} {{ log.apellido }}</p>
+            <span class="text-pink-600/70 font-mono font-bold">{{log.clave}}</span>
+          </td>
+          <td class="p-4 text-rose-600 font-black">{{ log.fecha_corte | date:'dd/MM/yyyy' }}</td>
+          <td class="p-4 font-black text-lg text-rose-700">
+            $ {{ (log.monto_pendiente * 1) + (log.monto_recargo * 1) | number:'1.2-2' }}
+          </td>
+          <td class="p-4 text-center">
+            <div class="flex justify-center gap-3">
+              <button (click)="openWhatsApp(log)" class="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors" title="Enviar WhatsApp">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              </button>
+              <button (click)="enviarCorreoIndividual(log)" class="p-2 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors" title="Enviar Correo">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="5" width="20" height="16" rx="2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 
 <div *ngIf="showMailModal()" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[150] p-4">

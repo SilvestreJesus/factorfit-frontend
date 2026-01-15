@@ -1,15 +1,13 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, effect } from '@angular/core';
 import { CommonModule, registerLocaleData as regLocale } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import localeEs from '@angular/common/locales/es';
 
-// Componentes hijos
+// Componentes hijos e imports de librerías (mantener igual...)
 import { IncomeComponent } from './logbook-income/logbook-income.component';
 import { DebtorsComponent } from './logbook-debtors/logbook-debtors.component';
 import { AttendanceComponent } from './logbook-attendance/logbook-attendance.component';
 import { RecoveryComponent } from './logbook-recovery/logbook-recovery.component';
-
-// Librerías de Excel
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver'; 
 import { UsuarioService } from '../../../../core/services/usuario.service';
@@ -20,20 +18,18 @@ regLocale(localeEs);
 @Component({
   selector: 'app-logbook',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    IncomeComponent, 
-    DebtorsComponent, 
-    AttendanceComponent, 
-    RecoveryComponent
-  ],
+ imports: [CommonModule, FormsModule, IncomeComponent, DebtorsComponent, AttendanceComponent, RecoveryComponent],
   templateUrl: './logbook.html',
   styleUrl: './logbook.css',
 })
 export class Logbook implements OnInit {
   private usuarioService = inject(UsuarioService);
-  
+  conteos = signal({ pagos: 0, asistencias: 0, renovacion: 0 });
+  vistos = signal({
+    ganancias: Number(localStorage.getItem('visto_ganancias') ?? 0),
+    asistencia: Number(localStorage.getItem('visto_asistencia') ?? 0),
+    renovacion: Number(localStorage.getItem('visto_renovacion') ?? 0)
+  });
   // --- Signals de Control ---
   sede = localStorage.getItem('sede') ?? '';
   busqueda = signal('');
@@ -44,9 +40,69 @@ export class Logbook implements OnInit {
     visible: false, mensaje: '', tipo: 'success'
   });
 
+
+
+  constructor() {
+    // Escuchar cambios de pestaña de forma reactiva
+    effect(() => {
+      this.marcarComoVisto(this.currentSubView());
+    }, { allowSignalWrites: true });
+  }
+
   ngOnInit() {
+    this.cargarConteos();
     setInterval(() => this.fechaHoraActual.set(new Date()), 1000);
   }
+
+  // 2. Mapeo correcto de la respuesta del Backend
+cargarConteos() {
+    this.usuarioService.getConteosBitacora(this.sede).subscribe({
+      next: (res) => {
+        // CORRECCIÓN: Usamos los nombres que definimos arriba en el Signal
+        this.conteos.set({
+          pagos: res.pagos || 0,
+          asistencias: res.asistencias || 0,
+          renovacion: res.renovacion || 0
+        });
+      },
+      error: (err) => console.error('Error cargando conteos', err)
+    });
+  }
+
+  // 3. Método unificado para cambiar de vista (usado en el HTML)
+  seleccionarVista(vista: string) {
+    this.currentSubView.set(vista);
+  }
+
+  // 4. Lógica de limpieza mejorada
+  marcarComoVisto(view: string) {
+    const totalActual = (this.conteos() as any)[view] || 0;
+    
+    // Solo actualizamos si el número de la base de datos es mayor a lo visto
+    if (totalActual >= 0) {
+      localStorage.setItem(`visto_${view}`, totalActual.toString());
+      this.vistos.update(v => ({ ...v, [view]: totalActual }));
+    }
+  }
+
+  // 5. Helper único para el HTML (Usa este en los *ngIf)
+  getContador(view: string): number {
+    const total = (this.conteos() as any)[view] || 0;
+    const visto = (this.vistos() as any)[view] || 0;
+    
+    const resultado = total - visto;
+    return resultado > 0 ? resultado : 0;
+  }
+    // Helper para el HTML
+  getBadge(view: string): number {
+    const total = view === 'ganancias' ? this.conteos().pagos : 
+                  view === 'asistencia' ? this.conteos().asistencias : 0;
+    const visto = view === 'ganancias' ? this.vistos().ganancias : 
+                  view === 'asistencia' ? this.vistos().asistencia : 0;
+    
+    return Math.max(0, total - visto);
+  }
+
 
   // --- MÉTODO PRINCIPAL DE DESCARGA ---
   async descargarReportes() {

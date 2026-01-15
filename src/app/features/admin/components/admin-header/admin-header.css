@@ -22,3 +22,14 @@
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     }
 }
+
+
+/* Animación opcional para llamar la atención sobre el cambio */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .8; transform: scale(1.1); }
+}

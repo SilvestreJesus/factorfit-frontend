@@ -8,22 +8,12 @@ import { Observable } from 'rxjs';
 })
 export class TrainerService {
 
+  // Usamos la variable base para mayor limpieza
   private readonly apiUrl = `${environment.apiUrl}/api/personal`;
 
   constructor(private http: HttpClient) {}
 
-  // =====================================
-  //               Personal
-  // =====================================
-
-  registrarPersonal(data: FormData): Observable<any> {
-    return this.http.post<any>(this.apiUrl, data);
-  }
-
-  getPersonalByClave(clave: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${clave}`);
-  }
-
+  // Obtener todos con filtro de sede
   getPersonal(sede: string = ''): Observable<any[]> {
     let params = new HttpParams();
     if (sede) {
@@ -32,29 +22,51 @@ export class TrainerService {
     return this.http.get<any[]>(this.apiUrl, { params });
   }
 
+  // Obtener uno solo
+  getPersonalByClave(clave: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${clave}`);
+  }
+
+
+
+  // Eliminar
   eliminarPersonal(clave: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${clave}`);
   }
 
-  actualizarPersonal(clave: string, formData: FormData): Observable<any> {
-    // Correcto: usamos POST con ?_method=PUT para archivos en Laravel
-    return this.http.post<any>(`${this.apiUrl}/${clave}?_method=PUT`, formData);
-  }
 
-  getPersonalPorSede(sede: string): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl, { params: { sede } });
-  }
 
-  // --- CORRECCIÓN PARA CLOUDINARY ---
-  getImagenPersonal(ruta: string): string {
-    if (!ruta) return 'assets/no-image.png';
+// Personal.service.ts
 
-    // Si la ruta ya es una URL completa (Cloudinary), no le añadimos el apiUrl
-    if (ruta.startsWith('http')) {
-      return ruta;
-    }
+subirImagenCloudinary(file: File): Observable<any> {
+  const url = `https://api.cloudinary.com/v1_1/dwvcefm84/image/upload`;
+  const formData = new FormData();
+  
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Tu preset configurado
+  formData.append('folder', 'Personal'); // Carpeta específica para Personal
 
-    // Solo si es una ruta local antigua
-    return `${environment.apiUrl}/${ruta}`;
-  }
+  return this.http.post(url, formData);
+}
+
+// Cambiamos FormData por 'any' porque ahora enviaremos JSON con la URL ya lista
+registrarPersonal(data: any): Observable<any> {
+  return this.http.post<any>(this.apiUrl, data);
+}
+
+actualizarPersonal(clave: string, data: any): Observable<any> {
+  // Al ser JSON, podemos usar PUT directamente sin el truco de ?_method=PUT
+  return this.http.put<any>(`${this.apiUrl}/${clave}`, data);
+}
+
+getImagenPersonal(ruta: string): string {
+  if (!ruta) return 'assets/images/no-image.png';
+  if (ruta.startsWith('http')) return ruta;
+  return `${environment.apiUrl}/${ruta}`;
+}
+// Nuevo método para pedirle a Laravel que borre una imagen específica de la nube
+borrarImagenCloudy(url: string): Observable<any> {
+  // Enviamos la URL completa al backend para que él extraiga el ID y la borre
+  return this.http.post(`${this.apiUrl}/destruir-imagen`, { url });
+}
 }
