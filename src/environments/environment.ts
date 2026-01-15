@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://factorfit-backend-production.up.railway.app'
+  apiUrl: 'http://127.0.0.1:8000' // Cambia esto según tu configuración local
 };

@@ -5,6 +5,7 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-clients-profile',
@@ -43,98 +44,98 @@ export class ClientsProfile implements OnInit {
     private usuarioService: UsuarioService
   ) {}
 
-  ngOnInit() {
-    // Intentamos obtener la clave desde la ruta padre o la actual
+ngOnInit() {
     this.clave_usuario = this.route.parent?.snapshot.paramMap.get('clave_usuario') ?? 
                          this.route.snapshot.paramMap.get('clave_usuario') ?? '';
     
     if (this.clave_usuario) {
       this.cargarUsuario(this.clave_usuario);
-    } else {
-      this.showToast("No se encontró la clave de usuario", "error");
     }
   }
 
 
+cargarUsuario(clave_usuario: string) {
+    this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
+      next: (data) => {
+        this.user = data;
 
-  cargarUsuario(clave_usuario: string) {
-  this.usuarioService.getUsuarioByClave(clave_usuario).subscribe({
-    next: (data) => {
-      this.user = data;
-
-      // 1. TRATAMIENTO DEL TELÉFONO
-      if (this.user.telefono) {
-        const partes = this.user.telefono.split(" ");
-        if (partes.length > 1) {
-          this.telefonoExtension = partes[0]; 
-          this.user.telefono = partes.slice(1).join(""); 
-        } else {
-          this.user.telefono = this.user.telefono.replace(/\D/g, '');
+        // Tratamiento de teléfono
+        if (this.user.telefono) {
+          const partes = this.user.telefono.split(" ");
+          if (partes.length > 1) {
+            this.telefonoExtension = partes[0]; 
+            this.user.telefono = partes.slice(1).join(""); 
+          }
         }
+
+        // MOSTRAR IMAGEN DESDE CLOUDINARY
+        this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
+      },
+      error: () => this.showToast("Error al cargar datos del perfil", "error")
+    });
+  }
+
+  // MÉTODO ACTUALIZADO PARA SUBIR A CLOUDINARY DIRECTO
+  subirFoto(event: any) {
+    const archivo = event.target.files[0];
+    if (!archivo) return;
+
+    // 1. Subir directamente a Cloudinary desde Angular
+    this.usuarioService.subirImagenCloudinaryDirecto(archivo).subscribe({
+      next: (res: any) => {
+        const urlCloudinary = res.secure_url;
+
+        // 2. Enviar la URL a Laravel para actualizar el perfil
+        // Usamos actualizarPerfil que ya tienes configurado
+        this.usuarioService.actualizarPerfil(this.clave_usuario, { ruta_imagen: urlCloudinary })
+          .subscribe({
+            next: () => {
+              this.user.ruta_imagen = urlCloudinary;
+              this.user.ruta_imagen_mostrar = urlCloudinary;
+              this.showToast("Foto de perfil actualizada", "success");
+            },
+            error: () => this.showToast("Error al guardar la nueva foto", "error")
+          });
+      },
+      error: (err) => {
+        console.error(err);
+        this.showToast("Error al subir a la nube", "error");
       }
-
-      // 2. TRATAMIENTO DE IMAGEN (Consistente con los otros componentes)
-      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(this.user.ruta_imagen);
-    },
-    error: () => this.showToast("Error al cargar datos del perfil", "error")
-  });
-}
-
-subirFoto(event: any) {
-  const archivo = event.target.files[0];
-  if (!archivo) return;
-
-  const formData = new FormData();
-  formData.append('foto', archivo);
-
-  this.usuarioService.subirFoto(this.clave_usuario, formData).subscribe({
-    next: (resp: any) => {
-      // Actualizamos la ruta interna y refrescamos la vista procesándola de nuevo
-      this.user.ruta_imagen = resp.ruta_imagen;
-      this.user.ruta_imagen_mostrar = this.usuarioService.getFotoPerfil(resp.ruta_imagen);
-      this.showToast("Foto de perfil actualizada", "success");
-    },
-    error: () => this.showToast("No se pudo subir la foto", "error")
-  });
-}
+    });
+  }
 
   guardarCambios() {
     if (!this.clave_usuario) return;
-
-    // Limpiar la clave por si trae parámetros extra (ej. :1)
     const claveLimpia = this.clave_usuario.split(':')[0].trim();
 
-    // Clonamos el objeto para no afectar la vista mientras se envía
     const datosAEnviar = { ...this.user };
 
-    // 3. FORMATEAR TELÉFONO: Unir prefijo y número para la DB
+    // Formatear Teléfono
     const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');
-    datosAEnviar.telefono = this.telefonoExtension ? `${this.telefonoExtension} ${numeroSolo}` : numeroSolo;
+    datosAEnviar.telefono = `${this.telefonoExtension} ${numeroSolo}`;
 
-    // 4. MANEJO DE CONTRASEÑA: Solo se envía si el usuario escribió algo
+    // Manejo de Contraseña
     if (this.passwordNueva && this.passwordNueva.trim() !== '') {
       datosAEnviar.password = this.passwordNueva;
     } else {
       delete datosAEnviar.password;
     }
 
-    // 5. LIMPIEZA DE DATOS: Quitamos propiedades que solo son para la vista
+    // Limpieza de campos de vista
     delete datosAEnviar.ruta_imagen_mostrar;
 
     this.usuarioService.actualizarPerfil(claveLimpia, datosAEnviar)
       .subscribe({
         next: () => {
-          this.showToast("¡Perfil actualizado con éxito!", "success");
-          this.passwordNueva = ''; // Resetear campo de password
-          // Recargamos datos para confirmar que todo se guardó bien
+          this.showToast("¡Perfil actualizado!", "success");
+          this.passwordNueva = '';
           this.cargarUsuario(this.clave_usuario);
         },
-        error: (err) => {
-          console.error("Error al actualizar:", err);
-          this.showToast("Error al guardar cambios", "error");
-        }
+        error: () => this.showToast("Error al guardar cambios", "error")
       });
   }
+
+
 
   // --- Utilidades ---
 
