@@ -242,36 +242,22 @@ private usuarioService = inject(UsuarioService);
     }
 
     // ... dentro de la clase RecoveryComponent
-
 async confirmarEliminacion() {
   if (!this.usuarioAEliminar) return;
   
   const clave = this.usuarioAEliminar.clave_usuario;
-  const rutaImagen = this.usuarioAEliminar.ruta_imagen;
 
-  // 1. Intentar borrar la imagen de la nube primero
-  if (rutaImagen && rutaImagen.includes('cloudinary')) {
-    try {
-      // Usamos await para asegurar que se intente borrar antes de eliminar el registro
-      await this.UserService.borrarImagenCloudy(rutaImagen).toPromise();
-      console.log("Imagen eliminada de Cloudinary");
-    } catch (e) {
-      // Si falla Cloudinary, igual procedemos a borrar de la DB para no dejar basura en el sistema
-      console.warn("No se pudo borrar la imagen de la nube o ya no existía", e);
-    }
-  }
-
-  // 2. Borrar de la base de datos definitivamente
-  // Nota: Asegúrate que el método eliminarUsuarios en tu UserService 
-  // apunte al endpoint de eliminación permanente (el que borra el registro de la DB)
-  this.UserService.eliminarUsuarios(clave).subscribe({
+  // Solo llama al endpoint de eliminación permanente. 
+  // Laravel se encargará de limpiar las imágenes y el registro en una sola transacción.
+  this.usuarioService.eliminarUsuarioPermanente(clave).subscribe({
     next: () => {
-      this.mostrarToast('Usuario e imagen eliminados permanentemente', 'success');
-      this.usuarioAEliminar = null; // Cerramos el modal
-      this.cargarTodo(); // Recargamos la lista de la tabla
+      this.mostrarToast('Usuario y archivos eliminados por completo', 'success');
+      this.usuarioAEliminar = null; 
+      this.cargarTodo(); 
     },
     error: (err) => {
-      this.mostrarToast('Error al eliminar de la base de datos', 'error');
+      // Si recibes 500 aquí, revisa los logs de Laravel (storage/logs/laravel.log)
+      this.mostrarToast('Error al eliminar. Revisa la conexión con la nube.', 'error');
       console.error(err);
       this.usuarioAEliminar = null;
     }
