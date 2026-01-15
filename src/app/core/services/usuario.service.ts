@@ -74,6 +74,7 @@ export class UsuarioService {
     // Asegúrate de que la URL coincida con tu ruta de Laravel
     return this.http.delete<any>(`${this.apiUrl}/${clave_usuario}/eliminar-permanente`);
   }
+
   // usuario.service.ts
 
   actualizarPerfil(clave: string, datos: any): Observable<any> {
@@ -93,6 +94,7 @@ export class UsuarioService {
     return this.http.put(`${this.apiUrl}/${clave_usuario}/eliminar`, {});
   }
 
+  
 
 
 // 1. Modifica el método getQrUrl (O cámbiale el nombre a resolverImagen)
@@ -146,6 +148,7 @@ notificaciónLimpiada$ = this.notificaciónLimpiadaSource.asObservable();
 notificarLimpieza() {
   this.notificaciónLimpiadaSource.next(true);
 }
+
 
 
 subirImagenCloudinaryDirecto(file: File): Observable<any> {
