@@ -23,34 +23,11 @@ export class UsuarioService {
       return this.http.post(`${environment.apiUrl}/api/recuperar-password`, { email });
   }
 
-enviarEmail(data: any): Observable<any> {
-const BREVO_API_KEY = environment.brevoKey;
-  const emailBody = {
-    sender: { name: "Factor Fit", email: "22690406@tecvalles.mx" },
-    to: data.emails.map((e: string) => ({ email: e })),
-    subject: data.asunto,
-    // Aquí mandamos el HTML directamente
-    htmlContent: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee;">
-        <div style="background: #111827; padding: 20px; text-align: center; color: white;">FACTOR FIT</div>
-        <div style="padding: 20px;">
-          <p>${data.mensaje.replace(/\n/g, '<br>')}</p>
-          ${data.imagen ? `<img src="${data.imagen}" style="width:100%; border-radius:10px;">` : ''}
-        </div>
-        <div style="background: #f9fafb; padding: 10px; text-align: center; font-size: 12px;">
-          Sede: ${data.sede || 'General'}
-        </div>
-      </div>
-    `
-  };
+  enviarEmail(data: any): Observable<any> {
+    // Usamos environment.apiUrl directamente para apuntar a la nueva ruta
+    return this.http.post<any>(`${environment.apiUrl}/api/enviar-correo`, data);
+  }
 
-  return this.http.post('https://api.brevo.com/v3/smtp/email', emailBody, {
-    headers: {
-      'api-key': BREVO_API_KEY,
-      'Content-Type': 'application/json'
-    }
-  });
-}
 
   // =====================================
   //               USUARIOS
