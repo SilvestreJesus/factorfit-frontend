@@ -24,8 +24,7 @@ export class UsuarioService {
   }
 
 enviarEmail(data: any): Observable<any> {
-  const BREVO_API_KEY = 'xsmtpsib-afcb97f4e673f2d4ccffd01f6debb1e0eb9662b2a42298bfbef85a2d9cecbf51-juLdt1FJrfVLuz0u'; // Pega aquí tu llave
-  
+const BREVO_API_KEY = environment.brevoKey;
   const emailBody = {
     sender: { name: "Factor Fit", email: "22690406@tecvalles.mx" },
     to: data.emails.map((e: string) => ({ email: e })),
