@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://factorfit-backend-production.up.railway.app',
+  apiUrl: 'http://localhost:8000' // Asegúrate de que esta URL apunte a tu backend Laravel,
   
 };

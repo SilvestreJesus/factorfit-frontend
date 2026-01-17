@@ -99,6 +99,9 @@ export class DebtorsComponent implements OnChanges {
     return num;
   }
 
+
+  
+
   openWhatsApp(log: any) {
     if (!log.telefono) {
       this.showToastMessage('Este usuario no tiene teléfono registrado', 'error');
