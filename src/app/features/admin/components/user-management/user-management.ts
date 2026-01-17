@@ -163,8 +163,8 @@ async ejecutarEnvioMasivo() {
     };
 
     try {
-      await this.http.post('http://localhost:3000/enviar', payload).toPromise();
-            await new Promise(res => setTimeout(res, 5000));
+      await this.http.post('nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
+      
       this.progresoEnvio.update(v => v + 1);
       console.log(`Mensaje enviado a ${user.nombres}`);
     } catch (e) {
