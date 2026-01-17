@@ -244,27 +244,29 @@ enviarCorreo() {
     ? this.usersFiltrados().map(u => u.email).filter(e => !!e)
     : [this.selectedUserForMail()?.email];
 
-  this.usuarioService.enviarEmail({
+  const payload = {
     emails: destinatarios,
     asunto: this.asuntoCorreo,
     mensaje: this.mensajeCorreo,
-    sede: this.sede,
-    imagen: this.imagenSeleccionada
-  }).subscribe({
-    next: () => {
-      this.closeMailModal();
-      this.imagenSeleccionada = null;
-      this.cargando.set(false);
-      this.showToastMessage('¡Correo enviado con éxito!'); // <--- Toast mejorado
-    },
-    error: (err) => {
-      console.error(err);
-      this.cargando.set(false);
-      this.showToastMessage('Error al enviar el correo', 'error');
-    }
-  });
-}
+    imagen: this.imagenSeleccionada // Tu base64 que ya capturas
+  };
 
+  // Cambiamos la petición para que vaya al servidor de Node en Railway
+  this.http.post('https://nodewhatsapp-production.up.railway.app/enviar-correo', payload)
+    .subscribe({
+      next: () => {
+        this.closeMailModal();
+        this.imagenSeleccionada = null;
+        this.cargando.set(false);
+        this.showToastMessage('¡Correo enviado con éxito!');
+      },
+      error: (err) => {
+        console.error(err);
+        this.cargando.set(false);
+        this.showToastMessage('Error al enviar el correo', 'error');
+      }
+    });
+}
   showQrModal(user: any) { this.selectedUserForQr.set(user); }
   closeQrModal() { this.selectedUserForQr.set(null); }
 
