@@ -139,6 +139,7 @@ mensajeWhatsApp = '';
 openWhatsAppMassModal() {
   this.mensajeWhatsApp = `Hola, te contactamos de Factor Fit Sede ${this.sede}...`;
   this.showWhatsAppModal.set(true);
+  
 }
 
 // Añade estos signals arriba con los demás
@@ -146,6 +147,7 @@ progresoEnvio = signal(0);
 totalEnvio = signal(0);
 
 async ejecutarEnvioMasivo() {
+  // Espera de seguridad más larga para no saturar el servidor pequeño
   const usuarios = this.usersFiltrados();
   this.totalEnvio.set(usuarios.length);
   this.progresoEnvio.set(0);
@@ -164,6 +166,8 @@ async ejecutarEnvioMasivo() {
 
     try {
       await this.http.post('https://nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
+      await new Promise(res => setTimeout(res, 5000));
+      
       this.progresoEnvio.update(v => v + 1);
       console.log(`Mensaje enviado a ${user.nombres}`);
     } catch (e) {
