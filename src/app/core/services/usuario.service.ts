@@ -25,9 +25,9 @@ export class UsuarioService {
   }
 
   enviarEmail(data: any): Observable<any> {
-    // Usamos environment.apiUrl directamente para apuntar a la nueva ruta
-    return this.http.post<any>(`${environment.apiUrl}/api/enviar-correo`, data);
+      return this.http.post<any>(this.correosUrl, data);
   }
+
 
   // =====================================
   //               USUARIOS
