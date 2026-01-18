@@ -154,14 +154,24 @@ export class DebtorsComponent implements OnChanges {
 
   // --- LÓGICA DE CORREOS ---
 
-  // Nombre de función corregido según tu HTML
+// --- LÓGICA DE CORREOS (AJUSTADA) ---
+
   enviarCorreoIndividual(log: any) {
     this.esEnvioIndividual = true;
     this.deudorDestino = log;
+    
+    // Calculamos el monto total de la deuda
     const monto = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
     
-    this.asuntoCorreo = `Aviso de Adeudo - ${log.nombre}`;
-    this.mensajeCorreo = `Hola ${log.nombre}, detectamos un saldo pendiente de $${monto}. Te invitamos a regularizarlo.\n\nSede: ${this.sede}`;
+    // Asunto personalizado
+    this.asuntoCorreo = `Aviso de Adeudo Pendiente - ${log.nombre}`;
+    
+    // Cuerpo del mensaje formateado para el cuadro blanco profesional
+    this.mensajeCorreo = `Estimado/a ${log.nombre} ${log.apellido},\n\n` +
+      `Le informamos que en nuestro sistema de Factor Fit Sede ${this.sede}, ` +
+      `detectamos un saldo pendiente por la cantidad de: $${monto.toFixed(2)}.\n\n` +
+      `Le invitamos cordialmente a pasar a recepción para regularizar su situación. ` +
+      `Si ya realizó su pago, por favor haga caso omiso a este mensaje.`;
     
     this.showMailModal.set(true);
   }
@@ -169,54 +179,60 @@ export class DebtorsComponent implements OnChanges {
   openMassMailModal() {
     this.esEnvioIndividual = false;
     this.deudorDestino = null;
-    this.asuntoCorreo = 'Aviso de Pago Pendiente - Factor Fit';
-    this.mensajeCorreo = `Estimado cliente, le informamos que presenta un adeudo...`;
+    this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
+    this.mensajeCorreo = `Estimados usuarios de Factor Fit Sede ${this.sede},\n\n` +
+      `Les enviamos este recordatorio general para informarles que cuentan con un saldo pendiente en su mensualidad.\n\n` +
+      `Favor de acudir a sucursal para evitar recargos adicionales. ¡Los esperamos!`;
     this.showMailModal.set(true);
   }
 
-confirmarEnvioCorreo() {
-  this.cargando.set(true);
+  confirmarEnvioCorreo() {
+    if (this.cargando()) return;
+    this.cargando.set(true);
 
-  let destinatarios: string[] = [];
-  if (this.esEnvioIndividual && this.deudorDestino) {
-    destinatarios = [this.deudorDestino.email];
-  } else {
-    // Filtramos para asegurar que no enviamos a emails nulos o vacíos
-    destinatarios = this.deudoresFiltrados()
-      .map(u => u.email)
-      .filter(e => !!e && e.includes('@'));
-  }
+    let destinatarios: string[] = [];
 
-  if (destinatarios.length === 0) {
-    this.cargando.set(false);
-    this.showToastMessage('No hay correos válidos para enviar', 'error');
-    return;
-  }
-
-  // Preparamos el payload para la plantilla profesional
-  const payload = {
-    emails: destinatarios,
-    asunto: this.asuntoCorreo,
-    mensaje: this.mensajeCorreo,
-    sede: this.sede,
-    imagen: this.imagenSeleccionada, // Si subiste un banner de "Recordatorio de pago"
-    tipo: 'promocion' // <-- Esto activa el diseño profesional en tu servidor Node
-  };
-
-  this.usuarioService.enviarEmail(payload).subscribe({
-    next: () => {
-      this.showMailModal.set(false);
-      this.cargando.set(false);
-      this.imagenSeleccionada = null;
-      this.showToastMessage(`¡Correo ${this.esEnvioIndividual ? 'individual' : 'masivo'} enviado con éxito!`);
-    },
-    error: (err) => {
-      console.error('Error al enviar:', err);
-      this.cargando.set(false);
-      this.showToastMessage('Error al conectar con el servicio de correos', 'error');
+    // 1. Definir destinatarios
+    if (this.esEnvioIndividual && this.deudorDestino) {
+      destinatarios = [this.deudorDestino.email];
+    } else {
+      destinatarios = this.deudoresFiltrados()
+        .map(u => u.email)
+        .filter(e => !!e && e.includes('@'));
     }
-  });
-}
+
+    if (destinatarios.length === 0) {
+      this.cargando.set(false);
+      this.showToastMessage('No hay correos válidos para enviar', 'error');
+      return;
+    }
+
+    // 2. CONFIGURAMOS EL PAYLOAD IDÉNTICO AL DE USERMANAGER
+    const payload = {
+      emails: destinatarios,
+      asunto: this.asuntoCorreo,
+      mensaje: this.mensajeCorreo,
+      imagen: this.imagenSeleccionada, // Tu base64 capturado por onFileSelected
+      sede: this.sede,                // Enviamos la sede para el footer
+      tipo: 'promocion'               // Activamos tu diseño oscuro profesional de Node
+    };
+
+    // 3. Ejecutar envío
+    this.usuarioService.enviarEmail(payload).subscribe({
+      next: () => {
+        this.showMailModal.set(false);
+        this.cargando.set(false);
+        this.imagenSeleccionada = null; // Limpiar imagen tras éxito
+        this.showToastMessage(`¡Correo ${this.esEnvioIndividual ? 'individual' : 'masivo'} enviado con éxito!`);
+      },
+      error: (err) => {
+        console.error('Error al enviar:', err);
+        this.cargando.set(false);
+        this.showToastMessage('Error al enviar el correo', 'error');
+      }
+    });
+  }
+
   // --- UTILIDADES ---
 
   onFileSelected(event: any) {
