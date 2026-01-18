@@ -20,7 +20,7 @@ export class UsuarioService {
 
   recuperarPassword(email: string): Observable<any> {
       // Apuntamos directamente a /api/recuperar-password
-      return this.http.post(`${environment.apiUrl}/api/recuperar-password`, { email });
+      return this.http.post<any>(this.correosUrl, { email });
   }
 
   enviarEmail(data: any): Observable<any> {
