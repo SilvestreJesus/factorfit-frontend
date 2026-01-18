@@ -44,34 +44,18 @@ onRecover(form: NgForm) {
     this.cargando.set(true);
     this.mensajeError.set('');
 
-    // 1. Llamamos a Laravel para generar la nueva clave en la DB
+    // LLAMADA ÚNICA: Laravel hace la lógica de DB y dispara el correo
     this.usuarioService.recuperarPassword(form.value.email).subscribe({
         next: (res) => {
-            // Laravel debe retornar el nombre del usuario y la contraseña generada
-            const datosParaCorreo = {
-                emails: [form.value.email],
-                asunto: 'Restablecer Contraseña - Factor Fit',
-                mensaje: 'Se ha solicitado una recuperación de acceso para tu cuenta de Factor Fit.',
-                nombres: res.nombres || 'Usuario', // Datos que vienen de tu API Laravel
-                password: res.nuevaPassword,      // La contraseña temporal generada
-                tipo: 'password'                  // Activa la plantilla morada
-            };
-
-            // 2. Enviamos el correo usando el nuevo servidor de Node
-            this.usuarioService.enviarEmail(datosParaCorreo).subscribe({
-                next: () => {
-                    this.cargando.set(false);
-                    this.showToastMessage('¡Éxito! Revisa tu correo para obtener tu nueva contraseña.');
-                },
-                error: () => {
-                    this.cargando.set(false);
-                    this.showToastMessage('Se cambió la clave, pero hubo un error al enviar el correo.', 'error');
-                }
-            });
+            this.cargando.set(false);
+            this.showToastMessage('¡Éxito! Revisa tu correo para obtener tu nueva contraseña.');
         },
         error: (err) => {
             this.cargando.set(false);
-            this.mensajeError.set(err.error.message || 'El correo no está registrado');
+            // Si Laravel devuelve 404 o 500, lo mostramos aquí
+            const msg = err.error?.message || 'Error al procesar la solicitud';
+            this.mensajeError.set(msg);
+            this.showToastMessage(msg, 'error');
         }
     });
 }
