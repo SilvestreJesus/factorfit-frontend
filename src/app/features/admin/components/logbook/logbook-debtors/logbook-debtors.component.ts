@@ -60,7 +60,84 @@ export class DebtorsComponent implements OnChanges {
   deudorDestino: any = null;
   constructor() {}
 
+// --- CORRECCIÓN DE LÓGICA DE CORREOS ---
 
+// 1. Abrir para Individual
+openMailModal(log: any) {
+  this.isMassEmail.set(false);
+  this.esEnvioIndividual = true; // Sincronizamos ambas variables
+  this.deudorDestino = log;
+  this.selectedUserForMail.set(log);
+
+  const monto = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+  this.asuntoCorreo = `Aviso de Adeudo - ${log.nombre}`;
+  this.mensajeCorreo = `Hola ${log.nombre},\n\nTe informamos que presentas un saldo pendiente de $${monto}. Te invitamos a regularizar tu cuenta en la sede ${this.sede}.`;
+  this.showMailModal.set(true);
+}
+
+// 2. Abrir para Masivo
+openMassMailModal() {
+  this.isMassEmail.set(true);
+  this.esEnvioIndividual = false; // Sincronizamos
+  this.deudorDestino = null;
+  this.selectedUserForMail.set({ nombre: 'Varios Usuarios' });
+
+  this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
+  this.mensajeCorreo = `Estimados usuarios,\n\nLes recordamos que es importante mantenerse al día con sus pagos para seguir disfrutando de nuestras instalaciones.`;
+  this.showMailModal.set(true);
+}
+
+// 3. Función ÚNICA de envío (La que llama el botón del modal)
+confirmarEnvioCorreo() {
+  this.cargando.set(true);
+
+  // Seleccionamos los destinatarios basándonos en la variable isMassEmail
+  let destinatarios: string[] = [];
+  
+  if (this.isMassEmail()) {
+    // Caso Masivo: Extraer correos de la lista filtrada
+    destinatarios = this.deudoresFiltrados()
+      .map(u => u.email)
+      .filter(e => !!e && e.includes('@')); // Validar que sea un correo real
+  } else {
+    // Caso Individual
+    const emailIndividual = this.deudorDestino?.email || this.selectedUserForMail()?.email;
+    if (emailIndividual) {
+      destinatarios = [emailIndividual];
+    }
+  }
+
+  // Verificación de seguridad
+  if (destinatarios.length === 0) {
+    this.cargando.set(false);
+    this.showToastMessage('No hay correos válidos para enviar', 'error');
+    return;
+  }
+
+  // Payload para Laravel -> Node
+  const payload = {
+    emails: destinatarios,
+    asunto: this.asuntoCorreo,
+    mensaje: this.mensajeCorreo,
+    sede: this.sede,
+    imagen: this.imagenSeleccionada, // Base64
+    tipo: 'html_puro' 
+  };
+
+  this.usuarioService.enviarEmail(payload).subscribe({
+    next: () => {
+      this.showMailModal.set(false);
+      this.cargando.set(false);
+      this.imagenSeleccionada = null;
+      this.showToastMessage(`¡Éxito! Enviado a ${destinatarios.length} destinatario(s)`);
+    },
+    error: (err) => {
+      console.error('Error enviando:', err);
+      this.cargando.set(false);
+      this.showToastMessage('Error al conectar con el servidor de correos', 'error');
+    }
+  });
+}
 
 
   // --- LÓGICA DE WHATSAPP ---
@@ -127,46 +204,6 @@ export class DebtorsComponent implements OnChanges {
   }
 
 
-  // Nombre de función corregido según tu HTML
-  confirmarEnvioCorreo() {
-    this.cargando.set(true);
-
-    let destinatarios: string[] = [];
-    if (this.esEnvioIndividual && this.deudorDestino) {
-      destinatarios = [this.deudorDestino.email];
-    } else {
-      destinatarios = this.deudoresFiltrados().map(u => u.email).filter(e => !!e);
-    }
-
-    if (destinatarios.length === 0) {
-      this.cargando.set(false);
-      this.showToastMessage('No hay correos válidos', 'error');
-      return;
-    }
-
-    this.usuarioService.enviarEmail({
-      emails: destinatarios,
-      asunto: this.asuntoCorreo,
-      mensaje: this.mensajeCorreo,
-      sede: this.sede,
-      imagen: this.imagenSeleccionada
-    }).subscribe({
-      next: () => {
-        this.showMailModal.set(false);
-        this.cargando.set(false);
-        this.imagenSeleccionada = null;
-        this.showToastMessage('¡Correo enviado con éxito!');
-      },
-      error: () => {
-        this.cargando.set(false);
-        this.showToastMessage('Error al enviar correo', 'error');
-      }
-    });
-  }
-
-
-
-
   cargarDatos() {
     this.usuarioService.getBitacoraIngresos(this.sede).subscribe({
       next: (resp) => {
@@ -190,24 +227,8 @@ export class DebtorsComponent implements OnChanges {
       });
   });
 
-  // --- LÓGICA DE CORREOS (Conexión con tu Node.js) ---
+ 
 
-  openMailModal(log: any) {
-    this.isMassEmail.set(false);
-    this.selectedUserForMail.set(log);
-    const monto = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
-    this.asuntoCorreo = `Aviso de Adeudo - ${log.nombre}`;
-    this.mensajeCorreo = `Hola ${log.nombre},\n\nTe informamos que presentas un saldo pendiente de $${monto}. Te invitamos a regularizar tu cuenta en la sede ${this.sede}.`;
-    this.showMailModal.set(true);
-  }
-
-  openMassMailModal() {
-    this.isMassEmail.set(true);
-    this.selectedUserForMail.set({ email: 'Varios Destinatarios' });
-    this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
-    this.mensajeCorreo = `Estimados usuarios,\n\nLes recordamos que es importante mantenerse al día con sus pagos para seguir disfrutando de nuestras instalaciones.`;
-    this.showMailModal.set(true);
-  }
 
   enviarCorreo() {
     if (!this.selectedUserForMail()) return;

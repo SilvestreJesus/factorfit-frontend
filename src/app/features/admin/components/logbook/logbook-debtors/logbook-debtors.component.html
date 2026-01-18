@@ -157,10 +157,13 @@
 
     <div class="p-6 bg-gray-50 flex justify-end gap-3 border-t">
       <button (click)="showWhatsAppModal.set(false)" class="px-6 py-3 font-black text-gray-400 uppercase text-xs">Cancelar</button>
-      <button (click)="ejecutarEnvioMasivo()" 
+      <button (click)="confirmarEnvioCorreo()" 
               [disabled]="cargando()"
-              class="bg-emerald-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg shadow-emerald-900/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-xs disabled:opacity-50">
-        Iniciar Envío Masivo
+              class="bg-pink-600 ...">
+          <span *ngIf="!cargando()">
+            {{ isMassEmail() ? 'Enviar a ' + deudoresFiltrados().length + ' Usuarios' : 'Enviar a ' + (deudorDestino?.nombre || 'Usuario') }}
+          </span>
+          <span *ngIf="cargando()">Enviando...</span>
       </button>
     </div>
   </div>
