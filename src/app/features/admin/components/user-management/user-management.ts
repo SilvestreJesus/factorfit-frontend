@@ -33,6 +33,7 @@ export class UserManagement implements OnInit {
   mensajeCorreo = '';
 
   sede = localStorage.getItem('sede') ?? '';
+  
 
   constructor(private usuarioService: UsuarioService, private http: HttpClient) {}
 
@@ -244,31 +245,31 @@ enviarCorreo() {
     ? this.usersFiltrados().map(u => u.email).filter(e => !!e)
     : [this.selectedUserForMail()?.email];
 
+  // CONFIGURAMOS EL PAYLOAD CON TUS NUEVOS ESTILOS
   const payload = {
     emails: destinatarios,
     asunto: this.asuntoCorreo,
     mensaje: this.mensajeCorreo,
-    imagen: this.imagenSeleccionada // Tu base64 que ya capturas
+    imagen: this.imagenSeleccionada, // Tu base64
+    sede: this.sede,                // Enviamos la sede para el footer
+    tipo: 'promocion'               // Activamos tu diseño oscuro profesional
   };
 
-  // Cambiamos la petición para que vaya al servidor de Node en Railway
-
-  this.http.post('https://corrreoservicio-production.up.railway.app/enviar-correo', payload)
-    .subscribe({
-      next: () => {
-        this.closeMailModal();
-        this.imagenSeleccionada = null;
-        this.cargando.set(false);
-        this.showToastMessage('¡Correo enviado con éxito!');
-      },
-      error: (err) => {
-        console.error(err);
-        this.cargando.set(false);
-        this.showToastMessage('Error al enviar el correo', 'error');
-      }
-    });
+  // Usamos el servicio (en lugar de this.http directamente para mantener orden)
+  this.usuarioService.enviarEmail(payload).subscribe({
+    next: () => {
+      this.closeMailModal();
+      this.imagenSeleccionada = null;
+      this.cargando.set(false);
+      this.showToastMessage('¡Correo enviado con éxito!');
+    },
+    error: (err) => {
+      console.error(err);
+      this.cargando.set(false);
+      this.showToastMessage('Error al enviar el correo', 'error');
+    }
+  });
 }
-
 
   showQrModal(user: any) { this.selectedUserForQr.set(user); }
   closeQrModal() { this.selectedUserForQr.set(null); }

@@ -174,43 +174,49 @@ export class DebtorsComponent implements OnChanges {
     this.showMailModal.set(true);
   }
 
-  // Nombre de función corregido según tu HTML
-  confirmarEnvioCorreo() {
-    this.cargando.set(true);
+confirmarEnvioCorreo() {
+  this.cargando.set(true);
 
-    let destinatarios: string[] = [];
-    if (this.esEnvioIndividual && this.deudorDestino) {
-      destinatarios = [this.deudorDestino.email];
-    } else {
-      destinatarios = this.deudoresFiltrados().map(u => u.email).filter(e => !!e);
-    }
-
-    if (destinatarios.length === 0) {
-      this.cargando.set(false);
-      this.showToastMessage('No hay correos válidos', 'error');
-      return;
-    }
-
-    this.usuarioService.enviarEmail({
-      emails: destinatarios,
-      asunto: this.asuntoCorreo,
-      mensaje: this.mensajeCorreo,
-      sede: this.sede,
-      imagen: this.imagenSeleccionada
-    }).subscribe({
-      next: () => {
-        this.showMailModal.set(false);
-        this.cargando.set(false);
-        this.imagenSeleccionada = null;
-        this.showToastMessage('¡Correo enviado con éxito!');
-      },
-      error: () => {
-        this.cargando.set(false);
-        this.showToastMessage('Error al enviar correo', 'error');
-      }
-    });
+  let destinatarios: string[] = [];
+  if (this.esEnvioIndividual && this.deudorDestino) {
+    destinatarios = [this.deudorDestino.email];
+  } else {
+    // Filtramos para asegurar que no enviamos a emails nulos o vacíos
+    destinatarios = this.deudoresFiltrados()
+      .map(u => u.email)
+      .filter(e => !!e && e.includes('@'));
   }
 
+  if (destinatarios.length === 0) {
+    this.cargando.set(false);
+    this.showToastMessage('No hay correos válidos para enviar', 'error');
+    return;
+  }
+
+  // Preparamos el payload para la plantilla profesional
+  const payload = {
+    emails: destinatarios,
+    asunto: this.asuntoCorreo,
+    mensaje: this.mensajeCorreo,
+    sede: this.sede,
+    imagen: this.imagenSeleccionada, // Si subiste un banner de "Recordatorio de pago"
+    tipo: 'promocion' // <-- Esto activa el diseño profesional en tu servidor Node
+  };
+
+  this.usuarioService.enviarEmail(payload).subscribe({
+    next: () => {
+      this.showMailModal.set(false);
+      this.cargando.set(false);
+      this.imagenSeleccionada = null;
+      this.showToastMessage(`¡Correo ${this.esEnvioIndividual ? 'individual' : 'masivo'} enviado con éxito!`);
+    },
+    error: (err) => {
+      console.error('Error al enviar:', err);
+      this.cargando.set(false);
+      this.showToastMessage('Error al conectar con el servicio de correos', 'error');
+    }
+  });
+}
   // --- UTILIDADES ---
 
   onFileSelected(event: any) {

@@ -38,23 +38,41 @@ export class Recover {
         }
     }
 
-    onRecover(form: NgForm) {
-        if (form.invalid) return;
+onRecover(form: NgForm) {
+    if (form.invalid) return;
 
-        this.cargando.set(true);
-        this.mensajeError.set('');
+    this.cargando.set(true);
+    this.mensajeError.set('');
 
-        this.usuarioService.recuperarPassword(form.value.email).subscribe({
-            next: (res) => {
-                this.cargando.set(false);
-                // Reemplazamos el alert por nuestro toast
-                this.showToastMessage('¡Éxito! Revisa tu correo para obtener tu nueva contraseña.');
-            },
-            error: (err) => {
-                this.cargando.set(false);
-                // También podemos usar el toast para errores si prefieres
-                this.mensajeError.set(err.error.message || 'Error al conectar con el servidor');
-            }
-        });
-    }
+    // 1. Llamamos a Laravel para generar la nueva clave en la DB
+    this.usuarioService.recuperarPassword(form.value.email).subscribe({
+        next: (res) => {
+            // Laravel debe retornar el nombre del usuario y la contraseña generada
+            const datosParaCorreo = {
+                emails: [form.value.email],
+                asunto: 'Restablecer Contraseña - Factor Fit',
+                mensaje: 'Se ha solicitado una recuperación de acceso para tu cuenta de Factor Fit.',
+                nombres: res.nombres || 'Usuario', // Datos que vienen de tu API Laravel
+                password: res.nuevaPassword,      // La contraseña temporal generada
+                tipo: 'password'                  // Activa la plantilla morada
+            };
+
+            // 2. Enviamos el correo usando el nuevo servidor de Node
+            this.usuarioService.enviarEmail(datosParaCorreo).subscribe({
+                next: () => {
+                    this.cargando.set(false);
+                    this.showToastMessage('¡Éxito! Revisa tu correo para obtener tu nueva contraseña.');
+                },
+                error: () => {
+                    this.cargando.set(false);
+                    this.showToastMessage('Se cambió la clave, pero hubo un error al enviar el correo.', 'error');
+                }
+            });
+        },
+        error: (err) => {
+            this.cargando.set(false);
+            this.mensajeError.set(err.error.message || 'El correo no está registrado');
+        }
+    });
+}
 }
