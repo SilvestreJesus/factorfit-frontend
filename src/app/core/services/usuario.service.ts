@@ -18,9 +18,10 @@ export class UsuarioService {
   constructor(private http: HttpClient) {}
 
 
+// En usuario.service.ts
   recuperarPassword(email: string): Observable<any> {
-      // Apuntamos directamente a /api/recuperar-password
-      return this.http.post<any>(this.correosUrl, { email });
+      // Esta ruta debe existir en tu routes/api.php de Laravel
+      return this.http.post(`${environment.apiUrl}/api/recuperar-password`, { email });
   }
 
   enviarEmail(data: any): Observable<any> {
