@@ -24,16 +24,22 @@ export class DebtorsComponent implements OnChanges {
 
   // UI States (Signals para modales y carga)
   cargando = signal<boolean>(false);
+
+  // Modals
   showMailModal = signal(false);
   showWhatsAppModal = signal(false);
   
-  // Propiedades requeridas por tu HTML (Errores TS2339 corregidos)
-  esEnvioIndividual = false;
-  deudorDestino: any = null;
-
-  // Progreso y Notificaciones
+  // Estado de envío
+  isMassEmail = signal<boolean>(false);
+  
+  deudorDestino = signal<any | null>(null);
   progresoEnvio = signal(0);
   totalEnvio = signal(0);
+  
+  // Propiedades requeridas por tu HTML (Errores TS2339 corregidos)
+  esEnvioIndividual = false;
+
+  // Progreso y Notificaciones
   toast = signal({ visible: false, mensaje: '', tipo: 'success' as 'success' | 'error' });
 
   // Formulario de Mensajería
@@ -63,6 +69,8 @@ export class DebtorsComponent implements OnChanges {
     });
   }
 
+  
+
   cargarDatos() {
     this.usuarioService.getBitacoraIngresos(this.sede).subscribe({
       next: (resp) => {
@@ -75,19 +83,6 @@ export class DebtorsComponent implements OnChanges {
       }
     });
   }
-
-  deudoresFiltrados = computed(() => {
-    const texto = this.busqueda.toLowerCase().trim();
-    return this.financialLogData()
-      .filter(log => {
-        const totalDeuda = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
-        const coincideBusqueda = !texto || 
-                                 log.nombre?.toLowerCase().includes(texto) || 
-                                 log.clave?.toLowerCase().includes(texto);
-        return totalDeuda > 0 && coincideBusqueda;
-      })
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-  });
 
   // --- LÓGICA DE WHATSAPP ---
 
@@ -117,6 +112,93 @@ export class DebtorsComponent implements OnChanges {
     this.mensajeWhatsApp = "Hola {nombre}, te recordamos que presentas un saldo pendiente de {monto} en Factor Fit Sede " + this.sede + ". ¡Te esperamos!";
     this.showWhatsAppModal.set(true);
   }
+
+deudoresFiltrados = computed(() => {
+    const texto = this.busqueda.toLowerCase().trim();
+    return this.financialLogData()
+      .filter(log => {
+        const totalDeuda = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+        const coincideBusqueda = !texto || 
+                                 log.nombre?.toLowerCase().includes(texto) || 
+                                 log.clave?.toLowerCase().includes(texto);
+        return totalDeuda > 0 && coincideBusqueda;
+      })
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  });
+
+  // --- LÓGICA DE CORREOS (IGUAL A USER MANAGEMENT) ---
+
+  openMailModal(log: any) {
+    this.isMassEmail.set(false);
+    this.deudorDestino.set(log);
+    const monto = Number(log.monto_pendiente ?? 0) + Number(log.monto_recargo ?? 0);
+    
+    this.asuntoCorreo = `Aviso de Adeudo - ${log.nombre}`;
+    this.mensajeCorreo = `Estimado/a ${log.nombre},\n\nLe informamos que presenta un saldo pendiente de $${monto.toFixed(2)} en Factor Fit Sede ${this.sede}. Le invitamos cordialmente a regularizar su situación.`;
+    this.showMailModal.set(true);
+  }
+
+  openMassMailModal() {
+    this.isMassEmail.set(true);
+    this.deudorDestino.set({ email: 'Varios destinatarios' });
+    this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
+    this.mensajeCorreo = `Estimados usuarios,\n\nLes recordamos que es importante mantener sus pagos al corriente para evitar recargos. Si tienen saldos pendientes, los esperamos en recepción.`;
+    this.showMailModal.set(true);
+  }
+
+  closeMailModal() {
+    this.showMailModal.set(false);
+    this.deudorDestino.set(null);
+    this.imagenSeleccionada = null;
+    this.cargando.set(false);
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.imagenSeleccionada = e.target.result;
+      reader.readAsDataURL(file);
+    }
+  }
+
+  enviarCorreo() {
+    if (!this.deudorDestino()) return;
+    this.cargando.set(true);
+
+    // Mapeo dinámico: busca 'email' o 'correo'
+    const destinatarios = this.isMassEmail()
+      ? this.deudoresFiltrados().map(u => u.email || u.correo).filter(e => !!e && e.includes('@'))
+      : [this.deudorDestino()?.email || this.deudorDestino()?.correo];
+
+    if (destinatarios.length === 0) {
+      this.cargando.set(false);
+      this.showToastMessage('No hay correos válidos', 'error');
+      return;
+    }
+
+    const payload = {
+      emails: destinatarios,
+      asunto: this.asuntoCorreo,
+      mensaje: this.mensajeCorreo,
+      imagen: this.imagenSeleccionada,
+      sede: this.sede,
+      tipo: 'promocion' // Diseño oscuro profesional
+    };
+
+    this.usuarioService.enviarEmail(payload).subscribe({
+      next: () => {
+        this.showToastMessage('¡Correo enviado con éxito!');
+        this.closeMailModal();
+      },
+      error: (err) => {
+        console.error(err);
+        this.cargando.set(false);
+        this.showToastMessage('Error al enviar', 'error');
+      }
+    });
+  }
+
 
   // Nombre de función corregido según tu HTML
   async ejecutarEnvioMasivo() {
@@ -176,15 +258,6 @@ export class DebtorsComponent implements OnChanges {
     this.showMailModal.set(true);
   }
 
-  openMassMailModal() {
-    this.esEnvioIndividual = false;
-    this.deudorDestino = null;
-    this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
-    this.mensajeCorreo = `Estimados usuarios de Factor Fit Sede ${this.sede},\n\n` +
-      `Les enviamos este recordatorio general para informarles que cuentan con un saldo pendiente en su mensualidad.\n\n` +
-      `Favor de acudir a sucursal para evitar recargos adicionales. ¡Los esperamos!`;
-    this.showMailModal.set(true);
-  }
 
   confirmarEnvioCorreo() {
     if (this.cargando()) return;
@@ -194,7 +267,7 @@ export class DebtorsComponent implements OnChanges {
 
     // 1. Definir destinatarios
     if (this.esEnvioIndividual && this.deudorDestino) {
-      destinatarios = [this.deudorDestino.email];
+      destinatarios = [this.deudorDestino()?.email];
     } else {
       destinatarios = this.deudoresFiltrados()
         .map(u => u.email)
@@ -235,14 +308,6 @@ export class DebtorsComponent implements OnChanges {
 
   // --- UTILIDADES ---
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => this.imagenSeleccionada = e.target.result;
-      reader.readAsDataURL(file);
-    }
-  }
 
   showToastMessage(mensaje: string, tipo: 'success' | 'error' = 'success') {
     this.toast.set({ visible: true, mensaje, tipo });
