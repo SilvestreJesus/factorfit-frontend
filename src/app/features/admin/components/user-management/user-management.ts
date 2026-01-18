@@ -163,7 +163,7 @@ async ejecutarEnvioMasivo() {
     };
 
     try {
-      await this.http.post('nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
+      await this.http.post('https://nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
       
       this.progresoEnvio.update(v => v + 1);
       console.log(`Mensaje enviado a ${user.nombres}`);
@@ -252,7 +252,8 @@ enviarCorreo() {
   };
 
   // Cambiamos la petición para que vaya al servidor de Node en Railway
-  this.http.post('https://nodewhatsapp-production.up.railway.app/enviar-correo', payload)
+
+  this.http.post('https://corrreoservicio-production.up.railway.app/enviar-correo', payload)
     .subscribe({
       next: () => {
         this.closeMailModal();
@@ -267,6 +268,8 @@ enviarCorreo() {
       }
     });
 }
+
+
   showQrModal(user: any) { this.selectedUserForQr.set(user); }
   closeQrModal() { this.selectedUserForQr.set(null); }
 
