@@ -14,6 +14,12 @@
             <span class="font-thin font-atomic-e text-2xl md:text-4xl block md:inline mt-2">I</span>
         </h1>
 
+        @if (mensajeError()) {
+            <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-xl mb-6 text-sm text-center animate-in fade-in zoom-in duration-300">
+                <i class="ph ph-warning-circle mr-2"></i> {{ mensajeError() }}
+            </div>
+        }
+
         <form (ngSubmit)="onRecover(recoverForm)" #recoverForm="ngForm" class="flex flex-col items-center space-y-6">
             <div class="relative w-full">
                 <input type="email" name="email" placeholder="usuario@ejemplo.com" ngModel required
@@ -21,9 +27,14 @@
                 <i class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-gray-500 ph ph-envelope-simple"></i>
             </div>
 
-            <button type="submit" [disabled]="!recoverForm.valid"
-                class="w-full md:w-64 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-purple-900/20">
-                Enviar Instrucciones
+            <button type="submit" [disabled]="!recoverForm.valid || cargando()"
+                class="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-purple-900/20 flex justify-center items-center gap-3">
+                @if (cargando()) {
+                    <span class="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
+                    PROCESANDO...
+                } @else {
+                    Enviar Instrucciones
+                }
             </button>
         </form>
     </div>
@@ -33,24 +44,6 @@
         <i class="ph ph-arrow-left"></i> Volver al Login
     </a>
 </div>
-
-@if (mensajeError()) {
-    <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-xl mb-4 text-sm text-center">
-        {{ mensajeError() }}
-    </div>
-}
-
-<form (ngSubmit)="onRecover(recoverForm)" #recoverForm="ngForm" class="flex flex-col items-center space-y-6">
-    <button type="submit" [disabled]="!recoverForm.valid || cargando()"
-        class="w-full md:w-64 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2">
-        @if (cargando()) {
-            <span class="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
-            PROCESANDO...
-        } @else {
-            Enviar Instrucciones
-        }
-    </button>
-</form>
 
 @if (toast().visible) {
     <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md animate-in slide-in-from-bottom-5 duration-300">
