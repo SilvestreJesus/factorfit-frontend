@@ -1,34 +1,41 @@
 <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden animate-in slide-in-from-bottom">
+  
   <div class="p-6 bg-black/10 flex flex-col lg:flex-row justify-between items-center gap-4">
-    <h5 class="text-xl font-black text-pink-600 uppercase tracking-tighter">Lista de Deudores</h5>
-    <div class="flex flex-row sm:flex-nowrap gap-2 w-full lg:w-auto">
-      <button (click)="openWhatsAppMassModal()" class="flex-1 bg-emerald-600 text-white px-3 py-3 rounded-xl font-black text-[9px] sm:text-[10px] uppercase shadow-lg shadow-emerald-900/20">Cobro WhatsApp Masivo</button>
-      <button (click)="openMassMailModal()" class="flex-1 bg-gray-800 text-white px-3 py-3 rounded-xl font-black text-[9px] sm:text-[10px] uppercase">Correo Masivo</button>
+    <h5 class="text-xl font-black text-pink-600 uppercase tracking-tighter italic">Lista de Deudores</h5>
+    <div class="flex flex-row gap-2 w-full lg:w-auto">
+      <button (click)="openWhatsAppMassModal()" 
+              class="flex-1 bg-emerald-600 text-white px-3 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-emerald-900/20 hover:bg-emerald-700 transition-all">
+        WhatsApp Masivo
+      </button>
+      <button (click)="openMassMailModal()" 
+              class="flex-1 bg-gray-800 text-white px-3 py-3 rounded-xl font-black text-[10px] uppercase hover:bg-gray-900 transition-all">
+        Correo Masivo
+      </button>
     </div>
   </div>
 
-  <div class="block md:hidden">
-    <div *ngFor="let log of deudoresFiltrados()" class="p-4 border-b border-white/10 bg-white/5 space-y-3">
+  <div class="block md:hidden divide-y divide-white/5">
+    <div *ngFor="let log of deudoresFiltrados()" class="p-4 bg-white/5 space-y-3">
       <div class="flex justify-between items-start">
-        <div>
-          <p class="font-bold text-gray-900 lowercase leading-tight">{{ log.nombre }} {{ log.apellido }}</p>
-          <span class="text-pink-600 text-xs font-mono font-bold">{{log.clave}}</span>
+        <div class="max-w-[65%]">
+          <p class="font-bold text-gray-900 lowercase leading-tight text-sm truncate">
+            {{ log.nombre }} {{ log.apellido }}
+          </p>
+          <span class="text-pink-600 text-[10px] font-mono font-bold">{{log.clave}}</span>
         </div>
         <div class="text-right">
           <p class="text-rose-700 font-black text-lg leading-none">
             ${{ (log.monto_pendiente * 1) + (log.monto_recargo * 1) | number:'1.2-2' }}
           </p>
-          <span class="text-[10px] font-bold text-rose-500 uppercase italic">Venció: {{ log.fecha_corte | date:'dd/MM' }}</span>
+          <span class="text-[9px] font-bold text-rose-500 uppercase italic">Vence: {{ log.fecha_corte | date:'dd/MM' }}</span>
         </div>
       </div>
       
-      <div class="flex gap-2 pt-2">
-        <button (click)="openWhatsApp(log)" class="flex-1 flex justify-center items-center gap-2 bg-emerald-50 text-emerald-600 py-2 rounded-lg font-bold text-xs">
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+      <div class="flex gap-2">
+        <button (click)="openWhatsApp(log)" class="flex-1 bg-emerald-50 text-emerald-600 py-2.5 rounded-lg font-black text-[10px] uppercase">
           WhatsApp
         </button>
-        <button (click)="enviarCorreoIndividual(log)" class="flex-1 flex justify-center items-center gap-2 bg-blue-50 text-blue-500 py-2 rounded-lg font-bold text-xs">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="5" width="20" height="16" rx="2"/></svg>
+        <button (click)="enviarCorreoIndividual(log)" class="flex-1 bg-blue-50 text-blue-500 py-2.5 rounded-lg font-black text-[10px] uppercase">
           Correo
         </button>
       </div>
@@ -36,31 +43,31 @@
   </div>
 
   <div class="hidden md:block overflow-x-auto">
-    <table class="w-full text-left">
-      <thead class="bg-black/20 text-pink-600 text-xs uppercase font-black">
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-black/20 text-pink-600 text-[11px] uppercase font-black">
         <tr>
           <th class="p-4">Usuario</th>
-          <th class="p-4">Venció</th>
-          <th class="p-4">Adeudo Total</th>
-          <th class="p-4 text-center">Acciones</th>
+          <th class="p-4">Fecha de Corte</th>
+          <th class="p-4">Total Pendiente</th>
+          <th class="p-4 text-center">Acciones Rápidas</th>
         </tr>
       </thead>
       <tbody class="text-gray-800">
-        <tr *ngFor="let log of deudoresFiltrados()" class="border-b border-white/10 hover:bg-white/5 transition-colors">
+        <tr *ngFor="let log of deudoresFiltrados()" class="border-b border-white/5 hover:bg-white/5 transition-colors">
           <td class="p-4">
-            <p class="font-bold lowercase">{{ log.nombre }} {{ log.apellido }}</p>
-            <span class="text-pink-600/70 font-mono font-bold">{{log.clave}}</span>
+            <p class="font-bold lowercase text-sm">{{ log.nombre }} {{ log.apellido }}</p>
+            <span class="text-pink-600/70 text-xs font-mono font-bold">{{log.clave}}</span>
           </td>
-          <td class="p-4 text-rose-600 font-black">{{ log.fecha_corte | date:'dd/MM/yyyy' }}</td>
-          <td class="p-4 font-black text-lg text-rose-700">
+          <td class="p-4 text-xs font-bold">{{ log.fecha_corte | date:'dd/MM/yyyy' }}</td>
+          <td class="p-4 font-black text-lg text-rose-700 italic">
             $ {{ (log.monto_pendiente * 1) + (log.monto_recargo * 1) | number:'1.2-2' }}
           </td>
-          <td class="p-4 text-center">
+          <td class="p-4">
             <div class="flex justify-center gap-3">
-              <button (click)="openWhatsApp(log)" class="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors" title="Enviar WhatsApp">
+              <button (click)="openWhatsApp(log)" class="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-all" title="Enviar WhatsApp">
                 <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
               </button>
-              <button (click)="enviarCorreoIndividual(log)" class="p-2 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors" title="Enviar Correo">
+              <button (click)="enviarCorreoIndividual(log)" class="p-2 rounded-lg hover:bg-blue-50 text-blue-500 transition-all" title="Enviar Correo">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="5" width="20" height="16" rx="2"/></svg>
               </button>
             </div>
@@ -71,44 +78,52 @@
   </div>
 </div>
 
-
 <div *ngIf="showMailModal()" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[150] p-4">
   <div class="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
     <div class="bg-gray-900 p-6 text-white flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-pink-600 rounded-xl flex items-center justify-center font-bold text-xl uppercase">FF</div>
-        <h3 class="font-black uppercase tracking-widest text-lg">Correo Masivo (Deudores)</h3>
+        <div class="w-10 h-10 bg-pink-600 rounded-xl flex items-center justify-center font-bold text-xl uppercase italic">FF</div>
+        <h3 class="font-black uppercase tracking-widest text-lg">
+          {{ esEnvioIndividual ? 'Aviso Individual' : 'Correo Masivo' }}
+        </h3>
       </div>
-      <button (click)="showMailModal.set(false)" class="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all">✕</button>
+      <button (click)="closeMailModal()" class="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all">✕</button>
     </div>
+
     <div class="p-8 space-y-4">
       <div>
         <label class="text-gray-400 text-[10px] font-black uppercase mb-1 block tracking-widest">Asunto del Correo</label>
         <input type="text" [(ngModel)]="asuntoCorreo" 
                class="w-full bg-gray-50 border-2 border-gray-100 p-3 rounded-xl outline-none focus:border-pink-500 text-gray-900 font-bold transition-all"
-               placeholder="Ej: Aviso de Pago Pendiente - Factor Fit">
+               placeholder="Ej: Aviso de Pago Pendiente">
       </div>
       <div>
         <label class="text-gray-400 text-[10px] font-black uppercase mb-1 block tracking-widest">Cuerpo del Mensaje</label>
-        <textarea [(ngModel)]="mensajeCorreo" rows="6" 
-                  class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-xl outline-none focus:border-pink-500 text-gray-900 font-medium transition-all resize-none"
-                  placeholder="Escriba el mensaje aquí..."></textarea>
+        <textarea [(ngModel)]="mensajeCorreo" rows="5" 
+                  class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-xl outline-none focus:border-pink-500 text-gray-900 font-medium transition-all resize-none"></textarea>
       </div>
-      <button (click)="fileInput.click()" class="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+      
+      <button (click)="fileInput.click()" 
+              class="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.587-1.587a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        Añadir Imagen Publicitaria
+        {{ imagenSeleccionada ? 'Imagen Cargada ✓' : 'Adjuntar Imagen Publicitaria' }}
       </button>
       <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)">
     </div>
+
     <div class="p-6 bg-gray-50 flex justify-end gap-3 border-t">
-    <button (click)="showMailModal.set(false)" class="px-6 py-3 font-black text-gray-400 uppercase text-xs">
-        Cancelar
-    </button>
-    
-    <button (click)="confirmarEnvioCorreo()" 
-            class="bg-pink-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-all uppercase text-xs">
-        {{ esEnvioIndividual ? 'Enviar a ' + deudorDestino?.nombre : 'Enviar a ' + deudoresFiltrados().length + ' Usuarios' }}
-    </button>
+      <button (click)="closeMailModal()" class="px-6 py-3 font-black text-gray-400 uppercase text-xs">Cancelar</button>
+      
+      <button (click)="confirmarEnvioCorreo()" 
+              [disabled]="cargando()"
+              class="bg-pink-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-all uppercase text-xs disabled:opacity-50">
+        <span *ngIf="!cargando()">
+          {{ esEnvioIndividual ? 'Enviar a ' + (deudorDestino()?.nombre || 'Usuario') : 'Enviar a ' + deudoresFiltrados().length + ' Clientes' }}
+        </span>
+        <span *ngIf="cargando()" class="flex items-center gap-2">
+          <div class="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div> Enviando...
+        </span>
+      </button>
     </div>
   </div>
 </div>
@@ -118,38 +133,39 @@
     <div class="bg-emerald-600 p-6 text-white flex justify-between items-center">
       <div class="flex items-center gap-3">
         <svg class="w-8 h-8 fill-white" viewBox="0 0 512 512"><path d="M380.9 97.1C339-3.6 240.2-32 160.8 11.7A186.7 186.7 0 0 0 24 194.5c0 33.1 8.8 65.5 25.7 94L0 480l195.9-50.9c27.1 14.8 57.4 22.6 88.3 22.6h.1c113.1 0 204.6-91.5 204.6-204.6 0-54.6-21.3-106-58-144z"/></svg>
-        <h3 class="font-black uppercase tracking-widest text-lg">WhatsApp Masivo</h3>
+        <h3 class="font-black uppercase tracking-widest text-lg">Envío Masivo</h3>
       </div>
-      <button (click)="showWhatsAppModal.set(false)" class="bg-white/20 p-2 rounded-full hover:bg-white/20 transition-all">✕</button>
+      <button (click)="showWhatsAppModal.set(false)" class="text-white">✕</button>
     </div>
+
     <div class="p-8">
-      <label class="text-gray-400 text-[10px] font-black uppercase mb-1 block tracking-widest">Mensaje Personalizado</label>
+      <label class="text-gray-400 text-[10px] font-black uppercase mb-1 block tracking-widest text-center">Mensaje a enviar</label>
       <textarea [(ngModel)]="mensajeWhatsApp" rows="5" 
-                class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-emerald-500 text-gray-900 font-bold transition-all resize-none"
-                placeholder="Hola {nombre}, te recordamos que tu pago venció el {fecha}..."></textarea>
-      <p class="text-[9px] text-gray-400 mt-3 font-bold uppercase italic">Usa &#123;nombre&#125; y &#123;monto&#125; para personalizar.</p>
+                class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-emerald-500 text-gray-900 font-bold text-center transition-all resize-none"></textarea>
       
       <div *ngIf="cargando()" class="mt-6 flex flex-col items-center">
-        <div class="relative w-20 h-20 flex items-center justify-center">
+        <div class="relative w-16 h-16 flex items-center justify-center">
            <div class="absolute inset-0 border-4 border-emerald-100 rounded-full"></div>
            <div class="absolute inset-0 border-4 border-emerald-600 rounded-full border-t-transparent animate-spin"></div>
-           <span class="font-black text-emerald-600 text-sm">{{ progresoEnvio() }}/{{ totalEnvio() }}</span>
+           <span class="font-black text-emerald-600 text-xs">{{ progresoEnvio() }}/{{ totalEnvio() }}</span>
         </div>
-        <p class="text-xs text-gray-400 font-bold mt-2 uppercase">Procesando envíos...</p>
+        <p class="text-[10px] text-gray-400 font-bold mt-2 uppercase">Procesando cola de envíos...</p>
       </div>
     </div>
+
     <div class="p-6 bg-gray-50 flex justify-end gap-3 border-t">
-      <button (click)="showWhatsAppModal.set(false)" class="px-6 py-3 font-black text-gray-400 uppercase text-xs">Cancelar</button>
-      <button (click)="ejecutarEnvioMasivo()" class="bg-emerald-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg shadow-emerald-900/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-xs">
-        Iniciar Envío Masivo
+      <button (click)="showWhatsAppModal.set(false)" class="px-6 py-3 font-black text-gray-400 uppercase text-xs">Cerrar</button>
+      <button (click)="ejecutarEnvioMasivo()" 
+              [disabled]="cargando()"
+              class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:scale-105 active:scale-95 transition-all uppercase text-xs disabled:opacity-50">
+        Iniciar Ahora
       </button>
     </div>
   </div>
 </div>
 
-
 <div *ngIf="toast().visible" 
      class="fixed bottom-6 right-6 z-[400] px-8 py-5 rounded-[1.5rem] shadow-2xl text-white animate-in slide-in-from-right" 
      [ngClass]="toast().tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600'">
-  <span class="font-black uppercase text-sm tracking-wider">{{ toast().mensaje }}</span>
+  <span class="font-black uppercase text-xs tracking-wider">{{ toast().mensaje }}</span>
 </div>
