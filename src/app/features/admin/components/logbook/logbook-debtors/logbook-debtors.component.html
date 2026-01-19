@@ -102,8 +102,11 @@
         <span class="text-gray-400 text-xs font-black uppercase w-12">Para:</span>
         <div class="flex-1">
           <span class="bg-pink-50 text-pink-600 px-3 py-1 rounded-full text-xs font-bold border border-pink-100">
-            {{ isMassEmail() ? 'Todos los deudores filtrados (' + deudoresFiltrados().length + ')' : selectedUserForMail()?.email }}
-          </span>
+          {{ isMassEmail() ? 
+            'Todos los deudores filtrados (' + deudoresFiltrados().length + ')' : 
+            (selectedUserForMail()?.correo || selectedUserForMail()?.email || 'Sin correo registrado') 
+          }}
+      </span>
         </div>
       </div>
 

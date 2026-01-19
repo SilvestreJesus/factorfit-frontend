@@ -78,18 +78,18 @@ enviarCorreo() {
   if (!this.selectedUserForMail()) return;
   this.cargando.set(true);
 
-  // Ajustamos para que busque tanto 'correo' como 'email' por seguridad
+  // Mapeamos buscando 'correo' primero, luego 'email'
   const destinatarios = this.isMassEmail() 
     ? this.deudoresFiltrados()
         .map(u => u.correo || u.email) 
         .filter(e => !!e)
     : [this.selectedUserForMail()?.correo || this.selectedUserForMail()?.email];
 
-  // LOG DE SEGURIDAD: Abre la consola del navegador (F12) para ver si esto tiene datos
-  console.log('Destinatarios detectados:', destinatarios);
+  // IMPORTANTE: Si la consola muestra [] (arreglo vacío), es que los datos de la bitácora no traen el correo.
+  console.log('DEBUG: Lista de destinatarios final:', destinatarios);
 
   if (destinatarios.length === 0 || !destinatarios[0]) {
-    this.showToastMessage('No hay correos válidos para enviar', 'error');
+    this.showToastMessage('No hay correos válidos para enviar. Verifica que los usuarios tengan un correo registrado.', 'error');
     this.cargando.set(false);
     return;
   }
@@ -111,9 +111,9 @@ enviarCorreo() {
       this.imagenSeleccionada = null;
     },
     error: (err) => {
-      console.error('Error desde el servidor:', err);
+      console.error('Error detallado del servidor:', err);
       this.cargando.set(false);
-      this.showToastMessage('Error al enviar el correo', 'error');
+      this.showToastMessage('Error al enviar el correo. Revisa la conexión con el servidor.', 'error');
     }
   });
 }
