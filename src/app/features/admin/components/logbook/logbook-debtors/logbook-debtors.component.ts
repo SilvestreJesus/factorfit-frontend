@@ -13,7 +13,7 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class DebtorsComponent implements OnChanges {
 
-    private usuarioService = inject(UsuarioService);
+  private usuarioService = inject(UsuarioService);
   private http = inject(HttpClient);
   
   @Input() busqueda = '';
@@ -78,12 +78,17 @@ enviarCorreo() {
   if (!this.selectedUserForMail()) return;
   this.cargando.set(true);
 
-  // Si es masivo, filtramos los correos de la lista de deudores actual
+  // Ajustamos para que busque tanto 'correo' como 'email' por seguridad
   const destinatarios = this.isMassEmail() 
-    ? this.deudoresFiltrados().map(u => u.email).filter(e => !!e)
-    : [this.selectedUserForMail()?.email];
+    ? this.deudoresFiltrados()
+        .map(u => u.correo || u.email) 
+        .filter(e => !!e)
+    : [this.selectedUserForMail()?.correo || this.selectedUserForMail()?.email];
 
-  if (destinatarios.length === 0) {
+  // LOG DE SEGURIDAD: Abre la consola del navegador (F12) para ver si esto tiene datos
+  console.log('Destinatarios detectados:', destinatarios);
+
+  if (destinatarios.length === 0 || !destinatarios[0]) {
     this.showToastMessage('No hay correos válidos para enviar', 'error');
     this.cargando.set(false);
     return;
@@ -93,21 +98,20 @@ enviarCorreo() {
     emails: destinatarios,
     asunto: this.asuntoCorreo,
     mensaje: this.mensajeCorreo,
-    imagen: this.imagenSeleccionada, // Base64 capturado en onFileSelected
+    imagen: this.imagenSeleccionada,
     sede: this.sede,
-    tipo: 'promocion' // Estilo oscuro profesional
+    tipo: 'promocion'
   };
 
   this.usuarioService.enviarEmail(payload).subscribe({
     next: () => {
       this.showMailModal.set(false);
-      this.selectedUserForMail.set(null);
-      this.imagenSeleccionada = null;
       this.cargando.set(false);
       this.showToastMessage('¡Correo enviado con éxito!');
+      this.imagenSeleccionada = null;
     },
     error: (err) => {
-      console.error(err);
+      console.error('Error desde el servidor:', err);
       this.cargando.set(false);
       this.showToastMessage('Error al enviar el correo', 'error');
     }
