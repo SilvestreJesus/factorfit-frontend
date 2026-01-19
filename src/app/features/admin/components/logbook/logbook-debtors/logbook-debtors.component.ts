@@ -47,6 +47,73 @@ export class DebtorsComponent implements OnChanges {
     }
   }
 
+
+  // --- CORREO ---
+openMailModal(user: any) {
+  this.isMassEmail.set(false);
+  this.selectedUserForMail.set(user);
+  
+  // Seteamos el asunto y mensaje inicial
+  this.asuntoCorreo = 'Aviso de Pago Pendiente - Factor Fit';
+  const nombre = user.nombre || user.nombres || 'Usuario';
+  const deuda = Number(user.monto_pendiente ?? 0) + Number(user.monto_recargo ?? 0);
+  
+  this.mensajeCorreo = `Hola ${nombre},\n\nTe informamos que presentas un saldo pendiente de $${deuda}. Te invitamos a regularizar tu situación en la sede ${this.sede}.\n\n¡Saludos!`;
+  
+  this.showMailModal.set(true);
+}
+
+openMassMailModal() {
+  this.isMassEmail.set(true);
+  // Objeto ficticio para representar a todos
+  this.selectedUserForMail.set({ nombre: 'Todos los deudores', email: 'Múltiples Destinatarios' });
+  
+  this.asuntoCorreo = 'Recordatorio de Pago - Factor Fit';
+  this.mensajeCorreo = `Estimados usuarios de Factor Fit Sede ${this.sede},\n\nLes recordamos la importancia de mantenerse al día con sus mensualidades para seguir disfrutando de nuestras instalaciones...`;
+  
+  this.showMailModal.set(true);
+}
+
+enviarCorreo() {
+  if (!this.selectedUserForMail()) return;
+  this.cargando.set(true);
+
+  // Si es masivo, filtramos los correos de la lista de deudores actual
+  const destinatarios = this.isMassEmail() 
+    ? this.deudoresFiltrados().map(u => u.email).filter(e => !!e)
+    : [this.selectedUserForMail()?.email];
+
+  if (destinatarios.length === 0) {
+    this.showToastMessage('No hay correos válidos para enviar', 'error');
+    this.cargando.set(false);
+    return;
+  }
+
+  const payload = {
+    emails: destinatarios,
+    asunto: this.asuntoCorreo,
+    mensaje: this.mensajeCorreo,
+    imagen: this.imagenSeleccionada, // Base64 capturado en onFileSelected
+    sede: this.sede,
+    tipo: 'promocion' // Estilo oscuro profesional
+  };
+
+  this.usuarioService.enviarEmail(payload).subscribe({
+    next: () => {
+      this.showMailModal.set(false);
+      this.selectedUserForMail.set(null);
+      this.imagenSeleccionada = null;
+      this.cargando.set(false);
+      this.showToastMessage('¡Correo enviado con éxito!');
+    },
+    error: (err) => {
+      console.error(err);
+      this.cargando.set(false);
+      this.showToastMessage('Error al enviar el correo', 'error');
+    }
+  });
+}
+
   sincronizarYDescargar() {
     this.cargando.set(true);
     this.http.get(`${environment.apiUrl}/api/pagos/actualizar?sede=${this.sede}`).subscribe({
@@ -60,23 +127,6 @@ export class DebtorsComponent implements OnChanges {
   deudorDestino: any = null;
   constructor() {}
 
-  // --- CORREO ---
-  openMailModal(user: any) {
-    this.isMassEmail.set(false);
-    this.selectedUserForMail.set(user);
-    // Usamos el nombre que venga del objeto (ajustar si es .nombres o .nombre)
-    const nombre = user.nombre || user.nombres;
-    this.mensajeCorreo = `Hola ${nombre}, detectamos un saldo pendiente de $${user.monto_pendiente}. Te invitamos a regularizarlo.\n\nSede: ${this.sede}`;
-    this.showMailModal.set(true); // ¡IMPORTANTE! Faltaba abrir el modal
-  }
-
-  openMassMailModal() {
-    this.isMassEmail.set(true);
-    // Objeto ficticio con propiedad nombre para que el HTML no falle
-    this.selectedUserForMail.set({ nombre: 'Todos los deudores', email: 'multiple' });
-    this.mensajeCorreo = `Estimados usuarios de Factor Fit Sede ${this.sede},\n\nLes recordamos que es importante mantenerse al día con sus pagos...`;
-    this.showMailModal.set(true);
-  }
 
   // --- WHATSAPP MASIVO ---
   openWhatsAppMassModal() {
@@ -141,47 +191,6 @@ export class DebtorsComponent implements OnChanges {
       reader.readAsDataURL(file);
     }
   }
-
-
-
-enviarCorreo() {
-  if (!this.selectedUserForMail()) return;
-  this.cargando.set(true);
-
-  const destinatarios = this.isMassEmail() 
-    ? this.deudoresFiltrados().map(u => u.email).filter(e => !!e)
-    : [this.selectedUserForMail()?.email];
-
-  // CONFIGURAMOS EL PAYLOAD CON TUS NUEVOS ESTILOS
-  const payload = {
-    emails: destinatarios,
-    asunto: this.asuntoCorreo,
-    mensaje: this.mensajeCorreo,
-    imagen: this.imagenSeleccionada, // Tu base64
-    sede: this.sede,                // Enviamos la sede para el footer
-    tipo: 'promocion'               // Activamos tu diseño oscuro profesional
-  };
-
-  // Usamos el servicio (en lugar de this.http directamente para mantener orden)
-  this.usuarioService.enviarEmail(payload).subscribe({
-    next: () => {
-      this.closeMailModal();
-      this.imagenSeleccionada = null;
-      this.cargando.set(false);
-      this.showToastMessage('¡Correo enviado con éxito!');
-    },
-    error: (err) => {
-      console.error(err);
-      this.cargando.set(false);
-      this.showToastMessage('Error al enviar el correo', 'error');
-    }
-  });
-}
-
-
-
-
-
 
 
   cargarDatos() {
