@@ -160,7 +160,7 @@ enviarCorreo() {
 
       try {
         // Usar lastValueFrom si estás en Angular 12+ o toPromise en versiones anteriores
-        await this.http.post('https://nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
+        await this.http.post('https://bot-factorfit-production.up.railway.app/enviar', payload).toPromise();
         this.progresoEnvio.update(v => v + 1);
       } catch (e) {
         console.error(`Error con ${user.nombre}`, e);

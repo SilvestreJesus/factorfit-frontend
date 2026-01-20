@@ -58,18 +58,18 @@
                 [class]="sedeActual === 1 ? 'text-purple-500' : 'text-pink-500'">
               HORARIOS {{ sedeActual === 1 ? 'EMILIANO' : 'OBRERA' }}
             </h3>
-            <div class="h-1 w-20 mt-2 rounded-full" [class]="sedeActual === 1 ? 'bg-purple-600' : 'bg-pink-600'"></div>
+            <div class="h-1 w-20 mt-2 rounded-full" [class]="sedeActual === 1 ? 'bg-purple-600' : 'bg-pink-600'" [class]="sedeActual === 2 ? 'bg-gray-600' : 'bg-pink-600'"></div>
           </div>
 
           <div class="overflow-x-auto">
             <div class="min-w-[600px]">
               <div class="grid grid-cols-6 gap-2 text-center font-bold text-white text-xs md:text-sm mb-4">
-              <div class="bg-pink-500 py-4 rounded-xl shadow">HORA</div>
-              <div class="bg-purple-600 py-4 rounded-xl shadow">LUN</div>
-              <div class="bg-purple-600 py-4 rounded-xl shadow">MAR</div>
-              <div class="bg-purple-600 py-4 rounded-xl shadow">MIE</div>
-              <div class="bg-purple-600 py-4 rounded-xl shadow">JUE</div>
-              <div class="bg-purple-600 py-4 rounded-xl shadow">VIE</div>
+                <div [class]="sedeActual === 2 ? 'bg-purple-600' : 'bg-pink-500'" class="py-4 rounded-xl shadow">HORA</div>
+                <div [class]="sedeActual === 2 ? 'bg-pink-400' : 'bg-purple-600'" class="py-4 rounded-xl shadow">LUN</div>
+                <div [class]="sedeActual === 2 ? 'bg-pink-400' : 'bg-purple-600'" class="py-4 rounded-xl shadow">MAR</div>
+                <div [class]="sedeActual === 2 ? 'bg-pink-400' : 'bg-purple-600'" class="py-4 rounded-xl shadow">MIE</div>
+                <div [class]="sedeActual === 2 ? 'bg-pink-400' : 'bg-purple-600'" class="py-4 rounded-xl shadow">JUE</div>
+                <div [class]="sedeActual === 2 ? 'bg-pink-400' : 'bg-purple-600'" class="py-4 rounded-xl shadow">VIE</div>
             </div>
             
             <div *ngIf="sedeActual === 1" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
@@ -97,8 +97,17 @@
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
               </div>
+              
+              <div class="grid grid-cols-6 gap-2">
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl"></div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center"></div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center"></div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center"></div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center"></div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center"></div>
+              </div>
                <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">6:00-7:00</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
@@ -106,7 +115,7 @@
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
               </div>
                <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
+                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
                 <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
@@ -116,46 +125,60 @@
             </div>
 
             <div *ngIf="sedeActual === 2" class="space-y-3 text-center text-xs md:text-[11px] font-extrabold uppercase tracking-tight">
-              <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">7:00-8:00</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center leading-tight">Glute Bands</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
+            <div class="grid grid-cols-6 gap-2">
+                <div class="bg-pink-400 text-white flex items-center justify-center py-5 rounded-xl shadow-sm">7:00</div>
+                <div class="bg-white text-blue-800 p-3 rounded-xl flex items-center justify-center leading-tight shadow-sm">GAP</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-green-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Glute Bands</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-red-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Tabata</div>
+              </div>
+            <div class="grid grid-cols-6 gap-2">
+                <div class="bg-pink-400 text-white flex items-center justify-center py-5 rounded-xl shadow-sm">8:00</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-blue-800 p-3 rounded-xl flex items-center justify-center shadow-sm">TGAP</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-indigo-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Meta HIT</div>
+                <div class="bg-white text-orange-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Circuito</div>
               </div>
               <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">8:00-9:00</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Tabata</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Zumba</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-pink-400 text-white flex items-center justify-center py-5 rounded-xl shadow-sm">9:00</div>
+                <div class="bg-white text-green-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Glute Bands</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center shadow-sm">Full body</div>
+                <div class="bg-white text-yellow-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Power Rebounder</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center shadow-sm">Zumba</div>
               </div>
               <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">9:00-10:00</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Meta Hit</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
+                <div class="bg-pink-400 text-white flex items-center justify-center py-5 rounded-xl shadow-sm">5:00</div>
+                <div class="bg-white text-orange-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Circuito</div>
+                <div class="bg-white text-red-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center shadow-sm">Full body</div>
+                <div class="bg-white text-blue-800 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
               </div>
                <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">18:00-19:00</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">GAP</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Glute Bands</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
+                <div class="bg-pink-400  text-white flex items-center justify-center py-5 rounded-xl shadow-sm">6:00</div>
+                <div class="bg-white text-green-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Glute Bands</div>
+                <div class="bg-white text-orange-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Circuito</div>
+                <div class="bg-white text-red-600 p-3 rounded-xl flex items-center justify-center shadow-sm">Tabata</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center shadow-sm">Full body</div>
+                <div class="bg-white text-purple-950 p-3 rounded-xl flex items-center justify-center shadow-sm">Clase Libre</div>
               </div>
                <div class="grid grid-cols-6 gap-2">
-                <div class="bg-purple-500 text-white flex items-center justify-center py-5 rounded-xl">19:00-20:00</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">ZUMBA</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Core</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Circuito</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">TABATA</div>
-                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center">Entrenamiento Funcional</div>
-              </div>  
+                <div class="bg-pink-400  text-white flex items-center justify-center py-5 rounded-xl shadow-sm">7:00</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-black p-3 rounded-xl flex items-center justify-center shadow-sm">ZUMBA</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-blue-800  p-3 rounded-xl flex items-center justify-center shadow-sm">GAP</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+              </div> 
+                <div class="grid grid-cols-6 gap-2">
+                <div class="bg-pink-400  text-white flex items-center justify-center py-5 rounded-xl shadow-sm">8:00</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+                <div class="bg-white text-indigo-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Meta HIT</div>
+                <div class="bg-white text-green-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Glute Bands</div>
+                <div class="bg-white text-purple-700 p-3 rounded-xl flex items-center justify-center shadow-sm">Entrenamiento Funcional</div>
+              </div>   
 
             </div>
           </div>

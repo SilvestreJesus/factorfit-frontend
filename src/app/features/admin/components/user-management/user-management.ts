@@ -164,7 +164,7 @@ async ejecutarEnvioMasivo() {
     };
 
     try {
-      await this.http.post('https://nodewhatsapp-production.up.railway.app/enviar', payload).toPromise();
+      await this.http.post('https://bot-factorfit-production.up.railway.app/enviar', payload).toPromise();
       
       this.progresoEnvio.update(v => v + 1);
       console.log(`Mensaje enviado a ${user.nombres}`);
