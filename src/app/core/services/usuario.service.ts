@@ -89,6 +89,10 @@ export class UsuarioService {
     });
   }
 
+  update(clave: string, data: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${clave}`, data);
+}
+
 
   eliminarUsuario(clave_usuario: string) {
     return this.http.put(`${this.apiUrl}/${clave_usuario}/eliminar`, {});
@@ -191,8 +195,6 @@ subirImagenCloudinaryDirecto(file: File): Observable<any> {
   }
 
 getBitacoraIngresos(sede: string = '') {
-  // Cambiamos this.apiUrl por this.pagosUrl
-  // Esto hará la petición a: http://127.0.0.1:8000/api/pagos/bitacora
   return this.http.get<any>(`${this.pagosUrl}/bitacora`, {
     params: { sede: sede }
   });

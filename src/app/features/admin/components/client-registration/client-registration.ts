@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
+import { UserService } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-client-registration',
@@ -72,65 +74,105 @@ cargando = false; // Para deshabilitar el botón mientras procesa
 
 
 async registrarusuario() {
-    if (this.cargando) return;
-    this.cargando = true;
+  if (this.cargando) return;
+  this.cargando = true;
 
-    const now = new Date();
-    const { fechaPago, tipo_pago } = this.calcularFechaPago(now);
-    
-    try {
-      // 1. GENERAR QR USANDO EL EMAIL (que es único)
-      const qrData = `USUARIO:${this.usuario.email}`;
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+  const now = new Date();
+  const { fechaPago, tipo_pago } = this.calcularFechaPago(now);
 
-      // 2. CONVERTIR QR A ARCHIVO PARA CLOUDINARY
-      const response = await fetch(qrApiUrl);
-      const blob = await response.blob();
-      const qrFile = new File([blob], 'qr_code.png', { type: 'image/png' });
+  // 1. Preparamos el peso con el formato correcto
+  let pesoFinal = this.usuario.peso_inicial?.trim() || '';
+  if (pesoFinal !== '' && !pesoFinal.toLowerCase().includes('kg')) {
+    pesoFinal = `${pesoFinal} Kg`;
+  }
 
-      // 3. SUBIR QR A CLOUDINARY
-      this.usuarioService.subirImagenCloudinaryDirecto(qrFile).subscribe({
-        next: (cloudinaryRes) => {
-          const urlQrCloudinary = cloudinaryRes.secure_url;
+  // 2. Payload inicial SIN QR (porque aún no conocemos la clave)
+  const payload = {
+    nombres: this.usuario.nombres,
+    apellidos: this.usuario.apellidos,
+    fecha_nacimiento: this.usuario.fecha_nacimiento,
+    telefono: `${this.telefonoExtension} ${this.usuario.telefono}`,
+    email: this.usuario.email,
+    password: this.usuario.email,
+    fecha_inscripcion: this.formatLocalDate(now),
+    fecha_corte: this.formatLocalDate(fechaPago),
+    tipo_pago: tipo_pago,
+    sede: this.sede,
+    status: "pendiente",
+    rol: "cliente",
+    qr_imagen: null, // Vacío por ahora
+    peso_inicial: pesoFinal
+  };
 
-          // 4. PREPARAR PAYLOAD PARA LARAVEL
-          let pesoFinal = this.usuario.peso_inicial?.trim() || '';
-          if (pesoFinal !== '' && !pesoFinal.toLowerCase().includes('kg')) {
-            pesoFinal = `${pesoFinal} Kg`;
-          }
+  // 3. PASO A: Registrar en base de datos para obtener la CLAVE
+  this.usuarioService.registrarUsuario(payload).subscribe({
+    next: async (res) => {
+      const claveOficial = res.usuario.clave_usuario; // Obtenemos CLI001, etc.
+      
+      try {
+        // 4. PASO B: Generar QR usando la CLAVE oficial
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${claveOficial}`;
+        const response = await fetch(qrApiUrl);
+        const blob = await response.blob();
+        const qrFile = new File([blob], 'qr_code.png', { type: 'image/png' });
 
-          const payload = {
-            nombres: this.usuario.nombres,
-            apellidos: this.usuario.apellidos,
-            fecha_nacimiento: this.usuario.fecha_nacimiento,
-            telefono: `${this.telefonoExtension} ${this.usuario.telefono}`,
-            email: this.usuario.email,
-            password: this.usuario.email, // Password inicial es su email
-            fecha_inscripcion: this.formatLocalDate(now),
-            fecha_corte: this.formatLocalDate(fechaPago),
-            tipo_pago: tipo_pago,
-            sede: this.sede,
-            status: "pendiente",
-            rol: "cliente",
-            ruta_imagen: null,
-            qr_imagen: urlQrCloudinary, // Enviamos la URL ya lista
-            peso_inicial: pesoFinal
-          };
+        // 5. PASO C: Subir QR a Cloudinary
+        this.usuarioService.subirImagenCloudinaryDirecto(qrFile).subscribe({
+          next: (cloudinaryRes) => {
+            const urlQr = cloudinaryRes.secure_url;
 
-          // 5. ENVIAR A LARAVEL
-          this.ejecutarRegistroFinal(payload, tipo_pago);
-        },
-        error: () => {
-          this.mostrarToast('Error al subir el QR a la nube', 'error');
-          this.cargando = false;
-        }
-      });
+            // 6. PASO D: Actualizar el usuario con la URL del QR
+            this.usuarioService.update(claveOficial, { qr_imagen: urlQr }).subscribe();
 
-    } catch (error) {
-      this.mostrarToast('Error al procesar el registro', 'error');
+            // 7. PASO E: Finalizar con asistencia y pago
+            this.ejecutarProcesosFinales(claveOficial, payload, tipo_pago);
+          },
+          error: () => this.finalizarConError('Usuario creado, pero error al subir QR')
+        });
+      } catch (error) {
+        this.finalizarConError('Error al procesar el código QR');
+      }
+    },
+    error: (err) => {
+      if (err.status === 422) {
+        this.mostrarToast('El correo ya está registrado', 'error');
+      } else {
+        this.mostrarToast('Error al registrar usuario', 'error');
+      }
       this.cargando = false;
     }
-  }
+  });
+}
+
+// Nueva función simplificada para los registros secundarios
+private ejecutarProcesosFinales(clave: string, payload: any, tipo_pago: string) {
+  const fechaInscripcion = payload.fecha_inscripcion;
+
+  // Registrar Asistencia
+  this.usuarioService.registrarAsistencia({
+    clave_cliente: clave,
+    fecha_diario: fechaInscripcion,
+  }).subscribe({
+    next: () => {
+      // Registrar Pago
+      this.usuarioService.registrarPago({
+        clave_cliente: clave,
+        fecha_ingreso: fechaInscripcion,
+        fecha_corte: payload.fecha_corte,
+        Tipo_pago: tipo_pago,
+        monto_pendiente: 500
+      }).subscribe({
+        next: () => {
+          this.mostrarToast('¡Usuario y QR registrados con éxito!', 'success');
+          this.limpiarFormulario();
+          this.cargando = false;
+        },
+        error: () => this.finalizarConError('Error en registro de pago')
+      });
+    },
+    error: () => this.finalizarConError('Error en registro de asistencia')
+  });
+}
 
   private ejecutarRegistroFinal(payload: any, tipo_pago: string) {
     this.usuarioService.registrarUsuario(payload).subscribe({
