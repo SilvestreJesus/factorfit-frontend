@@ -256,7 +256,7 @@ enviarCorreo() {
   };
 
   // Usamos el servicio (en lugar de this.http directamente para mantener orden)
-  this.usuarioService.enviarEmail(payload).subscribe({
+  this.usuarioService.enviarEmail2(payload).subscribe({
     next: () => {
       this.closeMailModal();
       this.imagenSeleccionada = null;

@@ -15,6 +15,7 @@ export class UsuarioService {
   private personalUrl = `${environment.apiUrl}/api/personal`;
   private asistenciasUrl = `${environment.apiUrl}/api/asistencias`;
   private correosUrl = 'https://corrreoservicio-production.up.railway.app/enviar-correo';
+  private correosUrl2 = 'https://corrreoservicio-production.up.railway.app/enviar-correo2';
   constructor(private http: HttpClient) {}
 
 
@@ -26,6 +27,10 @@ export class UsuarioService {
 
   enviarEmail(data: any): Observable<any> {
       return this.http.post<any>(this.correosUrl, data);
+  }
+
+  enviarEmail2(data: any): Observable<any> {
+     return this.http.post<any>(this.correosUrl2, data);
   }
 
 
