@@ -157,47 +157,71 @@
 /* =========================================
    AJUSTES PARA MÓVIL (MÁXIMA COMPRESIÓN)
    ========================================= */
-/* ... (todo el código anterior igual, hasta llegar a los media queries) ... */
 
 @media (max-width: 640px) {
-    /* 1. Reducimos el padding del contenedor principal */
     .container {
-        padding: 1rem !important; /* p-4 */
+        padding: 1rem !important;
     }
 
-    /* 2. Reducimos el margen del título principal */
-    h1.font-atomic {
-        margin-bottom: 1.5rem !important; /* mb-6 */
-    }
-
-    /* 3. Reducimos drásticamente la altura del área del carrusel en móvil */
+    /* Aumentamos un poco la altura para que quepa el texto */
     .relative.w-full.max-w-2xl {
-        height: 180px !important; /* Bajamos de 320px a 180px */
-        margin-bottom: 1rem;
+        height: 200px !important; 
     }
 
     .mini-instalacion-card {
-        gap: 8px;
-        padding: 8px;
-        height: 100%; /* Que se adapte al contenedor padre de 180px */
+        gap: 12px;
+        padding: 10px;
+        height: 100% !important;
     }
 
+    /* Reducimos el ancho de la imagen para dar más espacio al texto */
+    .mini-image-wrapper {
+        flex: 0 0 35%; 
+    }
+
+    /* ACTIVAMOS LA DESCRIPCIÓN */
     .mini-info-wrapper p {
-        display: none; /* Ocultamos la descripción en móvil para ahorrar espacio */
+        display: -webkit-box !important; /* Asegura que se vea */
+        -webkit-line-clamp: 2; /* Limita a 2 líneas para no desbordar */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.7rem !important; /* Texto más pequeño para que quepa */
+        line-height: 1.2;
+        opacity: 0.9;
+        margin-bottom: 5px;
     }
 
     .mini-info-wrapper h3 {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        white-space: normal;
+        line-clamp: 2;
         margin-bottom: 2px;
     }
 
-    /* 4. Comprimimos el formulario */
-    .space-y-4 > * + * {
-        margin-top: 0.5rem !important; /* Menos espacio entre inputs */
+    .input-field {
+        padding: 0.7rem !important;
     }
 
-    .input-field {
-        padding: 0.5rem !important; /* Inputs más delgados */
-        font-size: 0.875rem;
+    /* Ajuste de botones para que no tapen el texto */
+    .flex.gap-2.mt-auto {
+        padding-top: 4px;
     }
 }
+
+/* Flechas de navegación */
+.carousel-side-btn {
+    position: absolute;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carousel-side-btn.left { left: -10px; }
+.carousel-side-btn.right { right: -10px; }
