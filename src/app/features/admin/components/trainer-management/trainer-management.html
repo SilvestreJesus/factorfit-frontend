@@ -39,25 +39,25 @@
     </div>
 
     <div class="flex justify-center w-full">
-      <div class="w-full max-w-md bg-white/5 p-4 rounded-xl border border-white/10">
+      <div class="w-full max-w-md bg-white/5 p-4 rounded-xl">
         <form class="space-y-4" (ngSubmit)="guardar()" #form="ngForm">
           <div>
-            <label class="text-black font-medium text-sm">Nombre Completo</label>
+            <label class="text-black font-medium block mb-1">Nombre Completo</label>
             <input type="text" [(ngModel)]="personal.nombre_completo" name="nombre_completo" required class="input-field" placeholder="Nombre del trainer">
           </div>
           
           <div>
-            <label class="text-black font-medium text-sm">Puesto / Cargo</label>
+            <label class="text-black font-medium block mb-1">Puesto / Cargo</label>
             <input type="text" [(ngModel)]="personal.puesto" name="puesto" required class="input-field" placeholder="Puesto">
           </div>
 
           <div>
-            <label class="text-black font-medium text-sm">Descripción</label>
+            <label class="text-black font-medium block mb-1">Descripción</label>
             <textarea [(ngModel)]="personal.descripcion" name="descripcion" class="input-field h-24" placeholder="Breve biografía..."></textarea>
           </div>
 
           <div>
-            <label class="text-black font-medium text-sm block mb-1">Fotografía</label>
+            <label class="text-black font-medium block mb-1 block mb-1">Fotografía</label>
             <input type="file" accept="image/*" (change)="onFileSelected($event)" class="input-field text-xs file:bg-pink-100 file:text-pink-700 file:border-0 file:rounded-full file:px-4 cursor-pointer">
           </div>
 

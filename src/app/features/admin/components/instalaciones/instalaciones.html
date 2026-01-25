@@ -23,7 +23,7 @@
               <div class="mini-info-wrapper p-1">
                 <span class="mini-label">INSTALACIÓN</span>
                 <h3 class="truncate text-sm md:text-lg font-bold">{{ item.titulo }}</h3>
-                <p class="line-clamp-1 text-xs hidden md:block">{{ item.descripcion }}</p>
+                <p class="line-clamp-2 text-xs md:text-sm">{{ item.descripcion }}</p>
 
                 <div class="flex gap-2 mt-auto">
                   <button type="button" class="flex-1 bg-pink-600 text-white text-[10px] md:text-xs py-1.5 rounded-lg transition-colors" (click)="editar(item)">
@@ -47,20 +47,20 @@
     </div>
 
     <div class="flex justify-center w-full mt-2 lg:mt-0">
-      <div class="w-full max-w-md bg-white/5 p-3 md:p-4 rounded-xl border border-white/10">
+      <div class="w-full max-w-md bg-white/5 p-4 rounded-xl">
         <form class="space-y-3 md:space-y-4" (ngSubmit)="guardar()" #form="ngForm">
           <div>
-            <label class="text-black font-medium text-xs md:text-sm">Nombre de la Instalación</label>
+            <label class="text-black font-medium block mb-1">Nombre de la Instalación</label>
             <input type="text" [(ngModel)]="instalaciones.titulo" name="titulo" required placeholder="Ej: Área de Pesas" class="input-field">
           </div>
           
           <div>
-            <label class="text-black font-medium text-xs md:text-sm">Descripción del Área</label>
+            <label class="text-black font-medium block mb-1">Descripción del Área</label>
             <textarea [(ngModel)]="instalaciones.descripcion" name="descripcion" placeholder="Ej: Equipamiento de alta gama..." class="input-field h-16 md:h-24"></textarea>
           </div>
 
           <div>
-            <label class="text-black font-medium text-xs block mb-1">Fotografía</label>
+            <label class="text-black font-medium block mb-1">Fotografía</label>
             <input type="file" accept="image/*" (change)="onFileSelected($event)" 
                    class="input-field text-xs file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor:pointer">
           </div>

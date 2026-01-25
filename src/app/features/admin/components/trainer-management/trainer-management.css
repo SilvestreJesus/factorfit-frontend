@@ -2,7 +2,7 @@
 
 @layer base {
     .input-field {
-        @apply w-full bg-white/20 border border-black/10 rounded-lg p-3 text-black placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all;
+        @apply w-full bg-white border-none rounded-2xl p-4 text-gray-900 shadow-md focus:ring-2 focus:ring-pink-500 transition-all placeholder-gray-400 outline-none;
     }
 }
 
