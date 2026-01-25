@@ -157,48 +157,73 @@
 /* =========================================
    AJUSTES PARA MÓVIL (MÁXIMA COMPRESIÓN)
    ========================================= */
-/* ... (Manten tu código anterior e inserta/reemplaza esto) ... */
-
+/* =========================================
+   CORRECCIÓN PARA MÓVIL
+   ========================================= */
 @media (max-width: 640px) {
-    /* 1. Reducimos el padding del contenedor principal */
     .container {
         padding: 1rem !important;
     }
 
-    /* 2. Comprimimos el carrusel de 320px a 180px */
+    /* Aumentamos un poco la altura para que quepa el texto */
     .relative.w-full.max-w-2xl {
-        height: 180px !important;
-        margin-bottom: 0.5rem !important;
+        height: 200px !important; 
     }
 
     .mini-instalacion-card {
-        gap: 8px;
-        padding: 8px;
-        height: 100% !important; /* Se ajusta a los 180px del padre */
+        gap: 12px;
+        padding: 10px;
+        height: 100% !important;
     }
 
-    /* 3. Ocultamos descripción en móvil para que quepan los botones */
+    /* Reducimos el ancho de la imagen para dar más espacio al texto */
+    .mini-image-wrapper {
+        flex: 0 0 35%; 
+    }
+
+    /* ACTIVAMOS LA DESCRIPCIÓN */
     .mini-info-wrapper p {
-        display: none !important;
+        display: -webkit-box !important; /* Asegura que se vea */
+        -webkit-line-clamp: 2; /* Limita a 2 líneas para no desbordar */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.7rem !important; /* Texto más pequeño para que quepa */
+        line-height: 1.2;
+        opacity: 0.9;
+        margin-bottom: 5px;
     }
 
     .mini-info-wrapper h3 {
         font-size: 0.9rem;
-        white-space: normal; /* Permitimos que el título use 2 líneas si es necesario */
+        white-space: normal;
         line-clamp: 2;
-    }
-
-    /* 4. Ajustamos el formulario para que suba */
-    .space-y-4 > * + * {
-        margin-top: 0.5rem !important; /* Menos espacio entre campos */
+        margin-bottom: 2px;
     }
 
     .input-field {
-        padding: 0.6rem !important; /* Inputs más compactos */
+        padding: 0.7rem !important;
     }
 
-    h1.font-atomic {
-        margin-bottom: 1rem !important; /* Menos espacio arriba */
-        font-size: 2.5rem !important;
+    /* Ajuste de botones para que no tapen el texto */
+    .flex.gap-2.mt-auto {
+        padding-top: 4px;
     }
 }
+
+/* Flechas de navegación */
+.carousel-side-btn {
+    position: absolute;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carousel-side-btn.left { left: -10px; }
+.carousel-side-btn.right { right: -10px; }
