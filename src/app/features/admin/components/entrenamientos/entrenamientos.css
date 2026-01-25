@@ -1,204 +1,185 @@
 @import "tailwindcss";
 
+/* =========================================
+   1. ESTILOS DE INPUT (ESTILO PREMIUM EVENTOS)
+   ========================================= */
 @layer base {
-    .input-field {
-        @apply w-full bg-white/10 border border-white/20 rounded-lg p-3 text-black placeholder-gray-900 focus:outline-none focus:border-pink-500;
-    }
+  .input-field {
+    @apply w-full bg-white border-none rounded-2xl p-4 text-gray-900 shadow-md focus:ring-2 focus:ring-pink-500 transition-all placeholder-gray-400 outline-none;
+  }
 }
 
 /* =========================================
-   CONTENEDOR DEL CARRUSEL MINI
+   2. CONTENEDOR DEL CARRUSEL MINI
    ========================================= */
-.carousel-mini-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    perspective: 1000px;
+.carousel-polaroid.mini {
+  position: relative;
+  width: 100%;
+  height: 420px; /* Altura para dar aire en escritorio */
+  perspective: 2000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
 }
 
 /* =========================================
-   TARJETA MINI (ESTILO INSTALACIONES)
+   3. TARJETA POLAROID (ESTILO UNIFICADO)
    ========================================= */
-.mini-instalacion-card {
-    position: absolute;
-    width: 100%;
-    height: 260px;
-    background: linear-gradient(135deg, #c026d3 0%, #1f2937 100%);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.polaroid-card {
+  position: absolute;
+  background: #ffffff; /* Blanco puro para máximo contraste */
+  padding: 14px;
+  border-radius: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Columna Imagen */
-.mini-image-wrapper {
-    flex: 0 0 45%;
-    height: 100%;
+/* Imagen de la tarjeta */
+.polaroid-card img {
+  width: 100%;
+  height: 55%; /* Proporción balanceada */
+  object-fit: cover;
+  border-radius: 18px;
+  filter: saturate(1.1);
 }
 
-.mini-image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
-}
-
-/* Columna Texto e Información */
-.mini-info-wrapper {
-    flex: 1;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    text-align: left;
-    min-width: 0; /* Evita que el texto desborde el flex */
-    height: 100%;
+/* Información de la tarjeta */
+.polaroid-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 6px 4px 6px;
+  text-align: left; /* Alineación moderna */
 }
 
 .mini-label {
-    text-transform: uppercase;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    color: #d8b4fe;
-    margin-bottom: 4px;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: #db2777; /* Rosa intenso para la etiqueta superior */
+  display: block;
+  margin-bottom: 2px;
 }
 
-.mini-info-wrapper h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.polaroid-info h3 {
+  color: #1a1a1a;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 4px;
 }
 
-.mini-info-wrapper p {
-    font-size: 0.8rem;
-    opacity: 0.85;
-    line-height: 1.4;
-    margin-bottom: 10px;
+.polaroid-info p {
+  color: #4b5563;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-weight: 400;
 }
 
 /* =========================================
-   BOTONES DE ACCIÓN (ESTILO EVENTOS)
+   4. ESTADOS Y BOTONES DEL CARRUSEL
    ========================================= */
-.mini-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: auto; /* Empuja los botones al final */
-    width: 100%;
+.polaroid-card.active {
+  z-index: 30;
+  opacity: 1;
+  box-shadow: 0 30px 60px -15px rgba(219, 39, 119, 0.3);
+  border: 1px solid rgba(219, 39, 119, 0.2);
 }
 
-.mini-actions button {
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.polaroid-card.inactive {
+  z-index: 10;
+  opacity: 0.45;
+  filter: blur(1px) saturate(0.8);
+  pointer-events: none;
 }
 
-.mini-actions button:hover {
-    transform: scale(1.05);
+/* Botones laterales circular (Estilo Eventos) */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  color: #db2777;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.mini-actions button:active {
-    transform: scale(0.95);
+.carousel-btn:hover {
+  background: #db2777;
+  color: white;
 }
 
-/* Estilo específico de los botones */
+.carousel-btn.left { left: 10px; }
+.carousel-btn.right { right: 10px; }
+
+/* Botones de acción dentro de la tarjeta */
 .btn-edit {
-    flex: 1;
-    background-color: #db2777; /* pink-600 */
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 8px;
-    border-radius: 8px;
+  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-xl transition-all shadow-md active:scale-95 text-xs;
 }
 
 .btn-delete {
-    background-color: #1f2937; /* gray-800 */
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
+  @apply bg-gray-100 hover:bg-red-100 text-gray-600 hover:text-red-600 px-3 rounded-xl transition-all;
 }
 
 /* =========================================
-   FLECHAS Y NAVEGACIÓN
+   5. AJUSTES PARA MÓVIL (TEXTO VISIBLE)
    ========================================= */
-.carousel-side-btn {
-    position: absolute;
-    z-index: 10;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
+@media (max-width: 768px) {
+  .carousel-polaroid.mini {
+    height: 360px; /* Reducción de altura del contenedor */
+    perspective: 1000px;
+  }
+
+  .polaroid-card {
+    padding: 10px;
+  }
+
+  /* Ajustamos la imagen para dar más espacio al texto en pantallas pequeñas */
+  .polaroid-card img {
+    height: 45% !important;
+  }
+
+  .polaroid-info h3 {
+    font-size: 1rem;
+  }
+
+  /* Forzamos que la descripción sea visible y legible */
+  .polaroid-info p {
+    display: -webkit-box !important; /* Re-habilita el texto si estaba oculto */
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .carousel-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-btn.left { left: 5px; }
+  .carousel-btn.right { right: 5px; }
 }
 
-.carousel-side-btn:hover { background: rgba(0,0,0,0.8); }
-.carousel-side-btn.left { left: 5px; }
-.carousel-side-btn.right { right: 5px; }
-
-/* =========================================
-   AJUSTES PARA MÓVIL (MÁXIMA COMPRESIÓN)
-   ========================================= */
-/* ... (Manten tu código anterior e inserta/reemplaza esto) ... */
-
-@media (max-width: 640px) {
-    /* 1. Reducimos el padding del contenedor principal */
-    .container {
-        padding: 1rem !important;
-    }
-
-    /* 2. Comprimimos el carrusel de 320px a 180px */
-    .relative.w-full.max-w-2xl {
-        height: 180px !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    .mini-instalacion-card {
-        gap: 8px;
-        padding: 8px;
-        height: 100% !important; /* Se ajusta a los 180px del padre */
-    }
-
-    /* 3. Ocultamos descripción en móvil para que quepan los botones */
-    .mini-info-wrapper p {
-        display: none !important;
-    }
-
-    .mini-info-wrapper h3 {
-        font-size: 0.9rem;
-        white-space: normal; /* Permitimos que el título use 2 líneas si es necesario */
-        line-clamp: 2;
-    }
-
-    /* 4. Ajustamos el formulario para que suba */
-    .space-y-4 > * + * {
-        margin-top: 0.5rem !important; /* Menos espacio entre campos */
-    }
-
-    .input-field {
-        padding: 0.6rem !important; /* Inputs más compactos */
-    }
-
-    h1.font-atomic {
-        margin-bottom: 1rem !important; /* Menos espacio arriba */
-        font-size: 2.5rem !important;
-    }
+/* Utilidad para truncar texto */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
 }
