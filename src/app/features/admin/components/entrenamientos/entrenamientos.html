@@ -44,19 +44,19 @@
     </div>
 
     <div class="flex justify-center w-full mt-2 lg:mt-0">
-      <div class="w-full max-w-md bg-white/5 p-3 md:p-4 rounded-xl">
+      <div class="w-full max-w-md bg-white/5 p-4 rounded-xl">
         <form class="space-y-3 md:space-y-4" (ngSubmit)="guardar()" #form="ngForm">
           <div>
-            <label class="text-black font-medium text-xs md:text-sm">Título del Entrenamiento</label>
+            <label class="text-black font-medium block mb-1">Título del Entrenamiento</label>
             <input type="text" [(ngModel)]="entrenamientos.titulo" name="titulo" required placeholder="Ej: HIIT" class="input-field">
           </div>
           <div>
-            <label class="text-black font-medium text-xs md:text-sm">Descripción</label>
+            <label class="text-black font-medium block mb-1">Descripción</label>
             <textarea [(ngModel)]="entrenamientos.descripcion" name="descripcion" placeholder="Detalles..." class="input-field h-16 md:h-24"></textarea>
           </div>
           
           <div>
-            <label class="text-black font-medium text-xs md:text-sm block mb-1">Fotografía del Entrenamiento</label>
+            <label class="text-black font-medium block mb-1">Fotografía</label>
             <input type="file" accept="image/*" (change)="onFileSelected($event)" 
                    class="input-field text-xs file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer">
           </div>

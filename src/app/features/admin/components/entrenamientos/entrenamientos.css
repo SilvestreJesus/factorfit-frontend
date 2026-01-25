@@ -51,11 +51,13 @@
 /* Columna Texto e Información */
 .mini-info-wrapper {
     flex: 1;
+    color: white;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 12px 6px 4px 6px;
-    text-align: center;
+    justify-content: flex-start;
+    text-align: left;
+    min-width: 0; /* Evita que el texto desborde el flex */
+    height: 100%;
 }
 
 .mini-label {
@@ -67,19 +69,20 @@
 }
 
 .mini-info-wrapper h3 {
-    color: #1a1a1a;
-    font-size: 1.15rem;
-    font-weight: 800;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
     line-height: 1.2;
-    margin-bottom: 4px;
-    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mini-info-wrapper p {
-    color: #4b5563;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    opacity: 0.85;
     line-height: 1.4;
-    font-weight: 400;
+    margin-bottom: 10px;
 }
 
 /* =========================================
