@@ -4,7 +4,7 @@ import { Login } from './components/login/login';
 import { Recover } from './components/recover/recover';
 import { Register } from './components/register/register';
 import { RegisterEmiliano } from './components/register-emiliano/registeremiliano';
-import { RegisterObrera } from './components/register-obrera/registereobrera';
+import { RegisterObrera } from './components/register-obrera/registerobrera';
 
 const routes: Routes = [
     {

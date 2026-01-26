@@ -7,11 +7,11 @@ import { lastValueFrom } from 'rxjs';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 
 @Component({
-  selector: 'app-registeremiliano',
+  selector: 'app-registerobrera',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, HttpClientModule],
-  templateUrl: './registeremiliano.html',
-  styleUrls: ['./registeremiliano.css']
+  templateUrl: './registerobrera.html',
+  styleUrls: ['./registerobrera.css']
 })
 export class RegisterObrera {
   // ===== MODAL / UI =====
