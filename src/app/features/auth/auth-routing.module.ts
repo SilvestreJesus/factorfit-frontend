@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Recover } from './components/recover/recover';
 import { Register } from './components/register/register';
+import { RegisterEmiliano } from './components/register-emiliano/registeremiliano';
+import { RegisterObrera } from './components/register-obrera/registereobrera';
 
 const routes: Routes = [
     {
@@ -12,7 +14,15 @@ const routes: Routes = [
     {
         path: 'register', // Ruta: /auth/register
         component: Register
-    },    
+    },
+    {
+        path: 'register-emiliano', // Ruta: /auth/register-emiliano
+        component: RegisterEmiliano
+    },
+    {
+        path: 'register-obrera', // Ruta: /auth/register-obrera
+        component: RegisterObrera
+    },
     {
         path: 'recover', // Ruta: /auth/register
         component: Recover

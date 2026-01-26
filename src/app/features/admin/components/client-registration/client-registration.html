@@ -33,7 +33,7 @@
                         <select [(ngModel)]="telefonoExtension" name="telefonoExtension" class="input-field w-20 sm:w-24 text-center px-1">
                             <option *ngFor="let ext of extensiones" [value]="ext">{{ ext }}</option>
                         </select>
-                        <input type="tel" placeholder="123 456 7890" [(ngModel)]="usuario.telefono" name="telefono" required class="input-field flex-1">
+                        <input type="tel" placeholder="1234567890" [(ngModel)]="usuario.telefono" name="telefono" required class="input-field flex-1">
                     </div>
                 </div>
             </div>

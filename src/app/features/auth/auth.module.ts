@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { AuthRoutingModule } from './auth-routing.module';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
+import { RegisterEmiliano } from './components/register-emiliano/registeremiliano';
 import { Recover } from './components/recover/recover';
+import { RegisterObrera } from './components/register-obrera/registereobrera';
 
 @NgModule({
     declarations: [],
@@ -14,6 +16,8 @@ import { Recover } from './components/recover/recover';
         AuthRoutingModule,
         Login,
         Register,
+        RegisterEmiliano,
+        RegisterObrera,
         Recover
     ]
 })

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@layer base {
+    * {}
+
+    .input-field {
+        @apply w-full bg-black/10 border border-white/20 rounded-lg p-3 text-white placeholder-gray-300 focus:outline-none focus:border-purple-500;
+    }
+}
+
+#bg {
+    background-image: url('https://i.ibb.co/272HW3wN/fondo-landing.jpg');
+}

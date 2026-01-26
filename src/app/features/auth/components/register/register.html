@@ -89,9 +89,9 @@
               <select
                 name="phoneExtension"
                 [(ngModel)]="telefonoExtension"
-                class="input-field w-28 text-black"
+                class="input-field w-28 text-white"
               >
-                <option *ngFor="let ext of extensiones" [value]="ext">
+                <option class="text-black" *ngFor="let ext of extensiones" [value]="ext">
                   {{ ext }}
                 </option>
               </select>
@@ -101,7 +101,7 @@
                 name="phone"
                 ngModel
                 required
-                placeholder="481 123 4567"
+                placeholder="4811234567"
                 class="input-field w-full"
               >
             </div>
