@@ -156,7 +156,8 @@ subirFoto(event: any) {
                     fecha_ingreso: this.formatLocalDate(hoy),
                     fecha_corte: this.formatLocalDate(fechaPago),
                     Tipo_pago: tipo_pago,
-                    monto_pendiente: 500
+                    monto_pendiente: 500,
+                    monto_pagado: 0
                 }).subscribe({
                   next: () => {
                     // Ahora actualizarUsuario lleva payload.status = 'pendiente'

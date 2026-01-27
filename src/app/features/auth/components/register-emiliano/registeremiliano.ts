@@ -177,7 +177,8 @@ export class RegisterEmiliano {
           fecha_ingreso: payload.fecha_inscripcion,
           fecha_corte: payload.fecha_corte,
           Tipo_pago: tipo_pago,
-          monto_pendiente: 500
+          monto_pendiente: 500,
+          monto_pagado: 0,
         }).subscribe({
           next: () => {
             this.loading = false;

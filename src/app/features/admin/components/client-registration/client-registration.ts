@@ -193,7 +193,8 @@ private ejecutarProcesosFinales(clave: string, payload: any, tipo_pago: string) 
               fecha_ingreso: fechaInscripcionBackend,
               fecha_corte: fechaCorteBackend,
               Tipo_pago: tipo_pago,
-              monto_pendiente: 500
+              monto_pendiente: 500,
+              monto_pagado: 0
             }).subscribe({
               next: () => {
                 this.mostrarToast('¡Usuario registrado correctamente!', 'success');
@@ -262,6 +263,7 @@ private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
       email: '',
       fecha_inscripcion: this.today,
       fecha_corte: this.usuario.fecha_corte,
+
       peso_inicial: '',
     };
   }
