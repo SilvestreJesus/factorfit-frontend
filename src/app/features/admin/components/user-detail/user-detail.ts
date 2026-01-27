@@ -242,11 +242,12 @@ private calcularFechaPago(fecha: Date): { fechaPago: Date, tipo_pago: string } {
     let fechaPago: Date;
     let tipo_pago: string;
 
-    if (day >= 1 && day <= 14) {
+
+    if (day >= 1 && day <= 7) {
         fechaPago = new Date(anio, mes, 1);
         tipo_pago = 'Mensual';
     } 
-    else if (day >= 15 && day <= 27) {
+    else if (day >= 8 && day <= 22) {
         fechaPago = new Date(anio, mes, 15);
         tipo_pago = 'Quincenal';
     } 

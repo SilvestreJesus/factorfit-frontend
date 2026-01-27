@@ -159,7 +159,7 @@ guardarCambios() {
 
     const d = nuevaFecha.getDate();
     // REGLA 1 / 15
-    if (d >= 28 || d <= 14) {
+    if (d >= 23 || d <= 7) {
       nuevaFecha.setDate(1);
     } else {
       nuevaFecha.setDate(15);

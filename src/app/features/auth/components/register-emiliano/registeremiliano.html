@@ -86,33 +86,31 @@
           <input type="email" name="email" ngModel required placeholder="email@ejemplo.com" class="input-field">
         </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-  <div>
-    <input 
-      type="password" 
-      name="password" 
-      #pw="ngModel"
-      ngModel 
-      required 
-      minlength="6" 
-      placeholder="Contraseña (mín. 6)" 
-      class="input-field"
-      [class.border-red-500]="pw.invalid && pw.touched">
-    <p *ngIf="pw.invalid && pw.touched" class="text-red-400 text-xs mt-1">Mínimo 6 caracteres</p>
-  </div>
-  
-  <div>
-    <input 
-      type="password" 
-      name="confirmPassword" 
-      #cpw="ngModel"
-      ngModel 
-      required 
-      placeholder="Confirmar" 
-      class="input-field"
-      [class.border-red-500]="cpw.value !== pw.value && cpw.touched">
-  </div>
-</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-white font-medium">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              ngModel
+              required
+              placeholder="********"
+              class="input-field"
+            >
+          </div>
+
+          <div>
+            <label class="text-white font-medium">Repetir Contraseña</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              ngModel
+              required
+              placeholder="********"
+              class="input-field"
+            >
+          </div>
+        </div>        
 
         <button type="submit" [disabled]="loading || !registerForm.valid"
                 class="w-full mt-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg">
