@@ -60,41 +60,40 @@
    TARJETA POLAROID
 ================================ */
 .polaroid-card {
-  position: absolute;
   background: #FAF7F9;
-  padding: 15px; /* Un poco más de borde para estilo polaroid */
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 15px;
   display: flex;
-  flex-direction: column;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 20px; /* Espacio entre imagen y texto */
+  align-items: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
 
 /* ===============================
    IMAGEN (AJUSTE REAL)
 ================================ */
+/* Imagen a la izquierda en PC */
 .polaroid-card img {
-  width: 100%;
-  height: auto; /* Mantiene la proporción real de la imagen */
-  max-height: 65%; /* Limita el alto para dejar espacio al texto */
-  object-fit: contain; /* Muestra la imagen completa sin recortes */
-  background: transparent; /* Eliminado el fondo negro */
-  border-radius: 6px;
-  display: block;
+  flex: 1; /* Toma el 50% del espacio */
+  width: 50%;
+  height: auto;
+  max-height: 450px;
+  object-fit: contain; /* Tamaño real sin cortes */
+  background: transparent; /* Adiós fondo negro */
+  border-radius: 8px;
 }
 
 /* ===============================
    INFO Y TEXTO
 ================================ */
+/* Texto a la derecha en PC */
 .polaroid-info {
-  margin-top: 15px;
-  text-align: center;
-  color: #111;
+  flex: 1; /* Toma el otro 50% */
+  text-align: left; /* Alineación a la izquierda para leer mejor en PC */
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  flex-grow: 1;
+  justify-content: center;
 }
 
 .polaroid-info h3 {
@@ -153,12 +152,22 @@
     height: 520px;
   }
 
-  .polaroid-card {
-    padding: 10px;
+.polaroid-card {
+    flex-direction: column !important;
+    padding: 15px;
+  }
+  .polaroid-card img {
+    width: 100% !important;
+    max-height: 250px;
   }
 
-  .polaroid-info h3 {
-    font-size: 1.3rem;
+.polaroid-info {
+    text-align: center; /* Centrado en móvil como antes */
+    padding: 10px 0;
+  }
+  
+  .carousel-polaroid {
+    height: 700px; /* Espacio extra para que el texto no se salga del fondo morado */
   }
 
   .polaroid-info p {
