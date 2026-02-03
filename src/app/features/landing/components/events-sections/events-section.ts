@@ -61,16 +61,20 @@ getCardStyle(index: number) {
 
   const isActive = offset === 0;
   const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
+  // Ajuste de dimensiones
+const cardWidth = isActive ? (isMobile ? 300 : 800) : (isMobile ? 200 : 240);
+// Cambiamos de altura fija a 'auto' o una altura mínima más flexible
+const cardHeight = isActive ? (isMobile ? 420 : 480) : (isMobile ? 280 : 320);
   
   // Suavizamos el escalado para que no sea tan agresivo el cambio
   const scale = isActive ? 1 : (isMobile ? 0.8 : 0.7);
 
   return {
-    width: `${isActive ? (isMobile ? 280 : 800) : (isMobile ? 200 : 240)}px`,
-    height: `${isActive ? (isMobile ? 360 : 480) : (isMobile ? 280 : 320)}px`,
+  width: `${cardWidth}px`,
+    height: `${cardHeight}px`, // Incrementamos un poco para el texto
     transform: `
-      translateX(${offset * (isMobile ? 160 : 280)}px)
-      rotateY(${offset * 12}deg)
+      translateX(${offset * (isMobile ? 150 : 280)}px) 
+      rotateY(${offset * 8}deg)
       scale(${scale})
       translateZ(${isActive ? 100 : 0}px)
     `,
