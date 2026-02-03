@@ -55,33 +55,33 @@ getCardStyle(index: number) {
   const total = this.eventos.length;
   let offset = index - this.activeIndex;
 
-  // Lógica de loop para que el offset siempre sea el camino más corto
   if (offset > total / 2) offset -= total;
   if (offset < -total / 2) offset += total;
 
   const isActive = offset === 0;
-const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
+  const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
   
-  // En PC (no mobile) hacemos la tarjeta mucho más ancha para el diseño horizontal
-  const cardWidth = isActive ? (isMobile ? 320 : 900) : (isMobile ? 220 : 260);
+  // En PC, la tarjeta activa ahora tiene un ancho de 500px para que parezca un póster vertical
+  const cardWidth = isActive ? (isMobile ? 320 : 500) : (isMobile ? 220 : 260);
   const scale = isActive ? 1 : (isMobile ? 0.8 : 0.7);
 
   return {
     width: `${cardWidth}px`,
     height: isActive ? 'auto' : (isMobile ? '350px' : '400px'),
-    'min-height': isActive ? (isMobile ? '450px' : '500px') : 'auto',
-    transform: `translateX(${offset * (isMobile ? 170 : 350)}px) scale(${scale})`,
+    'min-height': isActive ? (isMobile ? '480px' : '600px') : 'auto',
+    transform: `
+      translateX(${offset * (isMobile ? 160 : 320)}px) 
+      scale(${scale})
+      translateZ(${isActive ? 100 : 0}px)
+    `,
     opacity: isActive ? 1 : 0.4,
     zIndex: 10 - Math.abs(offset),
-    // Aseguramos que sea un contenedor flex para el cambio de dirección
+    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
     display: 'flex',
-    'flex-direction': isMobile ? 'column' : 'row', 
-    transition: 'all 0.5s ease'
+    // Forzamos vertical (column) tanto en PC como en móvil
+    'flex-direction': 'column'
   };
 }
-
-
-
 
 
   /* ⬅➡ LOOP INFINITO CON FLECHAS */
