@@ -49,41 +49,40 @@ private procesarImagenEvento(ruta: string | null): string {
   return `${environment.apiUrl}/api/${ruta}`; // Servidor local
 }
 
+
 getCardStyle(index: number) {
   if (!this.eventos.length) return {};
 
   const total = this.eventos.length;
   let offset = index - this.activeIndex;
 
-  // Lógica de loop para que el offset siempre sea el camino más corto
   if (offset > total / 2) offset -= total;
   if (offset < -total / 2) offset += total;
 
   const isActive = offset === 0;
   const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
-  // Ajuste de dimensiones
-const cardWidth = isActive ? (isMobile ? 300 : 800) : (isMobile ? 200 : 240);
-// Cambiamos de altura fija a 'auto' o una altura mínima más flexible
-const cardHeight = isActive ? (isMobile ? 420 : 480) : (isMobile ? 280 : 320);
   
-  // Suavizamos el escalado para que no sea tan agresivo el cambio
+  const cardWidth = isActive ? (isMobile ? 320 : 500) : (isMobile ? 220 : 260);
   const scale = isActive ? 1 : (isMobile ? 0.8 : 0.7);
 
   return {
-  width: `${cardWidth}px`,
-    height: `${cardHeight}px`, // Incrementamos un poco para el texto
+    width: `${cardWidth}px`,
+    // CAMBIO: Usamos 'max-content' o 'auto' para que el texto defina el alto
+    height: isActive ? 'auto' : (isMobile ? '300px' : '350px'), 
+    'min-height': isActive ? (isMobile ? '450px' : '500px') : 'auto',
     transform: `
-      translateX(${offset * (isMobile ? 150 : 280)}px) 
-      rotateY(${offset * 8}deg)
+      translateX(${offset * (isMobile ? 160 : 320)}px) 
+      rotateY(${offset * 10}deg)
       scale(${scale})
       translateZ(${isActive ? 100 : 0}px)
     `,
     opacity: isActive ? 1 : 0.4,
     zIndex: 10 - Math.abs(offset),
-    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' // Animación suave
+    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+    display: 'flex',
+    'flex-direction': 'column'
   };
 }
-
 
 
 
