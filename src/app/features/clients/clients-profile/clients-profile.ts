@@ -59,6 +59,18 @@ cargarUsuario(clave_usuario: string) {
       next: (data) => {
         this.user = data;
 
+        if (this.user.peso_inicial) {
+            let pesoLimpio = this.user.peso_inicial
+              .toString()
+              .replace(/kg/i, '')
+              .trim();
+            
+            // Si es "0", lo ponemos como null para que el input se vea limpio
+            this.user.peso_inicial = (pesoLimpio === '0' || pesoLimpio === '') ? null : pesoLimpio;
+          } else {
+            this.user.peso_inicial = null;
+        }
+
         // Tratamiento de teléfono
         if (this.user.telefono) {
           const partes = this.user.telefono.split(" ");
@@ -108,18 +120,12 @@ guardarCambios() {
   if (!this.clave_usuario) return;
   const claveLimpia = this.clave_usuario.split(':')[0].trim();
 
-  // Creamos una copia para no afectar la vista inmediatamente
+// Creamos una copia para el backend (payload)
   const datosAEnviar = { ...this.user };
 
-  // --- TRATAMIENTO DEL PESO ---
-  if (datosAEnviar.peso_inicial) {
-    let peso = String(datosAEnviar.peso_inicial).trim();
-    // Si el usuario solo puso el número, agregamos " Kg"
-    if (peso !== '' && !peso.toLowerCase().includes('kg')) {
-      peso = `${peso} Kg`;
-    }
-    datosAEnviar.peso_inicial = peso;
-  }
+  // --- TRATAMIENTO DEL PESO PARA EL BACKEND ---
+  const valorPeso = this.user.peso_inicial;
+  datosAEnviar.peso_inicial = (valorPeso && valorPeso != 0) ? `${valorPeso} Kg` : '0 Kg';
 
   // --- TRATAMIENTO DE TELÉFONO ---
   const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');

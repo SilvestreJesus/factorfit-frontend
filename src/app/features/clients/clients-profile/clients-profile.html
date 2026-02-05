@@ -66,7 +66,7 @@
                         <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Peso Actual</label>
                             <div class="relative">
-                                <input type="text" 
+                                <input type="number" 
                                     [(ngModel)]="user.peso_inicial" 
                                     name="peso_inicial" 
                                     placeholder="Ej. 75"
@@ -74,7 +74,7 @@
                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">kg</span>
                             </div>
                         </div>
-                        <div class="space-y-1 md:col-span-2">
+                        <div class="space-y-1">
                             <label class="text-sm font-bold text-gray-700 ml-1">Nueva Contraseña (opcional)</label>
                             <input type="password" 
                                 [(ngModel)]="passwordNueva" 
