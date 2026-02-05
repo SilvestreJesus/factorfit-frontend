@@ -54,7 +54,22 @@ export class Logbook implements OnInit {
     setInterval(() => this.fechaHoraActual.set(new Date()), 1000);
   }
 
-
+// Añade este método a tu clase Logbook
+async descargarBaseDeDatos() {
+  this.showToastMessage('Generando respaldo de seguridad...', 'success');
+  
+  try {
+    const blob = await firstValueFrom(this.usuarioService.descargarBackupSQL());
+    const fecha = new Date().toISOString().split('T')[0];
+    const nombreArchivo = `BACKUP_SISTEMA_${this.sede.toUpperCase()}_${fecha}.sql`;
+    
+    saveAs(blob, nombreArchivo);
+    this.showToastMessage('Base de datos descargada con éxito');
+  } catch (error) {
+    console.error('Error al descargar DB:', error);
+    this.showToastMessage('Error al generar el respaldo', 'error');
+  }
+}
 
   // 2. Mapeo correcto de la respuesta del Backend
 cargarConteos() {

@@ -104,7 +104,11 @@ export class UsuarioService {
   }
 
   
-
+descargarBackupSQL(): Observable<Blob> {
+  return this.http.get(`${this.apiUrl}/respaldo-db`, {
+    responseType: 'blob'
+  });
+}
 
 // 1. Modifica el método getQrUrl (O cámbiale el nombre a resolverImagen)
 getQrUrl(path: string): string {
