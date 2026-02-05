@@ -54,7 +54,6 @@ export class Logbook implements OnInit {
     setInterval(() => this.fechaHoraActual.set(new Date()), 1000);
   }
 
-// Añade este método a tu clase Logbook
 async descargarBaseDeDatos() {
   this.showToastMessage('Generando respaldo de seguridad...', 'success');
   
@@ -65,9 +64,21 @@ async descargarBaseDeDatos() {
     
     saveAs(blob, nombreArchivo);
     this.showToastMessage('Base de datos descargada con éxito');
-  } catch (error) {
-    console.error('Error al descargar DB:', error);
-    this.showToastMessage('Error al generar el respaldo', 'error');
+  } catch (error: any) {
+    // Si el error es un Blob (porque el backend devolvió JSON pero Angular esperaba un archivo)
+    if (error.error instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const errorString = reader.result as string;
+        const errorParsed = JSON.parse(errorString);
+        console.error('Error detallado del servidor:', errorParsed);
+        this.showToastMessage('Error: ' + (errorParsed.detalle?.[0] || 'Fallo en servidor'), 'error');
+      };
+      reader.readAsText(error.error);
+    } else {
+      console.error('Error al descargar DB:', error);
+      this.showToastMessage('Error al generar el respaldo', 'error');
+    }
   }
 }
 
