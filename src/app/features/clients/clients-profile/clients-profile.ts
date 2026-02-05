@@ -104,36 +104,46 @@ cargarUsuario(clave_usuario: string) {
     });
   }
 
-  guardarCambios() {
-    if (!this.clave_usuario) return;
-    const claveLimpia = this.clave_usuario.split(':')[0].trim();
+guardarCambios() {
+  if (!this.clave_usuario) return;
+  const claveLimpia = this.clave_usuario.split(':')[0].trim();
 
-    const datosAEnviar = { ...this.user };
+  // Creamos una copia para no afectar la vista inmediatamente
+  const datosAEnviar = { ...this.user };
 
-    // Formatear Teléfono
-    const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');
-    datosAEnviar.telefono = `${this.telefonoExtension} ${numeroSolo}`;
-
-    // Manejo de Contraseña
-    if (this.passwordNueva && this.passwordNueva.trim() !== '') {
-      datosAEnviar.password = this.passwordNueva;
-    } else {
-      delete datosAEnviar.password;
+  // --- TRATAMIENTO DEL PESO ---
+  if (datosAEnviar.peso_inicial) {
+    let peso = String(datosAEnviar.peso_inicial).trim();
+    // Si el usuario solo puso el número, agregamos " Kg"
+    if (peso !== '' && !peso.toLowerCase().includes('kg')) {
+      peso = `${peso} Kg`;
     }
-
-    // Limpieza de campos de vista
-    delete datosAEnviar.ruta_imagen_mostrar;
-
-    this.usuarioService.actualizarPerfil(claveLimpia, datosAEnviar)
-      .subscribe({
-        next: () => {
-          this.showToast("¡Perfil actualizado!", "success");
-          this.passwordNueva = '';
-          this.cargarUsuario(this.clave_usuario);
-        },
-        error: () => this.showToast("Error al guardar cambios", "error")
-      });
+    datosAEnviar.peso_inicial = peso;
   }
+
+  // --- TRATAMIENTO DE TELÉFONO ---
+  const numeroSolo = String(this.user.telefono || '').replace(/\D/g, '');
+  datosAEnviar.telefono = `${this.telefonoExtension} ${numeroSolo}`;
+
+  // --- MANEJO DE CONTRASEÑA ---
+  if (this.passwordNueva && this.passwordNueva.trim() !== '') {
+    datosAEnviar.password = this.passwordNueva;
+  } else {
+    delete datosAEnviar.password;
+  }
+
+  delete datosAEnviar.ruta_imagen_mostrar;
+
+  this.usuarioService.actualizarPerfil(claveLimpia, datosAEnviar)
+    .subscribe({
+      next: () => {
+        this.showToast("¡Perfil actualizado!", "success");
+        this.passwordNueva = '';
+        this.cargarUsuario(this.clave_usuario); // Recargamos para ver el peso formateado
+      },
+      error: () => this.showToast("Error al guardar cambios", "error")
+    });
+}
 
 
 
