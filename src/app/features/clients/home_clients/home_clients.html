@@ -29,7 +29,7 @@
         </div>
 
 <div class="order-1 md:order-2 group">
-    <div class="bg-black/80 p-6 sm:p-10 md:p-14 rounded-[40px] shadow-2xl border border-white/10 backdrop-blur-sm transition-transform group-hover:scale-105 duration-500 relative">
+    <div class="bg-black/80 p-6 sm:p-10 md:p-14 rounded-[40px] shadow-2xl border border-white/10 backdrop-blur-sm transition-transform group-hover:scale-105 duration-500 relative flex flex-col items-center gap-6">
         
         @if (user?.qr_imagen) {
             <img 
@@ -42,19 +42,24 @@
             </div>
         }
 
-        <button (click)="downloadQR()"  title="Descargar QR" class="absolute bottom-6 right-6 md:bottom-10 md:right-10 bg-black hover:bg-pink-600 p-4 rounded-full border border-white/10 text-white transition-all active:scale-90 group/btn shadow-2xl z-20">
+        <button (click)="downloadQR()" 
+                title="Descargar QR" 
+                class="flex items-center gap-3 bg-white/10 hover:bg-fuchsia-600 text-white px-8 py-3 rounded-full border border-white/20 transition-all active:scale-95 shadow-lg group/btn">
+             
+             <span class="font-bold uppercase tracking-wider text-sm">Descargar QR</span>
+             
              <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                class="w-6 h-6 md:w-8 md:h-8 transition-transform group-hover/btn:translate-y-1" 
+                class="w-5 h-5 transition-transform group-hover/btn:translate-y-1" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
         </button>
+
     </div>
 </div>
-
 
     </div>
 </section>
